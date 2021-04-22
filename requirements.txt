@@ -1,0 +1,5 @@
+decorator==4.4.2
+hiredis==2.0.0
+joblib==1.0.1
+networkx==2.5.1
+redis==3.5.3
