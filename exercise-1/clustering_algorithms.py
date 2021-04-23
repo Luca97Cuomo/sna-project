@@ -54,7 +54,7 @@ def hierarchical_optimized(graph, seed):
     cluster_to_nodes = {}
 
     i = 0
-    for node in graph.nodes:
+    for node in graph.nodes: # O(n)
         node_to_cluster[node] = i
         cluster_to_nodes[i] = [node]
         i += 1
@@ -63,14 +63,14 @@ def hierarchical_optimized(graph, seed):
     while not done:
 
         cluster = random.choice(list(cluster_to_nodes.keys()))
-        edges = list(graph.edges(cluster_to_nodes[cluster]))
+        edges = list(graph.edges(cluster_to_nodes[cluster])) # O(n*grado(n))
         if not len(edges) == 0:
             chosen_node = random.choice(edges)[1]
             chosen_cluster = node_to_cluster[chosen_node]
 
             if not chosen_cluster == cluster:
                 cluster_to_nodes[cluster] = cluster_to_nodes[cluster] + cluster_to_nodes[chosen_cluster]
-                for node in cluster_to_nodes[chosen_cluster]:
+                for node in cluster_to_nodes[chosen_cluster]: #O(n)
                     node_to_cluster[node] = cluster
                 del(cluster_to_nodes[chosen_cluster])
 
@@ -78,3 +78,43 @@ def hierarchical_optimized(graph, seed):
             done = True
 
     return cluster_to_nodes.values()
+
+
+
+def k_means(graph, k):
+    n = graph.number_of_nodes()
+    prec_list = []  # 0
+    curr_list = []
+
+    # mi restituisce un vicino di root non ancora in un cluster
+    def next_neighbor(graph, root):
+        neighbors = graph.neighbors(root)
+        for neighbor in neighbors:
+            if nx.get_node_attributes(graph, "cluster")[neighbor]:  # vicino.label = None
+                yield neighbor
+
+        return None
+
+
+    u = random.choice(list(G.nodes()))
+    cluster0 = {u}
+    for i in range(k-1):
+        v = random.choice(list(nx.non_neighbors(G, u)))
+
+    cluster1 = {v}
+    node_to_cluster = {}
+    added = 2
+
+    while len(prec_list) != 0: # se il grafo è disconnesso esplode
+        while len(prec_list) != 0:
+
+            for root in prec_list: # non va bene perchè esplode, bisogna salvare i nodi da eliminare e elimarli fuori dal for.
+                neighbor = next_neighbor(root)
+                if neighbor is not None:
+                    node_to_cluster[root] = node_to_cluster[root] + neighbor
+                    curr_list.append(neighbor)
+                else:
+                    prec_list.pop(root)
+
+        prec_list = curr_list
+
