@@ -42,7 +42,8 @@ def generate_random_samples(n_samples: int, service_null_percentage: float, valu
 
 def generate_naive_labels(samples: typing.Iterable[typing.List], seed: int = 42) -> typing.List[int]:
     """
-
+    It creates labels as a linear function of the sum of the features, but considering a None value as a score of 3,
+    the middle ground. This is purposefully done in order to make a misreporting strategy viable.
     """
     labels = []
 
