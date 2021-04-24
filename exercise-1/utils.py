@@ -29,7 +29,9 @@ class Clustering:
         rand_index = self.__rand_index(clusters)
         print(f"The rand index for the clustering algorithm {clustering_algorithm.__name__} is {rand_index}")
         if self.verbose:
-            print(f"The graph was divided in {len(clusters)} clusters that are : {clusters}")
+            print(f"The graph was divided in {len(clusters)}")
+            for i, cluster in enumerate(clusters):
+                print(f"The length of the cluster_{i+1} is {len(cluster)}")
         if self.draw_graph:
             self.__draw_clusters(clusters)
 

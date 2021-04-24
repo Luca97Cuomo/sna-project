@@ -8,7 +8,6 @@ import random
 # n = number of nodes
 # m = number of edges
 
-
 # Naive implementation of hierarchical clustering algorithm
 def hierarchical(graph, seed):  # O(n^2*logn)
     # Create a priority queue with each pair of nodes indexed by distance
@@ -54,31 +53,36 @@ def hierarchical_optimized(graph, seed):
     cluster_to_nodes = {}
 
     i = 0
-    for node in graph.nodes: # O(n)
+    for node in graph.nodes:  # O(n)
         node_to_cluster[node] = i
         cluster_to_nodes[i] = [node]
         i += 1
 
     done = False
     while not done:
-
         cluster = random.choice(list(cluster_to_nodes.keys()))
-        edges = list(graph.edges(cluster_to_nodes[cluster])) # O(n*grado(n))
+        edges = list(graph.edges(cluster_to_nodes[cluster]))  # O(n*grado(n))
         if not len(edges) == 0:
-            chosen_node = random.choice(edges)[1]
-            chosen_cluster = node_to_cluster[chosen_node]
-
+            neighbor_clusters = set()
+            for edge in edges:
+                if node_to_cluster[edge[0]] == cluster and node_to_cluster[edge[1]] == cluster:
+                    continue
+                if node_to_cluster[edge[0]] == cluster:
+                    chosen_node = edge[1]
+                else:
+                    chosen_node = edge[0]
+                neighbor_clusters.add(node_to_cluster[chosen_node])
+            chosen_cluster = random.choice(list(neighbor_clusters))
             if not chosen_cluster == cluster:
                 cluster_to_nodes[cluster] = cluster_to_nodes[cluster] + cluster_to_nodes[chosen_cluster]
-                for node in cluster_to_nodes[chosen_cluster]: #O(n)
+                for node in cluster_to_nodes[chosen_cluster]:  # O(n)
                     node_to_cluster[node] = cluster
-                del(cluster_to_nodes[chosen_cluster])
+                del (cluster_to_nodes[chosen_cluster])
 
         if len(cluster_to_nodes.keys()) == 4:
             done = True
 
     return cluster_to_nodes.values()
-
 
 
 def k_means(graph, k):
@@ -95,20 +99,19 @@ def k_means(graph, k):
 
         return None
 
-
     u = random.choice(list(G.nodes()))
     cluster0 = {u}
-    for i in range(k-1):
+    for i in range(k - 1):
         v = random.choice(list(nx.non_neighbors(G, u)))
 
     cluster1 = {v}
     node_to_cluster = {}
     added = 2
 
-    while len(prec_list) != 0: # se il grafo è disconnesso esplode
+    while len(prec_list) != 0:  # se il grafo è disconnesso esplode
         while len(prec_list) != 0:
 
-            for root in prec_list: # non va bene perchè esplode, bisogna salvare i nodi da eliminare e elimarli fuori dal for.
+            for root in prec_list:  # non va bene perchè esplode, bisogna salvare i nodi da eliminare e elimarli fuori dal for.
                 neighbor = next_neighbor(root)
                 if neighbor is not None:
                     node_to_cluster[root] = node_to_cluster[root] + neighbor
@@ -117,4 +120,3 @@ def k_means(graph, k):
                     prec_list.pop(root)
 
         prec_list = curr_list
-
