@@ -47,8 +47,8 @@ class Clustering:
         predicted_list = []
         label_list = []
         for i in range(len(self.graph)):
-            predicted_list.append(node_to_cluster[str(i)])
-            label_list.append(self.node_to_labels[str(i)])
+            predicted_list.append(node_to_cluster[i])
+            label_list.append(self.node_to_labels[i])
 
         rand_index = rand_score(label_list, predicted_list)
 
@@ -108,11 +108,11 @@ def load_graph(nodes_path, edges_path):
         for edge in edge_lines[1:]:
             id_1 = edge.split(",")[0].strip()
             id_2 = edge.split(",")[1].strip()
-            graph.add_edge(id_1, id_2)
+            graph.add_edge(int(id_1), int(id_2))
 
         for node in node_lines[1:]:
             line = node.split(",")
-            identifier = line[0].strip()
+            identifier = int(line[0].strip())
             label = line[-1].strip()
 
             node_to_label[identifier] = label
