@@ -3,13 +3,14 @@ import math
 import itertools as it
 from priorityq import PriorityQueue
 import random
+from utils import rand_index
 
 
 # n = number of nodes
 # m = number of edges
 
 # Naive implementation of hierarchical clustering algorithm
-def hierarchical(graph, seed):  # O(n^2*logn)
+def hierarchical(graph, seed=42):  # O(n^2*logn)
     # Create a priority queue with each pair of nodes indexed by distance
     pq = PriorityQueue()
     for u in graph.nodes():  # O(n^2*logn) in the worst case.
@@ -44,10 +45,10 @@ def hierarchical(graph, seed):  # O(n^2*logn)
         if len(clusters) == 4:
             done = True
 
-    return clusters
+    return list(clusters)
 
 
-def hierarchical_optimized(graph, seed):
+def hierarchical_optimized(graph, seed=42, desired_clusters=4):
     random.seed(seed)
     node_to_cluster = {}
     cluster_to_nodes = {}
@@ -58,8 +59,7 @@ def hierarchical_optimized(graph, seed):
         cluster_to_nodes[i] = [node]
         i += 1
 
-    done = False
-    while not done:
+    while len(cluster_to_nodes.keys()) != desired_clusters:
         cluster = random.choice(list(cluster_to_nodes.keys()))
         edges = list(graph.edges(cluster_to_nodes[cluster]))  # O(n*grado(n))
         if not len(edges) == 0:
@@ -79,44 +79,69 @@ def hierarchical_optimized(graph, seed):
                     node_to_cluster[node] = cluster
                 del (cluster_to_nodes[chosen_cluster])
 
-        if len(cluster_to_nodes.keys()) == 4:
-            done = True
-
-    return cluster_to_nodes.values()
+    return list(cluster_to_nodes.values())
 
 
-def k_means(graph, k):
-    n = graph.number_of_nodes()
-    prec_list = []  # 0
-    curr_list = []
+def k_means_one_iteration(graph, seed=42, k=4, centers=None):
+    current_nodes = []  # 0
+    next_nodes = []
 
     # mi restituisce un vicino di root non ancora in un cluster
-    def next_neighbor(graph, root):
-        neighbors = graph.neighbors(root)
+    def non_clustered_neighbors(graph, node):
+        neighbors = graph.neighbors(node)
         for neighbor in neighbors:
-            if nx.get_node_attributes(graph, "cluster")[neighbor]:  # vicino.label = None
+            if neighbor not in node_to_cluster:
                 yield neighbor
 
-        return None
+    def add_node_to_cluster(node, cluster):
+        node_to_cluster[node] = cluster
+        cluster_to_nodes.setdefault(cluster, []).append(node)
 
-    u = random.choice(list(G.nodes()))
-    cluster0 = {u}
-    for i in range(k - 1):
-        v = random.choice(list(nx.non_neighbors(G, u)))
-
-    cluster1 = {v}
     node_to_cluster = {}
-    added = 2
+    cluster_to_nodes = {}
+    if centers is None:
+        random.seed(seed)
+        for i in range(k):
+            center = random.choice(list(graph.nodes()))
+            add_node_to_cluster(center, i)
+            current_nodes.append(center)
+    else:
+        assert len(centers) == k
+        current_nodes = centers
 
-    while len(prec_list) != 0:  # se il grafo è disconnesso esplode
-        while len(prec_list) != 0:
+    while len(current_nodes) != 0:
+        while len(current_nodes) != 0:
+            visited_nodes = set()
+            for node in current_nodes:
+                try:
+                    neighbor = next(non_clustered_neighbors(graph, node))
+                    add_node_to_cluster(neighbor, node_to_cluster[node])
+                    next_nodes.append(neighbor)
+                except StopIteration:
+                    visited_nodes.add(node)
+            current_nodes = list(filter(lambda node: node not in visited_nodes, current_nodes))
 
-            for root in prec_list:  # non va bene perchè esplode, bisogna salvare i nodi da eliminare e elimarli fuori dal for.
-                neighbor = next_neighbor(root)
-                if neighbor is not None:
-                    node_to_cluster[root] = node_to_cluster[root] + neighbor
-                    curr_list.append(neighbor)
-                else:
-                    prec_list.pop(root)
+        current_nodes = next_nodes
+        next_nodes = []
 
-        prec_list = curr_list
+    return list(cluster_to_nodes.values())
+
+
+def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000):
+    # rand-index come condizione di convergenza
+
+    # altra possibilità: prendere il più centrale tra i nodi del cluster, e poi alla prossima iterazione
+    # verificare se la misura di centralità è cambiata di almeno tot (problema: due centri diversi possono avere
+    # centralità simile ma generare cluster differenti).
+    last_clustering = [[]] * k  # [[], [], [], []]
+    centers = None
+    convergence = False
+    iterations = 0
+
+    while not convergence and iterations < max_iterations:
+        clusters = k_means_one_iteration(graph, seed, k, centers)  # note: the seed is only used once when centers=None
+
+        if rand_index(graph, clusters, ):
+            pass
+
+        iterations += 1
