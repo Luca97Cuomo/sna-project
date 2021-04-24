@@ -10,9 +10,14 @@ def main():
     # graph, node_to_labels = utils.build_random_graph(11, 0.20, 4)
 
     clustering = utils.Clustering([
-        # (clustering_algorithms.hierarchical_optimized, {"seed": 42, "desired_clusters": 4}),
-        (clustering_algorithms.k_means_one_iteration, {"seed": 42, "k": 4})
-    ], graph, true_clusters, verbose=True, draw_graph=False)
+        (clustering_algorithms.k_means_one_iteration, {"seed": 42, "k": 4}),
+        (clustering_algorithms.k_means, {"centrality_measure": None, "seed": 42, "k": 4,
+                                         "equality_threshold": 0.1, "max_iterations": 1, "centers": None}),
+        (clustering_algorithms.k_means, {"centrality_measure": "betweenness_centrality", "seed": 42, "k": 4,
+                                         "equality_threshold": 0.1, "max_iterations": 100000,
+                                         "centers": None, "verbose": True})],
+        graph, true_clusters, verbose=True, draw_graph=False)
+
     clustering.evaluate_all()
 
 

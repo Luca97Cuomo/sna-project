@@ -3,7 +3,7 @@ import math
 import itertools as it
 from priorityq import PriorityQueue
 import random
-from utils import rand_index
+from utils import rand_index, CENTRALITY_MEASURES
 
 
 # n = number of nodes
@@ -127,21 +127,50 @@ def k_means_one_iteration(graph, seed=42, k=4, centers=None):
     return list(cluster_to_nodes.values())
 
 
-def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000):
+def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000, centers=None, verbose=False):
     # rand-index come condizione di convergenza
 
     # altra possibilità: prendere il più centrale tra i nodi del cluster, e poi alla prossima iterazione
     # verificare se la misura di centralità è cambiata di almeno tot (problema: due centri diversi possono avere
     # centralità simile ma generare cluster differenti).
-    last_clustering = [[]] * k  # [[], [], [], []]
-    centers = None
+
+    last_clustering = [[] for _ in range(k)]
+    last_similarity = 0
     convergence = False
     iterations = 0
+    centrality_measure_function = CENTRALITY_MEASURES.get(centrality_measure, None)
+
+    if centrality_measure_function is not None and centers is None:
+        centers = []
+        centrality_dict = centrality_measure_function(graph)
+        for i in range(k):
+            centers[i] = max(centrality_dict, key=centrality_dict.get)
+            del (centrality_dict[centers[i]])
+
+    if centrality_measure_function is None and centers is not None:
+        random.seed(seed)
 
     while not convergence and iterations < max_iterations:
         clusters = k_means_one_iteration(graph, seed, k, centers)  # note: the seed is only used once when centers=None
 
-        if rand_index(graph, clusters, ):
-            pass
+        if iterations != 0:
+            similarity = rand_index(graph, clusters, last_clustering)
+            if verbose:
+                print(f"Difference between two iteration similarity: {abs(last_similarity - similarity)}")
+            if abs(last_similarity - similarity) <= equality_threshold:
+                convergence = True
+            last_similarity = similarity
 
+        last_clustering = clusters
         iterations += 1
+
+        centers = []
+        if centrality_measure_function is None:
+            for cluster in clusters:
+                centers.append(random.choice(cluster))
+        else:
+            for cluster in clusters:
+                centrality_dict = centrality_measure_function(graph.subgraph(cluster))
+                centers.append(max(centrality_dict, key=centrality_dict.get))
+
+    return last_clustering

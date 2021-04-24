@@ -9,6 +9,13 @@ from sklearn.metrics import rand_score
 COLORS = list(mcolors.BASE_COLORS.keys())
 ALL_COLORS = list(mcolors.CSS4_COLORS.keys())
 
+CENTRALITY_MEASURES = {
+    "degree_centrality": nx.degree_centrality,
+    "closeness_centrality": nx.closeness_centrality,
+    "betweenness_centrality": nx.betweenness_centrality,
+    "pagerank": nx.pagerank
+}
+
 
 class Clustering:
     def __init__(self, clustering_algorithms_with_kwargs, graph, true_clusters, seed=42, draw_graph=False, verbose=False):
@@ -85,7 +92,7 @@ def load_graph(nodes_path, edges_path, num_of_clusters=4):
 
     current_max_index = 0
     label_to_index = {}
-    clusters = [[]] * num_of_clusters
+    clusters = [[] for _ in range(num_of_clusters)]
     with open(nodes_path, "r", encoding="utf-8") as nodes_file, open(edges_path, "r", encoding="utf-8") as edges_file:
         node_lines = nodes_file.readlines()
         edge_lines = edges_file.readlines()
@@ -99,8 +106,6 @@ def load_graph(nodes_path, edges_path, num_of_clusters=4):
             line = node.split(",")
             identifier = int(line[0].strip())
             label = line[-1].strip()
-
-            # node_to_label[identifier] = label
             try:
                 index = label_to_index[label]
             except KeyError:
@@ -112,7 +117,6 @@ def load_graph(nodes_path, edges_path, num_of_clusters=4):
 
     print(f"There are {len(graph)} nodes in the graph")
 
-    print(clusters)
     return graph, clusters
 
 
