@@ -55,7 +55,7 @@ class Clustering:
         return rand_index
 
     def __draw_clusters(self, clusters):
-        pos = nx.spring_layout(self.graph)
+        pos = nx.spring_layout(self.graph, seed=self.seed)
         if len(clusters) > len(COLORS):
             colors = ALL_COLORS
         else:
