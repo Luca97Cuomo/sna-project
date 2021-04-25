@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import typing
 
-from base_classifier import BaseClassifier
+from classifiers.base_classifier import BaseClassifier
 from evaluation.truthfulness import cheatable, reviews_subject_to_cheating, ways_of_cheating_reviews
 
 
