@@ -63,3 +63,14 @@ def generate_naive_labels(samples: typing.Iterable[typing.List], seed: int = 42)
         labels.append(score)
 
     return labels
+
+
+def generate_all_combinations() -> typing.List[typing.List]:
+    samples = []
+
+    for food in range(1, 6 + 1):
+        for service in range(0, 6 + 1):
+            for value in range(0, 6 + 1):
+                samples.append([food, service if service > 0 else None, value if value > 0 else None])
+
+    return samples

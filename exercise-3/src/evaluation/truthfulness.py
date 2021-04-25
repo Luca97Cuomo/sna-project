@@ -30,7 +30,8 @@ the second review.
 """
 import typing
 
-from src.base_classifier import BaseClassifier
+from base_classifier import BaseClassifier
+from dataset.generate import generate_all_combinations
 
 
 def cheatable(review: typing.List[typing.Optional[int]], score: int, fitted_classifier: BaseClassifier,
@@ -41,36 +42,50 @@ def cheatable(review: typing.List[typing.Optional[int]], score: int, fitted_clas
     return cheating_score > score
 
 
-def possible_samples() -> typing.List[typing.List]:
-    samples = []
-
-    for food in range(1, 6 + 1):
-        for service in range(0, 6 + 1):
-            for value in range(0, 6 + 1):
-                samples.append([food, service if service > 0 else None, value if value > 0 else None])
-
-    return samples
-
-
 def reviews_subject_to_cheating(fitted_classifier: BaseClassifier) -> float:
-    samples = possible_samples()
+    samples = generate_all_combinations()
 
     cheated_reviews = 0
-    cheatable_reviews = len(samples) - 6  # excluding 1 x x, 2 x x, ... which cannot be cheated
+    samples_with_two_missing_features = 6 * 1 * 1  # excluding 1 x x, 2 x x, ... which cannot be cheated
+    cheatable_reviews = len(samples) - samples_with_two_missing_features
 
     for sample in samples:
         score = fitted_classifier.predict([sample])[0]
         # Since it is unknown how the classifier decides, two missing values may be less favorable than
         # one missing value, so all the possible cheating ways are checked
         if sample[1] is not None and cheatable(sample, score, fitted_classifier, 1):
-            cheatable_reviews += 1
+            cheated_reviews += 1
             continue
         if sample[2] is not None and cheatable(sample, score, fitted_classifier, 2):
-            cheatable_reviews += 1
+            cheated_reviews += 1
             continue
         if sample[1] is not None and sample[2] is not None:
             sample[1] = None
             if cheatable(sample, score, fitted_classifier, 2):
-                cheatable_reviews += 1
+                cheated_reviews += 1
 
     return cheated_reviews / cheatable_reviews
+
+
+def ways_of_cheating_reviews(fitted_classifier: BaseClassifier) -> float:
+    samples = generate_all_combinations()
+
+    misreportings = 0
+    samples_with_no_missing_features = 6 * 6 * 6
+    samples_with_one_missing_feature = (6 * 1 * 6) + (6 * 6 * 1)
+    possible_misreportings = samples_with_no_missing_features * 3 + samples_with_one_missing_feature
+
+    for sample in samples:
+        score = fitted_classifier.predict([sample])[0]
+        # Since it is unknown how the classifier decides, two missing values may be less favorable than
+        # one missing value, so all the possible cheating ways are checked
+        if sample[1] is not None and cheatable(sample, score, fitted_classifier, 1):
+            misreportings += 1
+        if sample[2] is not None and cheatable(sample, score, fitted_classifier, 2):
+            misreportings += 1
+        if sample[1] is not None and sample[2] is not None:
+            sample[1] = None
+            if cheatable(sample, score, fitted_classifier, 2):
+                misreportings += 1
+
+    return misreportings / possible_misreportings

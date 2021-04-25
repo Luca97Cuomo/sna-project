@@ -4,9 +4,9 @@ import typing
 
 class BaseClassifier:
     @abstractmethod
-    def fit(self, x: typing.Iterable[typing.Iterable], y: typing.Iterable[int]) -> None:
+    def fit(self, x: typing.List[typing.List], y: typing.List[int]) -> None:
         raise NotImplementedError("Must be implemented by subclasses.")
 
     @abstractmethod
-    def predict(self, x: typing.Iterable[typing.Iterable]) -> typing.List[int]:
+    def predict(self, x: typing.List[typing.List]) -> typing.List[int]:
         raise NotImplementedError("Must be implemented by subclasses.")
