@@ -1,10 +1,11 @@
+from itertools import combinations, groupby
 from pathlib import Path
 import networkx as nx
 import time
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import math
 from sklearn.metrics import rand_score
+import random
 
 COLORS = list(mcolors.BASE_COLORS.keys())
 ALL_COLORS = list(mcolors.CSS4_COLORS.keys())
@@ -18,7 +19,8 @@ CENTRALITY_MEASURES = {
 
 
 class Clustering:
-    def __init__(self, clustering_algorithms_with_kwargs, graph, true_clusters, seed=42, draw_graph=False, verbose=False):
+    def __init__(self, clustering_algorithms_with_kwargs, graph, true_clusters, seed=42, draw_graph=False,
+                 verbose=False):
         self.clustering_algorithms_with_kwargs = clustering_algorithms_with_kwargs
         self.draw_graph = draw_graph
         self.verbose = verbose
@@ -38,7 +40,7 @@ class Clustering:
         if self.verbose:
             print(f"The graph was divided in {len(clusters)}")
             for i, cluster in enumerate(clusters):
-                print(f"The length of the cluster_{i+1} is {len(cluster)}")
+                print(f"The length of the cluster_{i + 1} is {len(cluster)}")
         if self.draw_graph:
             self.__draw_clusters(clusters)
 
@@ -61,7 +63,7 @@ class Clustering:
     def evaluate_all(self):
         results_dict = {}
         for algorithm, kwargs in self.clustering_algorithms_with_kwargs:
-            clusters, num_clusters, time_elapsed, rand_index = self.__evaluate(algorithm, kwargs)
+            clusters, num_clusters, time_elapsed, cluster_similarity = self.__evaluate(algorithm, kwargs)
             results_dict[algorithm.__name__] = [clusters, num_clusters, time_elapsed]
 
         # results = {k: v for k, v in sorted(results_dict.items(), key=lambda item: item[2])}
@@ -69,19 +71,41 @@ class Clustering:
 
 def build_random_graph(num_of_nodes, probability_of_edge, num_of_clusters, seed=42):
     graph = nx.fast_gnp_random_graph(num_of_nodes, probability_of_edge, seed=seed)
+    clusters = generate_random_clusters(graph, num_of_clusters, num_of_nodes)
+    return graph, clusters
 
-    clusters = [[]] * num_of_clusters
 
+def build_random_connected_graph(num_of_nodes, probability_of_edge, num_of_clusters, seed=42):
+    edges = combinations(range(num_of_nodes), 2)
+    graph = nx.Graph()
+    graph.add_nodes_from(range(num_of_nodes))
+    if probability_of_edge <= 0:
+        return graph
+    if probability_of_edge >= 1:
+        return nx.complete_graph(num_of_nodes, create_using=graph)
+    for _, node_edges in groupby(edges, key=lambda x: x[0]):
+        node_edges = list(node_edges)
+        random_edge = random.choice(node_edges)
+        graph.add_edge(*random_edge)
+        for e in node_edges:
+            if random.random() < probability_of_edge:
+                graph.add_edge(*e)
+
+    clusters = generate_random_clusters(graph, num_of_clusters, num_of_nodes)
+    return graph, clusters
+
+
+def generate_random_clusters(graph, num_of_clusters, num_of_nodes):
+    clusters = [[] for _ in range(num_of_clusters)]
     i = 0
     j = 0
     for node in graph.nodes():
         clusters[j].append(node)
-        if i >= math.ceil(num_of_nodes / num_of_clusters):
+        if i >= round(num_of_nodes / num_of_clusters):
             i = 0
             j += 1
         i += 1
-
-    return graph, clusters
+    return clusters
 
 
 def load_graph(nodes_path, edges_path, num_of_clusters=4):
@@ -141,4 +165,3 @@ def rand_index(graph, predicted_clusters, true_clusters):
         label_list.append(node_to_labels[i])
 
     return rand_score(label_list, predicted_list)
-

@@ -101,13 +101,17 @@ def k_means_one_iteration(graph, seed=42, k=4, centers=None):
     cluster_to_nodes = {}
     if centers is None:
         random.seed(seed)
+        nodes = list(graph.nodes())
         for i in range(k):
-            center = random.choice(list(graph.nodes()))
+            center = random.choice(nodes)
             add_node_to_cluster(center, i)
             current_nodes.append(center)
+            nodes.remove(center)
     else:
         assert len(centers) == k
         current_nodes = centers
+        for i in range(k):
+            add_node_to_cluster(centers[i], i)
 
     while len(current_nodes) != 0:
         while len(current_nodes) != 0:
@@ -127,7 +131,8 @@ def k_means_one_iteration(graph, seed=42, k=4, centers=None):
     return list(cluster_to_nodes.values())
 
 
-def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000, centers=None, verbose=False):
+def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000, centers=None,
+            verbose=False):
     # rand-index come condizione di convergenza
 
     # altra possibilità: prendere il più centrale tra i nodi del cluster, e poi alla prossima iterazione
@@ -139,21 +144,22 @@ def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-
     convergence = False
     iterations = 0
     centrality_measure_function = CENTRALITY_MEASURES.get(centrality_measure, None)
-
     if centrality_measure_function is not None and centers is None:
         centers = []
         centrality_dict = centrality_measure_function(graph)
+        nodes = list(centrality_dict.keys())
+        values = list(centrality_dict.values())
         for i in range(k):
-            centers[i] = max(centrality_dict, key=centrality_dict.get)
-            del (centrality_dict[centers[i]])
-
+            max_value = max(values)
+            values.remove(max_value)
+            center = random.choice([node for node in nodes if centrality_dict[node] == max_value])
+            centers.append(nodes.pop(center))
     if centrality_measure_function is None and centers is not None:
         random.seed(seed)
 
     while not convergence and iterations < max_iterations:
         clusters = k_means_one_iteration(graph, seed, k, centers)  # note: the seed is only used once when centers=None
-
-        if iterations != 0:
+        if iterations > 0:
             similarity = rand_index(graph, clusters, last_clustering)
             if verbose:
                 print(f"Difference between two iteration similarity: {abs(last_similarity - similarity)}")
@@ -164,13 +170,17 @@ def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-
         last_clustering = clusters
         iterations += 1
 
-        centers = []
-        if centrality_measure_function is None:
-            for cluster in clusters:
-                centers.append(random.choice(cluster))
-        else:
-            for cluster in clusters:
-                centrality_dict = centrality_measure_function(graph.subgraph(cluster))
-                centers.append(max(centrality_dict, key=centrality_dict.get))
+        if not convergence:
+            centers = []
+            if centrality_measure_function is None:
+                for cluster in clusters:
+                    centers.append(random.choice(cluster))
+            else:
+                for cluster in clusters:
+                    centrality_dict = centrality_measure_function(graph.subgraph(cluster))
+                    values = list(centrality_dict.values())
+                    max_value = max(values)
+                    center = random.choice([node for node in cluster if centrality_dict[node] == max_value])
+                    centers.append(center)
 
     return last_clustering
