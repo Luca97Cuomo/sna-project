@@ -30,7 +30,7 @@ the second review.
 """
 import typing
 
-from classifiers.base_classifier import BaseClassifier
+from classification.base_classifier import BaseClassifier
 from dataset.generate import generate_all_combinations
 
 

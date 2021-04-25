@@ -19,7 +19,7 @@ def _get_random_review_value(random_state: random.Random):
 
 
 def generate_random_samples(n_samples: int, service_null_percentage: float, value_null_percentage: float, seed: int = 42) \
-        -> typing.Iterable[typing.List]:
+        -> typing.List[typing.List]:
     random_state = random.Random(seed)
     samples = []
 
@@ -40,7 +40,7 @@ def generate_random_samples(n_samples: int, service_null_percentage: float, valu
     return samples
 
 
-def generate_naive_labels(samples: typing.Iterable[typing.List], seed: int = 42) -> typing.List[int]:
+def generate_naive_labels_with_misreporting(samples: typing.Iterable[typing.List]) -> typing.List[int]:
     """
     It creates labels as a linear function of the sum of the features, but considering a None value as a score of 3,
     the middle ground. This is purposefully done in order to make a misreporting strategy viable.
@@ -54,12 +54,70 @@ def generate_naive_labels(samples: typing.Iterable[typing.List], seed: int = 42)
                 feature = 3
             score += feature
 
-        if 1 <= score <= 6:
-            score = 1
-        elif 7 <= score <= 12:
-            score = 2
-        else:
-            score = 3
+        score = feature_sum_to_score(score)
+        labels.append(score)
+
+    return labels
+
+
+def feature_sum_to_score(feature_sum, num_available_features=3):
+    if num_available_features == 3:
+        first_endpoint = 1
+        second_endpoint = 6
+        third_endpoint = 12
+        fourth_endpoint = 18
+    elif num_available_features == 2:
+        first_endpoint = 1
+        second_endpoint = 4
+        third_endpoint = 8
+        fourth_endpoint = 12
+    elif num_available_features == 1:
+        first_endpoint = 1
+        second_endpoint = 2
+        third_endpoint = 4
+        fourth_endpoint = 6
+    else:
+        raise ValueError('num_available_features must be in [1, 2, 3]')
+
+    if first_endpoint <= feature_sum <= second_endpoint:
+        return 1
+    elif second_endpoint < feature_sum <= third_endpoint:
+        return 2
+    elif third_endpoint < feature_sum <= fourth_endpoint:
+        return 3
+    else:
+        raise ValueError(f'feature sum must be in [{first_endpoint}, {fourth_endpoint}]')
+
+
+def generate_labels_using_only_available_features(samples: typing.Iterable[typing.List]) -> typing.List[int]:
+    labels = []
+
+    for sample in samples:
+        score = 0
+        available_features = 3
+        for feature in sample:
+            if feature is None:
+                available_features -= 1
+                continue
+            score += feature
+
+        score = feature_sum_to_score(score, num_available_features=available_features)
+        labels.append(score)
+
+    return labels
+
+
+def generate_naive_labels(samples: typing.Iterable[typing.List]) -> typing.List[int]:
+    labels = []
+
+    for sample in samples:
+        score = 0
+        for feature in sample:
+            if feature is None:
+                feature = 0
+            score += feature
+
+        score = feature_sum_to_score(score)
         labels.append(score)
 
     return labels
