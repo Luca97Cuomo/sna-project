@@ -65,6 +65,7 @@ def build_random_graph(num_of_nodes, probability_of_edge, num_of_clusters, seed=
 def build_random_connected_graph(num_of_nodes, probability_of_edge, num_of_clusters, seed=42):
     edges = combinations(range(num_of_nodes), 2)
     graph = nx.Graph()
+    random.seed(seed)
     graph.add_nodes_from(range(num_of_nodes))
     if probability_of_edge <= 0:
         return graph
@@ -88,7 +89,7 @@ def generate_random_clusters(graph, num_of_clusters, num_of_nodes):
     j = 0
     for node in graph.nodes():
         clusters[j].append(node)
-        if i >= round(num_of_nodes / num_of_clusters):
+        if i > round(num_of_nodes / num_of_clusters):
             i = 0
             j += 1
         i += 1

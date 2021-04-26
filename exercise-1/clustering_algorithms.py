@@ -4,6 +4,7 @@ import itertools as it
 from priorityq import PriorityQueue
 import random
 from utils import rand_index, CENTRALITY_MEASURES
+from scipy import linalg
 
 
 # n = number of nodes
@@ -186,33 +187,64 @@ def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-
     return last_clustering
 
 
-def girvan_newman(graph, betweenees_measure="edges_betweenness_centrality", seed=42, k=4, verbose=False):
+def girvan_newman(graph, betweenees_measure="edges_betweenness_centrality", seed=42, k=4, verbose=False,
+                  optimized=False, decimal_digits=5):
     copy_graph = graph.copy()
     connected_components = []
+    pq = PriorityQueue()
     i = 0
 
-    while len(connected_components) < k:
-        btw_dict = CENTRALITY_MEASURES[betweenees_measure](copy_graph, seed=seed)
+    btw_dict = CENTRALITY_MEASURES[betweenees_measure](copy_graph, seed=seed)
+    for edge, value in btw_dict.items():
+        pq.add(edge, -value)
 
-        edges = list(btw_dict.keys())
-        values = list(btw_dict.values())
-        max_value = max(values)
-        max_value = round(max_value, 5)
-        edges_to_remove = [edge for edge in edges if round(btw_dict[edge], 5) == max_value]
-        if verbose:
-            print(f"{len(edges_to_remove)} edges to remove have been found at the {i} iteration that have {max_value} betweenness")
+    while len(connected_components) < k:
+        edges_to_remove = [pq.pop()]
+
+        while len(pq) != 0 and round(pq.top()[0], decimal_digits) == -round(btw_dict[edges_to_remove[0]],
+                                                                            decimal_digits):
+            edges_to_remove.append(pq.pop())
+
         copy_graph.remove_edges_from(edges_to_remove)
 
         connected_components = list(nx.connected_components(copy_graph))
         if verbose:
             print(f"The connected components are {len(connected_components)} at the {i} iteration")
+
+        if not optimized:
+            btw_dict = CENTRALITY_MEASURES[betweenees_measure](copy_graph, seed=seed)
+            pq = PriorityQueue()
+            for edge, value in btw_dict.items():
+                pq.add(edge, -value)
         i += 1
+
     return connected_components
 
 
+# Spectral algorithm
+def spectral_one_iteration(graph, nodes):
+    n = len(nodes)
+    lap_matrix = nx.laplacian_matrix(graph, nodes).asfptype()
+    w, v = linalg.eigsh(lap_matrix, n - 1)
+    c1 = []
+    c2 = []
+    for i in range(n):
+        if v[i, 0] < 0:
+            c1.append(nodes[i])
+        else:
+            c2.append(nodes[i])
+
+    return [c1, c2]
 
 
+def spectral(graph, k=4):
+    next_clusters = []
+    curr_clusters = spectral_one_iteration(graph, graph.nodes())
+    while len(curr_clusters) < k:
+        for cluster in curr_clusters:
+            sub_clusters = spectral_one_iteration(graph, cluster)
+            for sub_cluster in sub_clusters:
+                next_clusters.append(sub_cluster)
+        curr_clusters = next_clusters
 
-
-
-
+    return curr_clusters

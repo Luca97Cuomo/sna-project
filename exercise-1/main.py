@@ -7,7 +7,7 @@ PATH_TO_EDGES = "facebook_large\\musae_facebook_edges.csv"
 
 def main():
     graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
-    # graph, true_clusters = utils.build_random_connected_graph(10, 0.10, 4)
+    # graph, true_clusters = utils.build_random_graph(100, 0.30, 4)
     """
     clustering = utils.Clustering([
         (clustering_algorithms.k_means_one_iteration, {"seed": 42, "k": 4}),
@@ -27,7 +27,8 @@ def main():
     clustering.evaluate_all()
     """
     clustering = utils.Clustering([
-        (clustering_algorithms.girvan_newman, {"seed": 42, "k": 4, "verbose": True})], graph, true_clusters,
+        (clustering_algorithms.girvan_newman, {"seed": 42, "k": 4, "verbose": True, "optimized": True})], graph,
+        true_clusters,
         verbose=True, draw_graph=False)
 
     clustering.evaluate_all()
