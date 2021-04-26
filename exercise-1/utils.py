@@ -13,7 +13,8 @@ ALL_COLORS = list(mcolors.CSS4_COLORS.keys())
 CENTRALITY_MEASURES = {
     "degree_centrality": nx.degree_centrality,
     "closeness_centrality": nx.closeness_centrality,
-    "betweenness_centrality": nx.betweenness_centrality,
+    "nodes_betweenness_centrality": nx.betweenness_centrality,
+    "edges_betweenness_centrality" : nx.edge_betweenness_centrality,
     "pagerank": nx.pagerank
 }
 
@@ -42,23 +43,9 @@ class Clustering:
             for i, cluster in enumerate(clusters):
                 print(f"The length of the cluster_{i + 1} is {len(cluster)}")
         if self.draw_graph:
-            self.__draw_clusters(clusters)
+            draw_clusters(self.graph, clusters, self.seed)
 
         return clusters, len(clusters), elapsed, cluster_similarity
-
-    def __draw_clusters(self, clusters):
-        pos = nx.spring_layout(self.graph, seed=self.seed)
-        if len(clusters) > len(COLORS):
-            colors = ALL_COLORS
-        else:
-            colors = COLORS
-        i = 0
-        for cluster in clusters:
-            nx.draw_networkx_nodes(self.graph, pos, nodelist=list(cluster), node_color=colors[i])
-            i += 1
-
-        nx.draw_networkx_edges(self.graph, pos, width=1.0, alpha=0.5)
-        plt.show()
 
     def evaluate_all(self):
         results_dict = {}
@@ -165,3 +152,17 @@ def rand_index(graph, predicted_clusters, true_clusters):
         label_list.append(node_to_labels[i])
 
     return rand_score(label_list, predicted_list)
+
+
+def draw_clusters(graph, clusters, seed):
+    pos = nx.spring_layout(graph, seed=seed)
+    if len(clusters) > len(COLORS):
+        colors = ALL_COLORS
+    else:
+        colors = COLORS
+
+    for i, cluster in enumerate(clusters):
+        nx.draw_networkx_nodes(graph, pos, nodelist=list(cluster), node_color=colors[i])
+
+    nx.draw_networkx_edges(graph, pos, width=1.0, alpha=0.5)
+    plt.show()

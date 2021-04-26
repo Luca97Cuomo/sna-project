@@ -170,13 +170,13 @@ def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-
         last_clustering = clusters
         iterations += 1
 
-        if not convergence:
+        if not convergence and iterations < max_iterations:
             centers = []
             if centrality_measure_function is None:
-                for cluster in clusters:
+                for cluster in last_clustering:
                     centers.append(random.choice(cluster))
             else:
-                for cluster in clusters:
+                for cluster in last_clustering:
                     centrality_dict = centrality_measure_function(graph.subgraph(cluster))
                     values = list(centrality_dict.values())
                     max_value = max(values)
@@ -184,3 +184,35 @@ def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-
                     centers.append(center)
 
     return last_clustering
+
+
+def girvan_newman(graph, betweenees_measure="edges_betweenness_centrality", seed=42, k=4, verbose=False):
+    copy_graph = graph.copy()
+    connected_components = []
+    i = 0
+
+    while len(connected_components) < k:
+        btw_dict = CENTRALITY_MEASURES[betweenees_measure](copy_graph, seed=seed)
+
+        edges = list(btw_dict.keys())
+        values = list(btw_dict.values())
+        max_value = max(values)
+        max_value = round(max_value, 5)
+        edges_to_remove = [edge for edge in edges if round(btw_dict[edge], 5) == max_value]
+        if verbose:
+            print(f"{len(edges_to_remove)} edges to remove have been found at the {i} iteration that have {max_value} betweenness")
+        copy_graph.remove_edges_from(edges_to_remove)
+
+        connected_components = list(nx.connected_components(copy_graph))
+        if verbose:
+            print(f"The connected components are {len(connected_components)} at the {i} iteration")
+        i += 1
+    return connected_components
+
+
+
+
+
+
+
+
