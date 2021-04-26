@@ -26,3 +26,7 @@ class LogisticRegression(BaseClassifier):
         map_missing_features_to_zero(samples)
         return self.model.predict(samples)
 
+    def __str__(self):
+        return f"LogisticRegression<(\n" \
+               f"   regularization={False}\n" \
+               f")>"

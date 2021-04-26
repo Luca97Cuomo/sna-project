@@ -1,6 +1,12 @@
+import datetime
+import sys
 import typing
+from pathlib import Path
 
+from classification.base_classifier import BaseClassifier
 from classification.logistic_regression import LogisticRegression
+from classification.neural_network import NeuralNetwork
+from classification.thrutifier import Truthifier
 from dataset import generate_random_samples, generate_naive_labels_with_misreporting, generate_naive_labels, \
     generate_labels_using_only_available_features
 from evaluation.accuracy import evaluate_over_all_combinations, mae
@@ -11,14 +17,27 @@ import numpy as np
 
 
 def set_logging():
-    logging.basicConfig(level=logging.INFO)
+    results_dir = Path('results')
+    results_dir.mkdir(exist_ok=True)
+
+    # noinspection PyArgumentList
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(message)s",
+        handlers=[
+            logging.StreamHandler(stream=sys.stdout),
+            logging.FileHandler(filename=results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt")
+        ]
+    )
 
 
-def print_statistics(classifiers_results: dict) -> None:
+def print_statistics(classifiers_results: dict, descriptions: dict) -> None:
     for classifier_name, classifier_results in classifiers_results.items():
-        print(f'\n##### {classifier_name} #####')
+        logging.info(f'\n##### CLASSIFIER #####\n'
+                     f'{descriptions[classifier_name]}\n'
+                     f'#####\n')
         for label_function_name, label_function_results in classifier_results.items():
-            print(f'##### {label_function_name.upper()} #####')
+            logging.info(f'##### {label_function_name.upper()} #####')
 
             reviews_subject_to_cheating_values = label_function_results['reviews_subject_to_cheating_values']
             ways_of_cheating_reviews_values = label_function_results['ways_of_cheating_reviews_values']
@@ -29,16 +48,16 @@ def print_statistics(classifiers_results: dict) -> None:
             ways_of_cheating_reviews_mean = np.mean(ways_of_cheating_reviews_values)
             ways_of_cheating_reviews_std = np.std(ways_of_cheating_reviews_values)
 
-            print('##### TRUTHFULNESS #####')
-            print('reviews subject to cheating:')
-            print(f'\tmean: {reviews_subject_to_cheating_mean}, std: {reviews_subject_to_cheating_std}')
-            print('ways of cheating reviews:')
-            print(f'\tmean: {ways_of_cheating_reviews_mean}, std: {ways_of_cheating_reviews_std}')
+            logging.info('##### TRUTHFULNESS #####')
+            logging.info('reviews subject to cheating:')
+            logging.info(f'\tmean: {reviews_subject_to_cheating_mean}, std: {reviews_subject_to_cheating_std}')
+            logging.info('ways of cheating reviews:')
+            logging.info(f'\tmean: {ways_of_cheating_reviews_mean}, std: {ways_of_cheating_reviews_std}')
 
-            print('##### METRICS #####')
+            logging.info('##### METRICS #####')
             metrics_values = label_function_results['metrics_values']
             for metric_name, metric_results in metrics_values.items():
-                print(f'metric name: {metric_name}')
+                logging.info(f'metric name: {metric_name}')
                 metric_over_all_combinations = metric_results['metric_over_all_combinations']
                 metric_over_test_set = metric_results['metric_over_test_set']
 
@@ -48,10 +67,10 @@ def print_statistics(classifiers_results: dict) -> None:
                 metric_over_test_set_mean = np.mean(metric_over_test_set)
                 metric_over_test_set_std = np.std(metric_over_test_set)
 
-                print('over all combinations:')
-                print(f'\tmean: {metric_over_all_combinations_mean}, std: {metric_over_all_combinations_std}')
-                print('over test set:')
-                print(f'\tmean: {metric_over_test_set_mean}, std: {metric_over_test_set_std}\n')
+                logging.info('over all combinations:')
+                logging.info(f'\tmean: {metric_over_all_combinations_mean}, std: {metric_over_all_combinations_std}')
+                logging.info('over test set:')
+                logging.info(f'\tmean: {metric_over_test_set_mean}, std: {metric_over_test_set_std}\n')
 
 
 def evaluate_all():
@@ -62,9 +81,9 @@ def evaluate_all():
     for multiple training e test set
     """
 
-    number_of_random_datasets = 10
+    number_of_random_datasets = 1
     label_functions = [generate_naive_labels, generate_naive_labels_with_misreporting, generate_labels_using_only_available_features]
-    classifier_classes = [LogisticRegression]
+    classifier_classes = [LogisticRegression, NeuralNetwork, lambda: Truthifier(NeuralNetwork())]
     metrics = [mae]
 
     classifiers_results = {classifier_class.__name__: {
@@ -75,8 +94,10 @@ def evaluate_all():
         } for label_function in label_functions
     } for classifier_class in classifier_classes}
 
+    descriptions = {}
+
     for i in range(number_of_random_datasets):
-        x_training = generate_random_samples(100, 0.2, 0.2)
+        x_training = generate_random_samples(1000, 0.2, 0.2)
         x_test = generate_random_samples(1000, 0.2, 0.2)
 
         for label_function in label_functions:
@@ -88,6 +109,7 @@ def evaluate_all():
 
                 classifier.fit(x_training, y_training)
 
+                descriptions[classifier_class.__name__] = str(classifier)
                 classifier_results = classifiers_results[classifier_class.__name__][label_function.__name__]
 
                 reviews_subject_to_cheating_list = classifier_results['reviews_subject_to_cheating_values']
@@ -106,12 +128,30 @@ def evaluate_all():
                     metric_over_all_combinations_values.append(evaluate_over_all_combinations(classifier, label_function, metric))
                     metric_over_test_set_values.append(metric(y_predicted, y_test))
 
-    print_statistics(classifiers_results)
+    print_statistics(classifiers_results, descriptions)
 
     # f'fit_time: {fit_time[1] / fit_time[0]} s\n'
     # f'prediction_time: {prediction_time[1] / prediction_time[0]} s')
 
 
+def test_classifier_simple(classifier: BaseClassifier):
+    x_training = generate_random_samples(1000, 0.2, 0.2)
+    x_test = generate_random_samples(1000, 0.2, 0.2)
+
+    label_function = generate_naive_labels
+
+    classifier.fit(x_training, label_function(x_training))
+    predictions = classifier.predict(x_test)
+
+    mae_score = mae(predictions, label_function(x_test))
+    cheated_reviews = reviews_subject_to_cheating(classifier)
+
+    print(f"mae: {mae_score}")
+    print(f"cheated reviews: {cheated_reviews}")
+
+
 if __name__ == '__main__':
     set_logging()
     evaluate_all()
+    # classifier = NeuralNetwork()
+    # test_classifier_simple(classifier)
