@@ -14,7 +14,7 @@ CENTRALITY_MEASURES = {
     "degree_centrality": nx.degree_centrality,
     "closeness_centrality": nx.closeness_centrality,
     "nodes_betweenness_centrality": nx.betweenness_centrality,
-    "edges_betweenness_centrality" : nx.edge_betweenness_centrality,
+    "edges_betweenness_centrality": nx.edge_betweenness_centrality,
     "pagerank": nx.pagerank
 }
 
@@ -167,3 +167,20 @@ def draw_clusters(graph, clusters, seed):
 
     nx.draw_networkx_edges(graph, pos, width=1.0, alpha=0.5)
     plt.show()
+
+
+def bfs(graph, node):
+    visited = set()
+    visited.add(node)
+    queue = [node]
+    node_distances = {node: 0}
+
+    while len(queue) > 0:
+        current_node = queue.pop(0)
+        for neighbor in graph[current_node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+                node_distances[neighbor] = node_distances[current_node] + 1
+
+    return node_distances

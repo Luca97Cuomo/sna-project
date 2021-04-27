@@ -1,11 +1,13 @@
+import time
 import networkx as nx
 import math
 import itertools as it
 from priorityq import PriorityQueue
 import random
 from utils import rand_index, CENTRALITY_MEASURES
-from scipy import linalg
-
+from scipy.sparse import linalg
+from networkx.linalg.laplacianmatrix import laplacian_matrix
+from tqdm import tqdm
 
 # n = number of nodes
 # m = number of edges
@@ -192,6 +194,7 @@ def girvan_newman(graph, betweenees_measure="edges_betweenness_centrality", seed
     copy_graph = graph.copy()
     connected_components = []
     pq = PriorityQueue()
+
     i = 0
 
     btw_dict = CENTRALITY_MEASURES[betweenees_measure](copy_graph, seed=seed)
@@ -224,22 +227,32 @@ def girvan_newman(graph, betweenees_measure="edges_betweenness_centrality", seed
 # Spectral algorithm
 def spectral_one_iteration(graph, nodes):
     n = len(nodes)
-    lap_matrix = nx.laplacian_matrix(graph, nodes).asfptype()
-    w, v = linalg.eigsh(lap_matrix, n - 1)
+    time_start = time.perf_counter()
+    lap_matrix = laplacian_matrix(graph, nodes).asfptype()
+    time_end = time.perf_counter()
+    print(f"The laplacian matrix took {time_end - time_start} seconds")
+
+    time_start = time.perf_counter()
+    w, v = linalg.eigsh(lap_matrix, 1)
+    time_end = time.perf_counter()
+    print(f"The linalg.eigsh took {time_end - time_start} seconds")
     c1 = []
     c2 = []
+    time_start = time.perf_counter()
     for i in range(n):
         if v[i, 0] < 0:
             c1.append(nodes[i])
         else:
             c2.append(nodes[i])
+    time_end = time.perf_counter()
+    print(f"The for loop took {time_end - time_start} seconds")
 
     return [c1, c2]
 
 
 def spectral(graph, k=4):
     next_clusters = []
-    curr_clusters = spectral_one_iteration(graph, graph.nodes())
+    curr_clusters = spectral_one_iteration(graph, list(graph.nodes()))
     while len(curr_clusters) < k:
         for cluster in curr_clusters:
             sub_clusters = spectral_one_iteration(graph, cluster)
