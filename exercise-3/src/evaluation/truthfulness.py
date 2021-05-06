@@ -31,61 +31,71 @@ the second review.
 import typing
 
 from classification.base_classifier import BaseClassifier
+from classification.postprocessing import compute_all_responses, ResponsesTable
 from dataset.generate import generate_all_combinations
 
 
-def cheatable(review: typing.List[typing.Optional[int]], score: int, fitted_classifier: BaseClassifier,
+total_samples = 6 * 7 * 7
+
+samples_with_no_missing_features = 6 * 6 * 6
+samples_with_two_missing_features = 6 * 1 * 1
+samples_with_one_missing_feature = (6 * 1 * 6) + (6 * 6 * 1)
+
+possible_misreportings = samples_with_no_missing_features * 3 + samples_with_one_missing_feature
+cheatable_reviews = total_samples - samples_with_two_missing_features
+
+
+def cheatable(review: tuple, score: int, responses: ResponsesTable,
               index_to_cheat: int) -> bool:
-    cheating_sample = review[:]
-    cheating_sample[index_to_cheat] = None
-    cheating_score = fitted_classifier.predict([cheating_sample])[0]
+    if index_to_cheat == 1:
+        cheating_sample = (review[0], None, review[2])
+    elif index_to_cheat == 2:
+        cheating_sample = (review[0], review[1], None)
+    else:
+        raise ValueError("Index to cheat must be in [1, 2]")
+    cheating_score = responses[cheating_sample]
     return cheating_score > score
 
 
 def reviews_subject_to_cheating(fitted_classifier: BaseClassifier) -> float:
-    samples = generate_all_combinations()
+    responses = compute_all_responses(fitted_classifier)
 
+    return reviews_subject_to_cheating_from_responses(responses)
+
+
+def reviews_subject_to_cheating_from_responses(responses):
     cheated_reviews = 0
-    samples_with_two_missing_features = 6 * 1 * 1  # excluding 1 x x, 2 x x, ... which cannot be cheated
-    cheatable_reviews = len(samples) - samples_with_two_missing_features
-
-    for sample in samples:
-        score = fitted_classifier.predict([sample])[0]
+    for sample, score in responses.items():
         # Since it is unknown how the classifier decides, two missing values may be less favorable than
         # one missing value, so all the possible cheating ways are checked
-        if sample[1] is not None and cheatable(sample, score, fitted_classifier, 1):
+        if sample[1] is not None and cheatable(sample, score, responses, 1):
             cheated_reviews += 1
             continue
-        if sample[2] is not None and cheatable(sample, score, fitted_classifier, 2):
+        if sample[2] is not None and cheatable(sample, score, responses, 2):
             cheated_reviews += 1
             continue
         if sample[1] is not None and sample[2] is not None:
-            sample[1] = None
-            if cheatable(sample, score, fitted_classifier, 2):
+            sample = (sample[0], None, sample[2])
+            if cheatable(sample, score, responses, 2):
                 cheated_reviews += 1
-
     return cheated_reviews / cheatable_reviews
 
 
 def ways_of_cheating_reviews(fitted_classifier: BaseClassifier) -> float:
-    samples = generate_all_combinations()
+    responses = compute_all_responses(fitted_classifier)
 
     misreportings = 0
-    samples_with_no_missing_features = 6 * 6 * 6
-    samples_with_one_missing_feature = (6 * 1 * 6) + (6 * 6 * 1)
-    possible_misreportings = samples_with_no_missing_features * 3 + samples_with_one_missing_feature
 
-    for sample in samples:
-        score = fitted_classifier.predict([sample])[0]
+    for sample, score in responses.items():
         # Since it is unknown how the classifier decides, two missing values may be less favorable than
         # one missing value, so all the possible cheating ways are checked
-        if sample[1] is not None and cheatable(sample, score, fitted_classifier, 1):
+        if sample[1] is not None and cheatable(sample, score, responses, 1):
             misreportings += 1
-        if sample[2] is not None and cheatable(sample, score, fitted_classifier, 2):
+        if sample[2] is not None and cheatable(sample, score, responses, 2):
             misreportings += 1
         if sample[1] is not None and sample[2] is not None:
-            sample[1] = None
-            if cheatable(sample, score, fitted_classifier, 2):
+            sample = (sample[0], None, sample[2])
+            if cheatable(sample, score, responses, 2):
                 misreportings += 1
 
     return misreportings / possible_misreportings

@@ -33,17 +33,25 @@ class MaxForNoneMockClassifier(BaseClassifier):
         return predictions
 
 
+class IdempotentDict:
+    def __init__(self, returned_score):
+        self.returned_score = returned_score
+
+    def __getitem__(self, item):
+        return self.returned_score
+
+
 class TestTruthfulness(TestCase):
     def test_cheatable(self):
         review = [2, 3, 5]
-        fitted_classifier = IdempotentMockClassifier(returned_score=2)
-        is_cheatable = cheatable(review=review, score=1, fitted_classifier=fitted_classifier, index_to_cheat=1)
+        response = IdempotentDict(returned_score=2)
+        is_cheatable = cheatable(review=review, score=1, responses=response, index_to_cheat=1)
         self.assertTrue(is_cheatable)
 
     def test_not_cheatable(self):
         review = [2, 3, 5]
-        fitted_classifier = IdempotentMockClassifier(returned_score=1)
-        is_cheatable = cheatable(review=review, score=1, fitted_classifier=fitted_classifier, index_to_cheat=1)
+        response = IdempotentDict(returned_score=1)
+        is_cheatable = cheatable(review=review, score=1, responses=response, index_to_cheat=1)
         self.assertFalse(is_cheatable)
 
     def test_reviews_subject_to_cheating_truthful(self):

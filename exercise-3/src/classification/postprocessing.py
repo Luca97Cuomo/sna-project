@@ -21,22 +21,38 @@ def compute_all_responses(fitted_classifier: BaseClassifier) -> ResponsesTable:
     return all_responses
 
 
-def truthify(responses: ResponsesTable) -> ResponsesTable:
+def truthify(responses: ResponsesTable, desired_reviews_subject_to_cheating_index: float = 0.0) -> ResponsesTable:
+    # calcolare quante disimbrogliare
+    from evaluation.truthfulness import cheatable_reviews, reviews_subject_to_cheating_from_responses
+
+    current_reviews_subject_to_cheating_index = reviews_subject_to_cheating_from_responses(responses)
+    if desired_reviews_subject_to_cheating_index >= current_reviews_subject_to_cheating_index:
+        return responses
+
+    reviews_to_truthify = int((current_reviews_subject_to_cheating_index - desired_reviews_subject_to_cheating_index) * cheatable_reviews)
+    number_of_truthified_reviews = 0
+
     truthified_responses = {}
 
     for input, output in responses.items():
-        max_score = output
+        if number_of_truthified_reviews < reviews_to_truthify:
+            new_score = output
 
-        if input[1] is not None and input[2] is not None:
-            max_score = max(responses[(input[0], None, input[2])], max_score)
-            max_score = max(responses[(input[0], input[1], None)], max_score)
-            max_score = max(responses[(input[0], None, None)], max_score)
-        elif input[1] is not None:
-            max_score = max(responses[(input[0], None, input[2])], max_score)
-        elif input[2] is not None:
-            max_score = max(responses[(input[0], input[1], None)], max_score)
+            if input[1] is not None and input[2] is not None:
+                new_score = max(responses[(input[0], None, input[2])], new_score)
+                new_score = max(responses[(input[0], input[1], None)], new_score)
+                new_score = max(responses[(input[0], None, None)], new_score)
+            elif input[1] is not None:
+                new_score = max(responses[(input[0], None, input[2])], new_score)
+            elif input[2] is not None:
+                new_score = max(responses[(input[0], input[1], None)], new_score)
 
-        truthified_responses[input] = max_score
+            if new_score > output:
+                number_of_truthified_reviews += 1
+        else:
+            new_score = output
+
+        truthified_responses[input] = new_score
 
     return truthified_responses
 

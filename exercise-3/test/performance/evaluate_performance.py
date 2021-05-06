@@ -32,9 +32,9 @@ def set_logging():
 
 
 def print_statistics(classifiers_results: dict, descriptions: dict) -> None:
-    for classifier_name, classifier_results in classifiers_results.items():
+    for classifier_class, classifier_results in classifiers_results.items():
         logging.info(f'\n##### CLASSIFIER #####\n'
-                     f'{descriptions[classifier_name]}\n'
+                     f'{descriptions[classifier_class]}\n'
                      f'#####\n')
         for label_function_name, label_function_results in classifier_results.items():
             logging.info(f'##### {label_function_name.upper()} #####')
@@ -83,10 +83,17 @@ def evaluate_all():
 
     number_of_random_datasets = 1
     label_functions = [generate_naive_labels, generate_naive_labels_with_misreporting, generate_labels_using_only_available_features]
-    classifier_classes = [LogisticRegression, NeuralNetwork, lambda: Truthifier(NeuralNetwork())]
+    classifier_classes = [
+        LogisticRegression,
+        # NeuralNetwork,
+        lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.0),
+        lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.1),
+        lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.05),
+        # lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=1.0)
+    ]
     metrics = [mae]
 
-    classifiers_results = {classifier_class.__name__: {
+    classifiers_results = {classifier_class: {
         label_function.__name__: {
             'reviews_subject_to_cheating_values': [],
             'ways_of_cheating_reviews_values': [],
@@ -109,8 +116,8 @@ def evaluate_all():
 
                 classifier.fit(x_training, y_training)
 
-                descriptions[classifier_class.__name__] = str(classifier)
-                classifier_results = classifiers_results[classifier_class.__name__][label_function.__name__]
+                descriptions[classifier_class] = str(classifier)
+                classifier_results = classifiers_results[classifier_class][label_function.__name__]
 
                 reviews_subject_to_cheating_list = classifier_results['reviews_subject_to_cheating_values']
                 ways_of_cheating_reviews_list = classifier_results['ways_of_cheating_reviews_values']
