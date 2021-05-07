@@ -68,6 +68,12 @@ def load_graph(nodes_path, edges_path, num_of_clusters=4):
 
 
 def bfs(graph, node):
+    """
+
+    :param graph:
+    :param node:
+    :return: a dictionary mapping each node with its distance from the node passed as input
+    """
     visited = set()
     visited.add(node)
     queue = [node]

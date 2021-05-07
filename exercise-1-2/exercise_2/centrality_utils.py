@@ -1,5 +1,24 @@
+import sys
+import networkx as nx
+
+sys.path.append("../")
 from pathlib import Path
 import datetime
+from priorityq import PriorityQueue
+
+
+def k_most_central_nodes(graph, measure, k):
+    pq = PriorityQueue()
+    node_to_measure = measure(graph)
+    for node in graph.nodes():
+        pq.add(node, -node_to_measure[node])
+    out = []
+
+    for i in range(k):
+        node = pq.pop()
+        out.append((node, node_to_measure[node]))
+
+    return out
 
 
 def print_centrality_results(node_to_centrality, output_dir_path, centrality_name):

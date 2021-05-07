@@ -9,9 +9,9 @@ PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
 
 
 def main():
-    # graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
-    graph = utils.build_random_graph(10, 0.40, 4)
-
+    #graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
+    graph = utils.build_random_graph(500, 0.40, 4)
+    results = centrality_measures.betweenness_centrality(graph)
 
 if __name__ == "__main__":
     main()

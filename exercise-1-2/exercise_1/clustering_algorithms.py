@@ -7,6 +7,7 @@ from clustering_utils import rand_index, CENTRALITY_MEASURES
 from scipy.sparse import linalg
 from networkx.linalg.laplacianmatrix import laplacian_matrix
 from priorityq import PriorityQueue
+from tqdm import tqdm
 
 # n = number of nodes
 # m = number of edges
