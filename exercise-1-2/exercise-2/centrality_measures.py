@@ -1,3 +1,5 @@
+import sys
+sys.path.append("../")
 from priorityq import PriorityQueue
 import utils
 
@@ -9,7 +11,9 @@ def k_most_central_nodes(graph, measure, k):
     out = []
 
     for i in range(k):
-        out.append(pq.pop())
+        node = pq.pop()
+        out.append((node, node_to_measure[node]))
+
     return out
 
 

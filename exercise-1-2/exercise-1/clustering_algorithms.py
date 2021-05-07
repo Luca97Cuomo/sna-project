@@ -1,13 +1,12 @@
 import time
 import networkx as nx
-import math
-import itertools as it
-from priorityq import PriorityQueue
 import random
-from utils import rand_index, CENTRALITY_MEASURES
+import sys
+sys.path.append('../')
+from clustering_utils import rand_index, CENTRALITY_MEASURES
 from scipy.sparse import linalg
 from networkx.linalg.laplacianmatrix import laplacian_matrix
-from tqdm import tqdm
+from priorityq import PriorityQueue
 
 # n = number of nodes
 # m = number of edges

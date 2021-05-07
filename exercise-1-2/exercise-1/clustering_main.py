@@ -1,13 +1,16 @@
-import utils
+import clustering_utils
 import clustering_algorithms
+import sys
+sys.path.append('../')
+import utils
 
-PATH_TO_NODES = "facebook_large\\musae_facebook_target.csv"
-PATH_TO_EDGES = "facebook_large\\musae_facebook_edges.csv"
+PATH_TO_NODES = "../facebook_large/musae_facebook_target.csv"
+PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
 
 
 def main():
     graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
-    # graph, true_clusters = utils.build_random_graph(200, 0.30, 4)
+    # graph = utils.build_random_graph(200, 0.30, 4)
     """
     clustering = utils.Clustering([
         (clustering_algorithms.k_means_one_iteration, {"seed": 42, "k": 4}),
@@ -26,7 +29,7 @@ def main():
 
     clustering.evaluate_all()
     """
-    clustering = utils.Clustering([
+    clustering = clustering_utils.Clustering([
         (clustering_algorithms.spectral, {"k": 4})], graph,
         true_clusters,
         verbose=True, draw_graph=False)
