@@ -2,6 +2,8 @@ import sys
 sys.path.append("../")
 import utils
 from tqdm import tqdm
+import numpy as np
+import networkx as nx
 
 def degree_centrality(graph):
     node_to_degree = {}
@@ -68,3 +70,62 @@ def betweenness_centrality(G):
                         c]  # betweenness of a vertex is the sum over all s of the number of shortest paths from s to other nodes using that vertex
             pbar.update(1)
     return edge_btw, node_btw
+
+
+def basic_page_rank(graph, max_iterations=100):
+    """
+        Page rank using iterative method
+
+        Preconditions:
+            Undirected graph
+
+        max_iterations: number of max iterations to perform
+    """
+
+    # Initialize nodes weights
+    current_node_to_rank = {}
+    next_node_to_rank = {}
+    for node in graph.nodes():
+        current_node_to_rank[node] = 1 / len(graph)
+        next_node_to_rank[node] = 0
+
+    with tqdm(total=max_iterations) as pbar:
+        for i in range(max_iterations): # add convergence check with tolerance
+            for edge in graph.edges():
+                first_endpoint = edge[0]
+                second_endpoint = edge[1]
+
+                # add alpha parameter
+                next_node_to_rank[first_endpoint] = next_node_to_rank[first_endpoint] + (current_node_to_rank[second_endpoint] / graph.degree(second_endpoint))
+                next_node_to_rank[second_endpoint] = next_node_to_rank[second_endpoint] + (current_node_to_rank[first_endpoint] / graph.degree(first_endpoint))
+
+            for node, rank in next_node_to_rank.items():
+                current_node_to_rank[node] = rank
+                next_node_to_rank[node] = 0
+
+            pbar.update(1)
+
+    return current_node_to_rank
+
+
+def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, tolerance=None):
+
+    # Build the vector v and the transition matrix M
+    v = 1 / len(graph) * np.ones((1, len(graph)))
+
+    # Evaluate the transition matrix
+    # Problematic O(N^2) memory 8GB
+    matrix = nx.algorithms.link_analysis.pagerank_alg.google_matrix(graph, alpha=alpha)
+
+    with tqdm(total=max_iterations) as pbar:
+        for i in range(max_iterations):
+            v = v * matrix
+            pbar.update(1)
+
+    node_to_rank = {}
+    # Luckily the array index i corresponds to the node index in the graph
+    # This happens because all the nodes in the graph are numbered from 0 to len(graph)
+    for i in range(len(graph)):
+        node_to_rank[i] = v.item(i)
+
+    return node_to_rank
