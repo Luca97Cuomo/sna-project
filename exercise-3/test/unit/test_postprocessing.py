@@ -1,5 +1,5 @@
 from unittest import TestCase
-from classification.postprocessing import truthify
+from classification.postprocessing import max_truthify
 
 
 class TestPostprocessing(TestCase):
