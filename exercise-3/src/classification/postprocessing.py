@@ -55,4 +55,3 @@ def truthify(responses: ResponsesTable, desired_reviews_subject_to_cheating_inde
         truthified_responses[input] = new_score
 
     return truthified_responses
-

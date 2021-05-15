@@ -5,14 +5,17 @@ from pathlib import Path
 
 from classification.base_classifier import BaseClassifier
 from classification.logistic_regression import LogisticRegression
+from classification.linear_regression import LinearRegression
 from classification.neural_network import NeuralNetwork
 from classification.thrutifier import Truthifier
 from dataset import generate_random_samples, generate_naive_labels_with_misreporting, generate_naive_labels, \
     generate_labels_using_only_available_features
-from evaluation.accuracy import evaluate_over_all_combinations, mae
+from evaluation.accuracy import evaluate_over_all_combinations, mae, categorical_accuracy, mae_std, \
+    errors_greater_than_one
 from evaluation.timing import evaluate_fit_time, evaluate_prediction_time
 from evaluation.truthfulness import reviews_subject_to_cheating, ways_of_cheating_reviews
 import logging
+import logging.config
 import numpy as np
 
 
@@ -22,7 +25,7 @@ def set_logging():
 
     # noinspection PyArgumentList
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="%(message)s",
         handlers=[
             logging.StreamHandler(stream=sys.stdout),
@@ -85,13 +88,14 @@ def evaluate_all():
     label_functions = [generate_naive_labels, generate_naive_labels_with_misreporting, generate_labels_using_only_available_features]
     classifier_classes = [
         LogisticRegression,
+        lambda: LinearRegression(positive=True),
         # NeuralNetwork,
         lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.0),
         lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.1),
         lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.05),
         # lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=1.0)
     ]
-    metrics = [mae]
+    metrics = [mae, errors_greater_than_one, categorical_accuracy]
 
     classifiers_results = {classifier_class: {
         label_function.__name__: {
