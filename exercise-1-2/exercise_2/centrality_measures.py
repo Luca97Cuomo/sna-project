@@ -1,5 +1,6 @@
 import sys
-import centrality_utils
+from . import centrality_utils
+
 sys.path.append("../")
 import utils
 from tqdm import tqdm
@@ -99,9 +100,9 @@ def basic_page_rank(graph, max_iterations=100):
                 # add alpha parameter
                 # There are no dead ends and spider traps, the graph is undirected
                 next_node_to_rank[first_endpoint] = next_node_to_rank[first_endpoint] + (
-                            current_node_to_rank[second_endpoint] * np.float((1 / graph.degree(second_endpoint))))
+                        current_node_to_rank[second_endpoint] * np.float((1 / graph.degree(second_endpoint))))
                 next_node_to_rank[second_endpoint] = next_node_to_rank[second_endpoint] + (
-                            current_node_to_rank[first_endpoint] * np.float((1 / graph.degree(first_endpoint))))
+                        current_node_to_rank[first_endpoint] * np.float((1 / graph.degree(first_endpoint))))
 
             for node, rank in next_node_to_rank.items():
                 current_node_to_rank[node] = rank
@@ -134,3 +135,41 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, tolerance=None):
         node_to_rank[i] = v.item(i)
 
     return node_to_rank
+
+
+def hits(graph, max_iterations=100):
+    node_to_authorities = {}
+    node_to_hubs = {}
+
+    for node in graph.nodes():
+        node_to_authorities[node] = 1
+        node_to_hubs[node] = 1
+
+    with tqdm(total=max_iterations) as pbar:
+        for i in range(max_iterations):
+            for edge in graph.edges():
+                first_endpoint = edge[0]
+                second_endpoint = edge[1]
+
+                node_to_authorities[first_endpoint] = node_to_authorities[first_endpoint] + node_to_hubs[
+                    second_endpoint]
+                node_to_authorities[second_endpoint] = node_to_authorities[second_endpoint] + node_to_hubs[
+                    first_endpoint]
+
+            for edge in graph.edges():
+                first_endpoint = edge[0]
+                second_endpoint = edge[1]
+
+                node_to_hubs[first_endpoint] = node_to_hubs[first_endpoint] + node_to_authorities[second_endpoint]
+                node_to_hubs[second_endpoint] = node_to_hubs[second_endpoint] + node_to_authorities[first_endpoint]
+
+            sum_of_authorities = sum(node_to_authorities.values())
+            sum_of_hubs = sum(node_to_hubs.values())
+
+            for node in graph.nodes():
+                node_to_authorities[node] = node_to_authorities[node] / sum_of_authorities
+                node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
+
+            pbar.update(1)
+
+    return node_to_hubs, node_to_authorities

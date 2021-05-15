@@ -16,7 +16,7 @@ PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
 
 class TestCentralityMeasures(TestCase):
     def setUp(self) -> None:
-        self.graph = utils.build_random_graph(1000, 0.30, seed=42)
+        self.graph = utils.build_random_graph(1000, 0.10, seed=42)
         self.facebook_graph, _ = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
 
         self.small_graph = nx.Graph()
@@ -75,16 +75,30 @@ class TestCentralityMeasures(TestCase):
         google_matrix = nx.algorithms.link_analysis.pagerank_alg.google_matrix(graph, alpha=alpha, nodelist=node_list)
         google_matrix_end = time.perf_counter()
 
-        our_matrix = centrality_utils.compute_transition_matrix(graph, node_list)
-        our_matrix_end = time.perf_counter()
+        transition_matrix = centrality_utils.compute_transition_matrix(graph, node_list)
+        transition_matrix_end = time.perf_counter()
 
         print(
-            f"The google matrix took {google_matrix_end - google_matrix_start} seconds, our matrix tool {our_matrix_end - google_matrix_end} seconds")
+            f"The google matrix took {google_matrix_end - google_matrix_start} seconds, transition matrix took {transition_matrix_end - google_matrix_end} seconds")
         google_matrix_list = google_matrix.tolist()
-        print("Google matrix list done")
         for i in range(len(graph)):
             for j in range(len(graph)):
-                self.assertAlmostEqual(our_matrix[i][j], google_matrix_list[i][j], delta=1e-2)
+                self.assertEqual(approx(transition_matrix[i][j], rel=0.5), google_matrix_list[i][j])
+
+    def test_hits(self):
+        graph = self.facebook_graph
+        nx_start_time = time.perf_counter()
+        nx_hubs, nx_authorities = nx.algorithms.link_analysis.hits_alg.hits(graph, max_iter=100)
+        nx_end_time = time.perf_counter()
+
+        hubs, authorities = centrality_measures.hits(graph, max_iterations=100)
+        end_time = time.perf_counter()
+
+        print(f"The nx hits took {nx_end_time - nx_start_time} seconds, hits took {end_time - nx_end_time} seconds")
+
+        for node in graph.nodes():
+            self.assertEqual(approx(nx_hubs[node], rel=0.5), hubs[node])
+            self.assertEqual(approx(nx_authorities[node], rel=0.5), authorities[node])
 
     def test_node_names(self):
         facebook_graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
