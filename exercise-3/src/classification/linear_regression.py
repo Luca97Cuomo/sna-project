@@ -21,7 +21,7 @@ class LinearRegression(BaseClassifier):
         map_missing_features_to_zero(samples)
         self.model.fit(samples, y)
 
-        logger.debug('Linear regression: intercept: %s, coefficients: %s', self.model.intercept_, self.model.coef_)
+        logger.debug('intercept: %s, coefficients: %s', self.model.intercept_, self.model.coef_)
 
     def predict(self, x: typing.List[typing.List]) -> typing.List[int]:
         samples = deepcopy(x)

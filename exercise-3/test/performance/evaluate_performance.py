@@ -23,15 +23,50 @@ def set_logging():
     results_dir = Path('results')
     results_dir.mkdir(exist_ok=True)
 
-    # noinspection PyArgumentList
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(message)s",
-        handlers=[
-            logging.StreamHandler(stream=sys.stdout),
-            logging.FileHandler(filename=results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt")
-        ]
-    )
+    logging.config.dictConfig({
+        "version": 1,
+        "formatters": {
+            "named": {
+                "format": "%(name)s - %(message)s"
+            },
+            "unnamed": {
+                "format": "%(message)s"
+            }
+        },
+        "handlers": {
+            "console-named": {
+                "class": "logging.StreamHandler",
+                "stream": sys.stdout,
+                "formatter": "named"
+            },
+            "console-unnamed": {
+                "class": "logging.StreamHandler",
+                "stream": sys.stdout,
+                "formatter": "unnamed"
+            },
+            "file-named": {
+                "class": "logging.FileHandler",
+                "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
+                "formatter": "named"
+            },
+            "file-unnamed": {
+                "class": "logging.FileHandler",
+                "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
+                "formatter": "unnamed"
+            },
+        },
+        "loggers": {
+            "root": {
+                "level": "INFO",
+                "handlers": ["console-unnamed", "file-unnamed"]
+            },
+            "classification": {
+                "level": "DEBUG",
+                "handlers": ["console-named", "file-named"],
+                "propagate": False
+            }
+        },
+    })
 
 
 def print_statistics(classifiers_results: dict, descriptions: dict) -> None:
