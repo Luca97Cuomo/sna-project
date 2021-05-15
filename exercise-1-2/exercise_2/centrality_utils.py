@@ -1,6 +1,6 @@
 import sys
-import networkx as nx
-
+import numpy as np
+from tqdm import tqdm
 sys.path.append("../")
 from pathlib import Path
 import datetime
@@ -45,3 +45,14 @@ def load_centrality_results(results_file_path):
             results.append((line[0], line[1]))
 
     return results
+
+
+def compute_transition_matrix(graph, node_list):
+    n = len(node_list)
+    matrix = np.zeros((n, len(graph)))
+    for index, node in enumerate(node_list):
+        node_degree = graph.degree(node)
+        for neighbor in graph[node]:
+            matrix[index, :][neighbor] = 1 / node_degree
+
+    return matrix

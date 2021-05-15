@@ -1,9 +1,10 @@
 import sys
+import centrality_utils
 sys.path.append("../")
 import utils
 from tqdm import tqdm
 import numpy as np
-import networkx as nx
+
 
 def degree_centrality(graph):
     node_to_degree = {}
@@ -36,7 +37,8 @@ def betweenness_centrality(G):
             spnum = {i: 0 for i in G.nodes()}  # it saves the number of shortest paths from s to i
             parents = {i: [] for i in G.nodes()}  # it saves the parents of i in each of the shortest paths from s to i
             distance = {i: -1 for i in G.nodes()}  # it saves the distance of i from s
-            eflow = {frozenset(e): 0 for e in G.edges()}  # the number of shortest paths starting from s that use the edge e
+            eflow = {frozenset(e): 0 for e in
+                     G.edges()}  # the number of shortest paths starting from s that use the edge e
             vflow = {i: 1 for i in
                      G.nodes()}  # the number of shortest paths starting from s that use the vertex i. It is initialized to 1 because the shortest path from s to i is assumed to uses that vertex once.
 
@@ -81,27 +83,29 @@ def basic_page_rank(graph, max_iterations=100):
 
         max_iterations: number of max iterations to perform
     """
-
     # Initialize nodes weights
     current_node_to_rank = {}
     next_node_to_rank = {}
     for node in graph.nodes():
-        current_node_to_rank[node] = 1 / len(graph)
-        next_node_to_rank[node] = 0
+        current_node_to_rank[node] = np.float(1 / len(graph))
+        next_node_to_rank[node] = np.float(0)
 
     with tqdm(total=max_iterations) as pbar:
-        for i in range(max_iterations): # add convergence check with tolerance
+        for i in range(max_iterations):  # add convergence check with tolerance
             for edge in graph.edges():
                 first_endpoint = edge[0]
                 second_endpoint = edge[1]
 
                 # add alpha parameter
-                next_node_to_rank[first_endpoint] = next_node_to_rank[first_endpoint] + (current_node_to_rank[second_endpoint] / graph.degree(second_endpoint))
-                next_node_to_rank[second_endpoint] = next_node_to_rank[second_endpoint] + (current_node_to_rank[first_endpoint] / graph.degree(first_endpoint))
+                # There are no dead ends and spider traps, the graph is undirected
+                next_node_to_rank[first_endpoint] = next_node_to_rank[first_endpoint] + (
+                            current_node_to_rank[second_endpoint] * np.float((1 / graph.degree(second_endpoint))))
+                next_node_to_rank[second_endpoint] = next_node_to_rank[second_endpoint] + (
+                            current_node_to_rank[first_endpoint] * np.float((1 / graph.degree(first_endpoint))))
 
             for node, rank in next_node_to_rank.items():
                 current_node_to_rank[node] = rank
-                next_node_to_rank[node] = 0
+                next_node_to_rank[node] = np.float(0)
 
             pbar.update(1)
 
@@ -109,17 +113,18 @@ def basic_page_rank(graph, max_iterations=100):
 
 
 def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, tolerance=None):
-
     # Build the vector v and the transition matrix M
     v = 1 / len(graph) * np.ones((1, len(graph)))
 
-    # Evaluate the transition matrix
-    # Problematic O(N^2) memory 8GB
-    matrix = nx.algorithms.link_analysis.pagerank_alg.google_matrix(graph, alpha=alpha)
+    node_list = list(range(len(graph)))
 
+    # Evaluate the transition matrix
+    # Problematic O(N^2) memory 12GB
+    # matrix = nx.algorithms.link_analysis.pagerank_alg.google_matrix(graph, alpha=alpha, nodelist=node_list)
+    matrix = centrality_utils.compute_transition_matrix(graph, node_list)
     with tqdm(total=max_iterations) as pbar:
         for i in range(max_iterations):
-            v = v * matrix
+            v = np.dot(v, matrix)
             pbar.update(1)
 
     node_to_rank = {}
