@@ -3,7 +3,9 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from sklearn.metrics import rand_score
-
+from pathlib import Path
+import logging
+import datetime
 
 COLORS = list(mcolors.BASE_COLORS.keys())
 ALL_COLORS = list(mcolors.CSS4_COLORS.keys())
@@ -19,27 +21,42 @@ CENTRALITY_MEASURES = {
 
 class Clustering:
     def __init__(self, clustering_algorithms_with_kwargs, graph, true_clusters, seed=42, draw_graph=False,
-                 verbose=False):
+                 logger_level=logging.INFO,
+                 output_file_path=f"clustering_results/results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt"):
         self.clustering_algorithms_with_kwargs = clustering_algorithms_with_kwargs
         self.draw_graph = draw_graph
-        self.verbose = verbose
         self.graph = graph
         self.true_clusters = true_clusters
         self.seed = seed
+        self.output_file_path = Path(output_file_path).absolute()
+        self.logger_level = logger_level
+        logging.basicConfig(level=self.logger_level,
+                            format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                            datefmt='%m-%d %H:%M',
+                            filename=str(self.output_file_path),
+                            filemode='w+')
+
+        console = logging.StreamHandler()
+        console.setLevel(self.logger_level)
+        formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+        console.setFormatter(formatter)
+        logging.getLogger().addHandler(console)
 
     def __evaluate(self, clustering_algorithm, kwargs):
-        print(f"Evaluating {clustering_algorithm.__name__} algorithm:")
+        logger = logging.getLogger(f"{clustering_algorithm.__name__}")
+        logger.info(f"Evaluating {clustering_algorithm.__name__} algorithm, with these arguments : {kwargs}")
         start = time.perf_counter()
         clusters = clustering_algorithm(self.graph, **kwargs)
         end = time.perf_counter()
         elapsed = end - start
-        print(f"The clustering algorithm took {elapsed} seconds")
+        logger.info(f"The clustering algorithm: {clustering_algorithm.__name__} took {elapsed} seconds")
         cluster_similarity = rand_index(self.graph, clusters, self.true_clusters)
-        print(f"The rand index for the clustering algorithm {clustering_algorithm.__name__} is {cluster_similarity}")
-        if self.verbose:
-            print(f"The graph was divided in {len(clusters)}")
-            for i, cluster in enumerate(clusters):
-                print(f"The length of the cluster_{i + 1} is {len(cluster)}")
+        logger.info(
+            f"The rand index for the clustering algorithm {clustering_algorithm.__name__} is {cluster_similarity}")
+        logger.debug(f"The graph was divided in {len(clusters)}")
+        for i, cluster in enumerate(clusters):
+            logger.debug(f"The length of the cluster_{i + 1} is {len(cluster)}")
+
         if self.draw_graph:
             draw_clusters(self.graph, clusters, self.seed)
 
@@ -51,7 +68,7 @@ class Clustering:
             clusters, num_clusters, time_elapsed, cluster_similarity = self.__evaluate(algorithm, kwargs)
             results_dict[algorithm.__name__] = [clusters, num_clusters, time_elapsed]
 
-        # results = {k: v for k, v in sorted(results_dict.items(), key=lambda item: item[2])}
+        return results_dict
 
 
 def generate_random_clusters(graph, num_of_clusters, num_of_nodes):
@@ -102,5 +119,3 @@ def draw_clusters(graph, clusters, seed):
 
     nx.draw_networkx_edges(graph, pos, width=1.0, alpha=0.5)
     plt.show()
-
-

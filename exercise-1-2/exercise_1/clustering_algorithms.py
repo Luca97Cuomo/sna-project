@@ -7,7 +7,6 @@ from clustering_utils import rand_index, CENTRALITY_MEASURES
 from scipy.sparse import linalg
 from networkx.linalg.laplacianmatrix import laplacian_matrix
 from priorityq import PriorityQueue
-from tqdm import tqdm
 
 # n = number of nodes
 # m = number of edges
@@ -136,11 +135,6 @@ def k_means_one_iteration(graph, seed=42, k=4, centers=None):
 
 def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000, centers=None,
             verbose=False):
-    # rand-index come condizione di convergenza
-
-    # altra possibilità: prendere il più centrale tra i nodi del cluster, e poi alla prossima iterazione
-    # verificare se la misura di centralità è cambiata di almeno tot (problema: due centri diversi possono avere
-    # centralità simile ma generare cluster differenti).
 
     last_clustering = [[] for _ in range(k)]
     last_similarity = 0
@@ -189,7 +183,7 @@ def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-
     return last_clustering
 
 
-def girvan_newman(graph, betweenees_measure="edges_betweenness_centrality", seed=42, k=4, verbose=False,
+def girvan_newman(graph, centrality_measure="edges_betweenness_centrality", seed=42, k=4, verbose=False,
                   optimized=False, decimal_digits=5):
     copy_graph = graph.copy()
     connected_components = []
@@ -197,7 +191,7 @@ def girvan_newman(graph, betweenees_measure="edges_betweenness_centrality", seed
 
     i = 0
 
-    btw_dict = CENTRALITY_MEASURES[betweenees_measure](copy_graph, seed=seed)
+    btw_dict = CENTRALITY_MEASURES[centrality_measure](copy_graph, seed=seed)
     for edge, value in btw_dict.items():
         pq.add(edge, -value)
 
@@ -215,7 +209,7 @@ def girvan_newman(graph, betweenees_measure="edges_betweenness_centrality", seed
             print(f"The connected components are {len(connected_components)} at the {i} iteration")
 
         if not optimized:
-            btw_dict = CENTRALITY_MEASURES[betweenees_measure](copy_graph, seed=seed)
+            btw_dict = CENTRALITY_MEASURES[centrality_measure](copy_graph, seed=seed)
             pq = PriorityQueue()
             for edge, value in btw_dict.items():
                 pq.add(edge, -value)

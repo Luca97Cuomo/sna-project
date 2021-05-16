@@ -104,8 +104,8 @@ class TestCentralityMeasures(TestCase):
         print(f"The nx hits took {nx_end_time - nx_start_time} seconds, hits took {end_time - nx_end_time} seconds")
 
         for node in graph.nodes():
-            self.assertEqual(approx(nx_hubs[node], rel=0.5), hubs[node])
-            self.assertEqual(approx(nx_authorities[node], rel=0.5), authorities[node])
+            self.assertEqual(approx(nx_hubs[node], rel=1e-1), hubs[node])
+            self.assertEqual(approx(nx_authorities[node], rel=1e-1), authorities[node])
 
     def test_node_names(self):
         facebook_graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)

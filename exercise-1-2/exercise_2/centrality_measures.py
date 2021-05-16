@@ -5,7 +5,7 @@ from collections import defaultdict
 from joblib import Parallel, delayed
 
 from . import centrality_utils
-
+import networkx as nx
 sys.path.append("../")
 import utils
 from tqdm import tqdm
@@ -154,8 +154,7 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta=None):
 
     # Evaluate the transition matrix
     # Problematic O(N^2) memory 12GB
-    # matrix = nx.algorithms.link_analysis.pagerank_alg.google_matrix(graph, alpha=alpha, nodelist=node_list)
-    matrix = centrality_utils.compute_transition_matrix(graph, node_list)
+    matrix = nx.algorithms.link_analysis.pagerank_alg.google_matrix(graph, alpha=alpha, nodelist=node_list)
     with tqdm(total=max_iterations) as pbar:
         for i in range(max_iterations):
             next_v = np.dot(current_v, matrix)
