@@ -62,8 +62,8 @@ class TestCentralityMeasures(TestCase):
         self.assertListEqual(expected_nodes, results_nodes)
 
     def test_algebraic_page_rank(self):
-        expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=100)
-        results = centrality_measures.algebraic_page_rank(self.facebook_graph, max_iterations=100, alpha=1)
+        expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5)
+        results = centrality_measures.algebraic_page_rank(self.facebook_graph, max_iterations=200, alpha=1, delta=1e-5)
         for node in self.facebook_graph.nodes():
             self.assertEqual(approx(expected[node], rel=0.5), results[node])
 

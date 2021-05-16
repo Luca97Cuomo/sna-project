@@ -75,7 +75,7 @@ def betweenness_centrality(G):
     return edge_btw, node_btw
 
 
-def basic_page_rank(graph, max_iterations=100):
+def basic_page_rank(graph, max_iterations=100, delta=None):
     """
         Page rank using iterative method
 
@@ -83,7 +83,20 @@ def basic_page_rank(graph, max_iterations=100):
             Undirected graph
 
         max_iterations: number of max iterations to perform
+        delta: tolerance threshold for determining convergence. If given, the algorithm stops when the ranks are
+            stabilized within the delta variable (for accounting for float precision).
     """
+    def check_convergence(current_ranks, next_ranks, delta):
+        if delta is None:
+            return False
+        for node, rank in current_ranks.items():
+            next_rank = next_ranks[node]
+            error = abs(next_rank - rank)
+            if error > delta:
+                print(error)
+                return False
+        return True
+
     # Initialize nodes weights
     current_node_to_rank = {}
     next_node_to_rank = {}
@@ -104,6 +117,10 @@ def basic_page_rank(graph, max_iterations=100):
                 next_node_to_rank[second_endpoint] = next_node_to_rank[second_endpoint] + (
                         current_node_to_rank[first_endpoint] * np.float((1 / graph.degree(first_endpoint))))
 
+            if check_convergence(current_node_to_rank, next_node_to_rank, delta):
+                print(f"The algorithm has reached convergence at iteration {i}.")
+                break
+
             for node, rank in next_node_to_rank.items():
                 current_node_to_rank[node] = rank
                 next_node_to_rank[node] = np.float(0)
@@ -113,9 +130,20 @@ def basic_page_rank(graph, max_iterations=100):
     return current_node_to_rank
 
 
-def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, tolerance=None):
+def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta=None):
+    def check_convergence(current_ranks, next_ranks, delta):
+        if delta is None:
+            return False
+
+        for current_rank, next_rank in zip(current_ranks.flat, next_ranks.flat):
+            error = abs(current_rank - next_rank)
+            if error > delta:
+                print(error)
+                return False
+        return True
+
     # Build the vector v and the transition matrix M
-    v = 1 / len(graph) * np.ones((1, len(graph)))
+    current_v = 1 / len(graph) * np.ones((1, len(graph)))
 
     node_list = list(range(len(graph)))
 
@@ -125,14 +153,18 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, tolerance=None):
     matrix = centrality_utils.compute_transition_matrix(graph, node_list)
     with tqdm(total=max_iterations) as pbar:
         for i in range(max_iterations):
-            v = np.dot(v, matrix)
+            next_v = np.dot(current_v, matrix)
             pbar.update(1)
+            if check_convergence(current_v, next_v, delta):
+                print(f"The algorithm has reached convergence at iteration {i}.")
+                break
+            current_v = next_v
 
     node_to_rank = {}
     # Luckily the array index i corresponds to the node index in the graph
     # This happens because all the nodes in the graph are numbered from 0 to len(graph)
     for i in range(len(graph)):
-        node_to_rank[i] = v.item(i)
+        node_to_rank[i] = current_v.item(i)
 
     return node_to_rank
 
