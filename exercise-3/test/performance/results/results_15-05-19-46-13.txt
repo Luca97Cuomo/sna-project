@@ -1,0 +1,691 @@
+classification.logistic_regression - intercept: [ 281.52811743   49.59321896 -331.12133639], coefficients: [[-33.83249736 -33.83968739 -33.9977489 ]
+ [  1.70131444   1.63035976   1.76218117]
+ [ 32.13118292  32.20932763  32.23556773]]
+classification.linear_regression - intercept: 0.4709135894891472, coefficients: [0.15904695 0.16608621 0.16756128]
+classification.logistic_regression - intercept: [  7.75726076   4.84275657 -12.60001734], coefficients: [[-1.52761411 -0.77097511 -0.80092932]
+ [-0.11904999 -0.27283894 -0.23248514]
+ [ 1.6466641   1.04381405  1.03341446]]
+classification.linear_regression - intercept: 1.0332067884627567, coefficients: [0.15329667 0.10451354 0.10413281]
+classification.logistic_regression - intercept: [ 9.56120626 -0.19352577 -9.36768049], coefficients: [[-2.10375212 -1.21809945 -1.24528638]
+ [ 0.49302473  0.28420808  0.34236018]
+ [ 1.61072739  0.93389137  0.9029262 ]]
+classification.linear_regression - intercept: 0.813083451349127, coefficients: [0.20227269 0.11682977 0.11128664]
+
+##### CLASSIFIER #####
+LogisticRegression<(
+   regularization=False
+   fit_intercept=True
+)>
+#####
+
+##### GENERATE_NAIVE_LABELS #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_NAIVE_LABELS_WITH_MISREPORTING #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.16326530612244897, std: 0.0
+over test set:
+	mean: 0.152, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.8367346938775511, std: 0.0
+over test set:
+	mean: 0.848, std: 0.0
+
+##### GENERATE_LABELS_USING_ONLY_AVAILABLE_FEATURES #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.20068027210884354, std: 0.0
+over test set:
+	mean: 0.199, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.7993197278911565, std: 0.0
+over test set:
+	mean: 0.801, std: 0.0
+
+
+##### CLASSIFIER #####
+LinearRegression<(
+   regularization=False
+   fit_intercept=True
+   positive=True
+)>
+#####
+
+##### GENERATE_NAIVE_LABELS #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_NAIVE_LABELS_WITH_MISREPORTING #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.15306122448979592, std: 0.0
+over test set:
+	mean: 0.148, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.8469387755102041, std: 0.0
+over test set:
+	mean: 0.852, std: 0.0
+
+##### GENERATE_LABELS_USING_ONLY_AVAILABLE_FEATURES #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.2108843537414966, std: 0.0
+over test set:
+	mean: 0.202, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.7891156462585034, std: 0.0
+over test set:
+	mean: 0.798, std: 0.0
+
+
+##### CLASSIFIER #####
+NeuralNetwork<(
+   regularization=False
+   hidden_layers=(30, 30, 20, 10)
+)>
+#####
+
+##### GENERATE_NAIVE_LABELS #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_NAIVE_LABELS_WITH_MISREPORTING #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.14583333333333334, std: 0.0
+ways of cheating reviews:
+	mean: 0.08611111111111111, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_LABELS_USING_ONLY_AVAILABLE_FEATURES #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.2465277777777778, std: 0.0
+ways of cheating reviews:
+	mean: 0.13472222222222222, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.003401360544217687, std: 0.0
+over test set:
+	mean: 0.001, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.9965986394557823, std: 0.0
+over test set:
+	mean: 0.999, std: 0.0
+
+
+##### CLASSIFIER #####
+Truthifier<(
+classifier=NeuralNetwork<(
+   regularization=False
+   hidden_layers=(30, 30, 20, 10)
+)>
+desired_truthfulness_index=0.0
+)>
+#####
+
+##### GENERATE_NAIVE_LABELS #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.003401360544217687, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.9965986394557823, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_NAIVE_LABELS_WITH_MISREPORTING #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.14285714285714285, std: 0.0
+over test set:
+	mean: 0.124, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.8571428571428571, std: 0.0
+over test set:
+	mean: 0.876, std: 0.0
+
+##### GENERATE_LABELS_USING_ONLY_AVAILABLE_FEATURES #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.24489795918367346, std: 0.0
+over test set:
+	mean: 0.22, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.7551020408163265, std: 0.0
+over test set:
+	mean: 0.78, std: 0.0
+
+
+##### CLASSIFIER #####
+Truthifier<(
+classifier=NeuralNetwork<(
+   regularization=False
+   hidden_layers=(30, 30, 20, 10)
+)>
+desired_truthfulness_index=0.1
+)>
+#####
+
+##### GENERATE_NAIVE_LABELS #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_NAIVE_LABELS_WITH_MISREPORTING #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.10069444444444445, std: 0.0
+ways of cheating reviews:
+	mean: 0.0625, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.04421768707482993, std: 0.0
+over test set:
+	mean: 0.045, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.95578231292517, std: 0.0
+over test set:
+	mean: 0.955, std: 0.0
+
+##### GENERATE_LABELS_USING_ONLY_AVAILABLE_FEATURES #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.10069444444444445, std: 0.0
+ways of cheating reviews:
+	mean: 0.08472222222222223, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.14625850340136054, std: 0.0
+over test set:
+	mean: 0.128, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.8537414965986394, std: 0.0
+over test set:
+	mean: 0.872, std: 0.0
+
+
+##### CLASSIFIER #####
+Truthifier<(
+classifier=NeuralNetwork<(
+   regularization=False
+   hidden_layers=(30, 30, 20, 10)
+)>
+desired_truthfulness_index=0.05
+)>
+#####
+
+##### GENERATE_NAIVE_LABELS #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_NAIVE_LABELS_WITH_MISREPORTING #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.052083333333333336, std: 0.0
+ways of cheating reviews:
+	mean: 0.020833333333333332, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.09183673469387756, std: 0.0
+over test set:
+	mean: 0.075, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.9081632653061225, std: 0.0
+over test set:
+	mean: 0.925, std: 0.0
+
+##### GENERATE_LABELS_USING_ONLY_AVAILABLE_FEATURES #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.052083333333333336, std: 0.0
+ways of cheating reviews:
+	mean: 0.05416666666666667, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.19387755102040816, std: 0.0
+over test set:
+	mean: 0.167, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.8061224489795918, std: 0.0
+over test set:
+	mean: 0.833, std: 0.0
+
+
+##### CLASSIFIER #####
+CombinatorialTruthifier<(
+classifier=NeuralNetwork<(
+   regularization=False
+   hidden_layers=(30, 30, 20, 10)
+)>
+)>
+#####
+
+##### GENERATE_NAIVE_LABELS #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_NAIVE_LABELS_WITH_MISREPORTING #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.08163265306122448, std: 0.0
+over test set:
+	mean: 0.101, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.9183673469387755, std: 0.0
+over test set:
+	mean: 0.899, std: 0.0
+
+##### GENERATE_LABELS_USING_ONLY_AVAILABLE_FEATURES #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.09523809523809523, std: 0.0
+over test set:
+	mean: 0.116, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.9047619047619048, std: 0.0
+over test set:
+	mean: 0.884, std: 0.0
+
+
+##### CLASSIFIER #####
+Truthifier<(
+classifier=NeuralNetwork<(
+   regularization=False
+   hidden_layers=(30, 30, 20, 10)
+)>
+desired_truthfulness_index=1.0
+)>
+#####
+
+##### GENERATE_NAIVE_LABELS #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.0, std: 0.0
+ways of cheating reviews:
+	mean: 0.0, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
+##### GENERATE_NAIVE_LABELS_WITH_MISREPORTING #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.125, std: 0.0
+ways of cheating reviews:
+	mean: 0.06805555555555555, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.02040816326530612, std: 0.0
+over test set:
+	mean: 0.01, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 0.9795918367346939, std: 0.0
+over test set:
+	mean: 0.99, std: 0.0
+
+##### GENERATE_LABELS_USING_ONLY_AVAILABLE_FEATURES #####
+##### TRUTHFULNESS #####
+reviews subject to cheating:
+	mean: 0.25, std: 0.0
+ways of cheating reviews:
+	mean: 0.1388888888888889, std: 0.0
+##### METRICS #####
+metric name: mae
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: errors_greater_than_one
+over all combinations:
+	mean: 0.0, std: 0.0
+over test set:
+	mean: 0.0, std: 0.0
+
+metric name: categorical_accuracy
+over all combinations:
+	mean: 1.0, std: 0.0
+over test set:
+	mean: 1.0, std: 0.0
+
