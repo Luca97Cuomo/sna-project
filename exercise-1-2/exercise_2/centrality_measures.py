@@ -1,4 +1,9 @@
+import math
 import sys
+from collections import defaultdict
+
+from joblib import Parallel, delayed
+
 from . import centrality_utils
 
 sys.path.append("../")
@@ -167,6 +172,64 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta=None):
         node_to_rank[i] = current_v.item(i)
 
     return node_to_rank
+
+
+def parallel_basic_page_rank(graph, max_iterations=100, jobs=4, delta=None):
+    def check_convergence(current_ranks, next_ranks, delta):
+        if delta is None:
+            return False
+        for node, rank in current_ranks.items():
+            next_rank = next_ranks[node]
+            error = abs(next_rank - rank)
+            if error > delta:
+                print(error)
+                return False
+        return True
+
+    def chunked_page_rank_step(edges, current_node_to_rank):
+        next_node_to_rank = {node: 0 for node in current_node_to_rank.keys()}
+        for edge in edges:
+            first_endpoint = edge[0]
+            second_endpoint = edge[1]
+
+            # add alpha parameter
+            # There are no dead ends and spider traps, the graph is undirected
+            next_node_to_rank[first_endpoint] = next_node_to_rank[first_endpoint] + (
+                    current_node_to_rank[second_endpoint] * np.float((1 / graph.degree(second_endpoint))))
+            next_node_to_rank[second_endpoint] = next_node_to_rank[second_endpoint] + (
+                    current_node_to_rank[first_endpoint] * np.float((1 / graph.degree(first_endpoint))))
+        return next_node_to_rank
+
+    def aggregate_results(results):
+        aggregated = defaultdict(int)
+        for result in results:
+            for node, rank in result.items():
+                aggregated[node] += rank
+        return aggregated
+
+    # Initialize nodes weights
+    current_node_to_rank = {}
+    for node in graph.nodes():
+        current_node_to_rank[node] = np.float(1 / len(graph))
+
+    with tqdm(total=max_iterations) as pbar:
+        with Parallel(n_jobs=jobs) as parallel:
+            edges_chunks = []
+            chunk_size = math.ceil(len(graph.edges) / jobs)
+            for i in range(jobs):
+                edges_chunks.append(list(graph.edges())[i * chunk_size: (i+1) * chunk_size])
+
+            for i in range(max_iterations):  # add convergence check with tolerance
+                results = parallel(delayed(chunked_page_rank_step)(edges_chunk, current_node_to_rank) for edges_chunk in edges_chunks)
+                next_node_to_rank = aggregate_results(results)
+                if check_convergence(current_node_to_rank, next_node_to_rank, delta):
+                    print(f"The algorithm has reached convergence at iteration {i}.")
+                    break
+
+                current_node_to_rank = next_node_to_rank
+                pbar.update(1)
+
+    return current_node_to_rank
 
 
 def hits(graph, max_iterations=100):

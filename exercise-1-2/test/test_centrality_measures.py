@@ -67,6 +67,13 @@ class TestCentralityMeasures(TestCase):
         for node in self.facebook_graph.nodes():
             self.assertEqual(approx(expected[node], rel=0.5), results[node])
 
+    def test_parallel_page_rank(self):
+        actual = centrality_measures.parallel_basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5, jobs=4)
+        expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5)
+        for node in self.facebook_graph.nodes():
+            self.assertEqual(approx(expected[node], rel=0.5), actual[node])
+
+
     def test_transition_matrix(self):
         alpha = 1
         graph = self.facebook_graph
