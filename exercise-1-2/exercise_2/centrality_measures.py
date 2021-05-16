@@ -1,6 +1,6 @@
 import sys
 from . import centrality_utils
-
+import networkx as nx
 sys.path.append("../")
 import utils
 from tqdm import tqdm
@@ -113,7 +113,7 @@ def basic_page_rank(graph, max_iterations=100):
     return current_node_to_rank
 
 
-def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, tolerance=None):
+def algebraic_page_rank(graph, alpha=0.85, max_iterations=100):
     # Build the vector v and the transition matrix M
     v = 1 / len(graph) * np.ones((1, len(graph)))
 
@@ -121,8 +121,7 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, tolerance=None):
 
     # Evaluate the transition matrix
     # Problematic O(N^2) memory 12GB
-    # matrix = nx.algorithms.link_analysis.pagerank_alg.google_matrix(graph, alpha=alpha, nodelist=node_list)
-    matrix = centrality_utils.compute_transition_matrix(graph, node_list)
+    matrix = nx.algorithms.link_analysis.pagerank_alg.google_matrix(graph, alpha=alpha, nodelist=node_list)
     with tqdm(total=max_iterations) as pbar:
         for i in range(max_iterations):
             v = np.dot(v, matrix)
