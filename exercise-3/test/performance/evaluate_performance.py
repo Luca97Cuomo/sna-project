@@ -8,7 +8,7 @@ from classification.combinatorial_truthifier import CombinatorialTruthifier
 from classification.logistic_regression import LogisticRegression
 from classification.linear_regression import LinearRegression
 from classification.neural_network import NeuralNetwork
-from classification.thrutifier import Truthifier
+from classification.truthifier import Truthifier
 from dataset import generate_random_samples, generate_naive_labels_with_misreporting, generate_naive_labels, \
     generate_labels_using_only_available_features
 from evaluation.accuracy import evaluate_over_all_combinations, mae, categorical_accuracy, mae_std, \
@@ -58,7 +58,7 @@ def set_logging():
         },
         "loggers": {
             "root": {
-                "level": "INFO",
+                "level": "DEBUG",
                 "handlers": ["console-unnamed", "file-unnamed"]
             },
             "classification": {
@@ -124,13 +124,13 @@ def evaluate_all():
     label_functions = [generate_naive_labels, generate_naive_labels_with_misreporting, generate_labels_using_only_available_features]
     classifier_classes = [
         LogisticRegression,
-        lambda: LinearRegression(positive=True),
-        NeuralNetwork,
-        lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.0),
-        lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.1),
-        lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.05),
-        lambda: CombinatorialTruthifier(NeuralNetwork()),
-        lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=1.0)
+        # lambda: LinearRegression(positive=True),
+        # NeuralNetwork,
+        # lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.0),
+        # lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.1),
+        # lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=0.05),
+        # lambda: CombinatorialTruthifier(NeuralNetwork()),
+        # lambda: Truthifier(NeuralNetwork(), desired_truthfulness_index=1.0)
     ]
     metrics = [mae, errors_greater_than_one, categorical_accuracy]
 

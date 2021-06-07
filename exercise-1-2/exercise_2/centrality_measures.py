@@ -99,7 +99,6 @@ def basic_page_rank(graph, max_iterations=100, delta=None):
             next_rank = next_ranks[node]
             error = abs(next_rank - rank)
             if error > delta:
-                print(error)
                 return False
         return True
 
@@ -144,7 +143,6 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta=None):
         for current_rank, next_rank in zip(current_ranks.flat, next_ranks.flat):
             error = abs(current_rank - next_rank)
             if error > delta:
-                print(error)
                 return False
         return True
 
@@ -182,7 +180,6 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=4, delta=None):
             next_rank = next_ranks[node]
             error = abs(next_rank - rank)
             if error > delta:
-                print(error)
                 return False
         return True
 
