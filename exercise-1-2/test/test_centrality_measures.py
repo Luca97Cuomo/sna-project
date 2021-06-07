@@ -9,6 +9,7 @@ sys.path.append("../")
 import utils
 
 from exercise_2 import centrality_measures, centrality_utils
+from exercise_2 import betweenness_centrality
 
 PATH_TO_NODES = "../facebook_large/musae_facebook_target.csv"
 PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
@@ -16,7 +17,7 @@ PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
 
 class TestCentralityMeasures(TestCase):
     def setUp(self) -> None:
-        self.graph = utils.build_random_graph(1000, 0.10, seed=42)
+        self.graph = utils.build_random_graph(100, 0.10, seed=42)
         self.facebook_graph, _ = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
 
         self.small_graph = nx.Graph()
@@ -45,9 +46,12 @@ class TestCentralityMeasures(TestCase):
         results = centrality_measures.closeness_centrality(self.graph)
         self.assertDictEqual(expected, results)
 
-    def test_betweenness_centrality(self):
+    def test_naive_betweenness_centrality(self):
+        # required time for: self.graph = utils.build_random_graph(1000, 0.10, seed=42) is:
+        # 141.765s
+
         expected = nx.betweenness_centrality(self.graph)
-        edge_btw, node_btw = centrality_measures.betweenness_centrality(self.graph)
+        edge_btw, node_btw = betweenness_centrality.lecture_betweenness_centrality(self.graph)
 
         expected = sorted(expected.items(), key=lambda item: item[1])
         expected_nodes = []
@@ -122,3 +126,23 @@ class TestCentralityMeasures(TestCase):
 
         for i in range(len(facebook_graph)):
             self.assertTrue(facebook_graph.has_node(i))
+
+
+    def test_naive_betweenness_bfs(self):
+        bfs_graph = nx.Graph()
+        bfs_graph.add_edge(0, 1)
+        bfs_graph.add_edge(1, 2)
+        bfs_graph.add_edge(1, 3)
+        bfs_graph.add_edge(3, 4)
+        bfs_graph.add_edge(2, 4)
+
+        bfs_graph.add_edge(3, 5)
+        bfs_graph.add_edge(5, 4)
+
+        bfs_graph.add_edge(1, 10)
+        bfs_graph.add_edge(10, 4)
+
+        actual = betweenness_centrality.naive_betweenness_bfs(bfs_graph, 0, 4, {})
+        expected = 3
+
+        self.assertEqual(actual, expected)
