@@ -4,8 +4,8 @@ from collections import defaultdict
 
 from joblib import Parallel, delayed
 
-from . import centrality_utils
 import networkx as nx
+
 sys.path.append("../")
 import utils
 from tqdm import tqdm
@@ -44,6 +44,7 @@ def basic_page_rank(graph, max_iterations=100, delta=None):
         delta: tolerance threshold for determining convergence. If given, the algorithm stops when the ranks are
             stabilized within the delta variable (for accounting for float precision).
     """
+
     def check_convergence(current_ranks, next_ranks, delta):
         if delta is None:
             return False
@@ -169,10 +170,11 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=4, delta=None):
             edges_chunks = []
             chunk_size = math.ceil(len(graph.edges) / jobs)
             for i in range(jobs):
-                edges_chunks.append(list(graph.edges())[i * chunk_size: (i+1) * chunk_size])
+                edges_chunks.append(list(graph.edges())[i * chunk_size: (i + 1) * chunk_size])
 
             for i in range(max_iterations):  # add convergence check with tolerance
-                results = parallel(delayed(chunked_page_rank_step)(edges_chunk, current_node_to_rank) for edges_chunk in edges_chunks)
+                results = parallel(
+                    delayed(chunked_page_rank_step)(edges_chunk, current_node_to_rank) for edges_chunk in edges_chunks)
                 next_node_to_rank = aggregate_results(results)
                 if check_convergence(current_node_to_rank, next_node_to_rank, delta):
                     print(f"The algorithm has reached convergence at iteration {i}.")
@@ -218,5 +220,84 @@ def hits(graph, max_iterations=100):
                 node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
 
             pbar.update(1)
+
+    return node_to_hubs, node_to_authorities
+
+
+def parallel_hits(graph, max_iterations=100, jobs=4):
+    def chunked_hits_step(edges, node_to_authorities, node_to_hubs):
+        partial_node_to_authorities = {node: 0 for node in node_to_authorities.keys()}
+        partial_node_to_hubs = {node: 0 for node in node_to_hubs.keys()}
+        for edge in edges:
+            first_endpoint = edge[0]
+            second_endpoint = edge[1]
+
+            partial_node_to_authorities[first_endpoint] = partial_node_to_authorities[first_endpoint] + node_to_hubs[
+                second_endpoint]
+            partial_node_to_authorities[second_endpoint] = partial_node_to_authorities[second_endpoint] + node_to_hubs[
+                first_endpoint]
+
+        for edge in edges:
+            first_endpoint = edge[0]
+            second_endpoint = edge[1]
+
+            partial_node_to_hubs[first_endpoint] = partial_node_to_hubs[first_endpoint] + partial_node_to_authorities[
+                second_endpoint]
+            partial_node_to_hubs[second_endpoint] = partial_node_to_hubs[second_endpoint] + partial_node_to_authorities[
+                first_endpoint]
+
+        return partial_node_to_hubs, partial_node_to_authorities
+
+    def aggregate_results(results, current_node_to_authorities, current_node_to_hubs):
+        aggregated_authorities = defaultdict(float)
+        aggregated_hubs = defaultdict(float)
+        for result in results:
+            results_hubs = result[0]
+            results_authorities = result[1]
+            for node, authority in results_authorities.items():
+                aggregated_authorities[node] += authority
+
+            for node, hub in results_hubs.items():
+                aggregated_hubs[node] += hub
+
+        for node, current_authority in current_node_to_authorities.items():
+            aggregated_authorities[node] += current_authority
+
+        for node, current_hub in current_node_to_hubs.items():
+            aggregated_hubs[node] += current_hub
+
+        sum_of_authorities = sum(aggregated_authorities.values())
+        sum_of_hubs = sum(aggregated_hubs.values())
+
+        for node in graph.nodes():
+            aggregated_authorities[node] = aggregated_authorities[node] / sum_of_authorities
+            aggregated_hubs[node] = aggregated_hubs[node] / sum_of_hubs
+
+        return aggregated_authorities, aggregated_hubs
+
+    node_to_authorities = {}
+    node_to_hubs = {}
+
+    for node in graph.nodes():
+        node_to_authorities[node] = 1
+        node_to_hubs[node] = 1
+
+    with tqdm(total=max_iterations) as pbar:
+        with Parallel(n_jobs=jobs) as parallel:
+            edges_chunks = []
+            chunk_size = math.ceil(len(graph.edges) / jobs)
+            for i in range(jobs):
+                edges_chunks.append(list(graph.edges())[i * chunk_size: (i + 1) * chunk_size])
+
+            for i in range(max_iterations):
+                results = parallel(
+                    delayed(chunked_hits_step)(edges_chunk, node_to_authorities, node_to_hubs) for edges_chunk in
+                    edges_chunks)
+
+                node_to_authorities, node_to_hubs = aggregate_results(results,
+                                                                      node_to_authorities,
+                                                                      node_to_hubs)
+
+                pbar.update(1)
 
     return node_to_hubs, node_to_authorities

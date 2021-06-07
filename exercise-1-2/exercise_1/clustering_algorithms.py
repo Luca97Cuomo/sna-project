@@ -2,11 +2,13 @@ import time
 import networkx as nx
 import random
 import sys
+
 sys.path.append('../')
 from clustering_utils import rand_index, CENTRALITY_MEASURES
 from scipy.sparse import linalg
 from networkx.linalg.laplacianmatrix import laplacian_matrix
 from priorityq import PriorityQueue
+
 
 # n = number of nodes
 # m = number of edges
@@ -135,7 +137,6 @@ def k_means_one_iteration(graph, seed=42, k=4, centers=None):
 
 def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000, centers=None,
             verbose=False):
-
     last_clustering = [[] for _ in range(k)]
     last_similarity = 0
     convergence = False
@@ -227,7 +228,7 @@ def spectral_one_iteration(graph, nodes):
     print(f"The laplacian matrix took {time_end - time_start} seconds")
 
     time_start = time.perf_counter()
-    w, v = linalg.eigsh(lap_matrix, 1)
+    w, v = linalg.eigsh(lap_matrix, 1)  # check if we must use the greatest eigenvalue or the smallest one
     time_end = time.perf_counter()
     print(f"The linalg.eigsh took {time_end - time_start} seconds")
     c1 = []

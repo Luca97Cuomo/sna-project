@@ -111,6 +111,16 @@ class TestCentralityMeasures(TestCase):
             self.assertEqual(approx(nx_hubs[node], rel=1e-1), hubs[node])
             self.assertEqual(approx(nx_authorities[node], rel=1e-1), authorities[node])
 
+
+    def test_parallel_hits(self):
+        graph = self.graph
+        expected_hubs, expected_authorities = centrality_measures.hits(graph, max_iterations=100)
+        result_hubs, result_authorities = centrality_measures.parallel_hits(graph, max_iterations=100)
+
+        for node in graph.nodes():
+            self.assertEqual(approx(expected_hubs[node], rel=1e-1), result_hubs[node])
+            self.assertEqual(approx(expected_authorities[node], rel=1e-1), result_authorities[node])
+
     def test_node_names(self):
         facebook_graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
 
