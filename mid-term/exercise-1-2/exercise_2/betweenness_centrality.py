@@ -101,6 +101,7 @@ def naive_betweenness_bfs(graph, source_node, dest_node, node_to_rank):
 
         if current_node == dest_node:
             # A shortest path has been found
+            pass
         else:
             for neighbour in graph.neighbors(current_node):
                 if not visited[neighbour]:
@@ -111,4 +112,5 @@ def naive_betweenness_bfs(graph, source_node, dest_node, node_to_rank):
     for father in fathers[dest_node]:
         # The rank for each node is equal to the number of ways it can be reached by his fathers
         # multiplied by the number of ways he can reach the destination node
+        pass
 
