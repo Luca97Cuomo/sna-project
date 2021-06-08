@@ -3,9 +3,9 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from sklearn.metrics import rand_score
-from pathlib import Path
 import logging
-import datetime
+import logging_configuration
+
 
 COLORS = list(mcolors.BASE_COLORS.keys())
 ALL_COLORS = list(mcolors.CSS4_COLORS.keys())
@@ -20,27 +20,12 @@ CENTRALITY_MEASURES = {
 
 
 class Clustering:
-    def __init__(self, clustering_algorithms_with_kwargs, graph, true_clusters, seed=42, draw_graph=False,
-                 logger_level=logging.INFO,
-                 output_file_path=f"clustering_results/results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt"):
+    def __init__(self, clustering_algorithms_with_kwargs, graph, true_clusters, seed=42, draw_graph=False):
         self.clustering_algorithms_with_kwargs = clustering_algorithms_with_kwargs
         self.draw_graph = draw_graph
         self.graph = graph
         self.true_clusters = true_clusters
         self.seed = seed
-        self.output_file_path = Path(output_file_path).absolute()
-        self.logger_level = logger_level
-        logging.basicConfig(level=self.logger_level,
-                            format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                            datefmt='%m-%d %H:%M',
-                            filename=str(self.output_file_path),
-                            filemode='w+')
-
-        console = logging.StreamHandler()
-        console.setLevel(self.logger_level)
-        formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-        console.setFormatter(formatter)
-        logging.getLogger().addHandler(console)
 
     def __evaluate(self, clustering_algorithm, kwargs):
         logger = logging.getLogger(f"{clustering_algorithm.__name__}")
@@ -50,9 +35,12 @@ class Clustering:
         end = time.perf_counter()
         elapsed = end - start
         logger.info(f"The clustering algorithm: {clustering_algorithm.__name__} took {elapsed} seconds")
-        cluster_similarity = rand_index(self.graph, clusters, self.true_clusters)
-        logger.info(
-            f"The rand index for the clustering algorithm {clustering_algorithm.__name__} is {cluster_similarity}")
+        cluster_similarity = None
+        if self.true_clusters is not None:
+            cluster_similarity = rand_index(self.graph, clusters, self.true_clusters)
+            logger.info(
+                f"The rand index for the clustering algorithm {clustering_algorithm.__name__} is {cluster_similarity}")
+
         logger.debug(f"The graph was divided in {len(clusters)}")
         for i, cluster in enumerate(clusters):
             logger.debug(f"The length of the cluster_{i + 1} is {len(cluster)}")

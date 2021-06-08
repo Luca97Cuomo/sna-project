@@ -2,6 +2,9 @@ import networkx as nx
 from itertools import combinations, groupby
 import random
 from pathlib import Path
+import matplotlib.pyplot as plt
+import logging_configuration
+import logging
 
 
 def build_random_graph(num_of_nodes, probability_of_edge, seed=42):
@@ -31,7 +34,8 @@ def build_random_connected_graph(num_of_nodes, probability_of_edge, seed=42):
     return graph
 
 
-def load_graph(nodes_path, edges_path, num_of_clusters=4):
+def load_graph_and_clusters(nodes_path, edges_path, num_of_clusters=4):
+    logger = logging.getLogger(f"{load_graph_and_clusters.__name__}")
     nodes_path = Path(nodes_path).absolute()
     edges_path = Path(edges_path).absolute()
 
@@ -62,7 +66,7 @@ def load_graph(nodes_path, edges_path, num_of_clusters=4):
 
             clusters[index].append(identifier)
 
-    print(f"There are {len(graph)} nodes in the graph")
+    logger.info(f"There are {len(graph)} nodes in the graph")
 
     return graph, clusters
 
@@ -88,3 +92,47 @@ def bfs(graph, node):
                 node_distances[neighbor] = node_distances[current_node] + 1
 
     return node_distances
+
+
+def load_network(network_path):
+    logger = logging.getLogger(f"{load_network.__name__}")
+    network_path = Path(network_path).absolute()
+    graph = nx.Graph()
+
+    with open(network_path, "r") as network_file:
+        edge_lines = network_file.readlines()
+
+        for edge in edge_lines[:]:
+            edge = edge.strip()
+            id_1 = edge.split(" ")[0]
+            id_2 = edge.split(" ")[1]
+            graph.add_edge(int(id_1), int(id_2))
+
+    logger.info(f"There are {len(graph)} nodes in the graph")
+    for i in range(len(graph)):
+        if not graph.has_node(i):
+            logger.error(f"The node {str(i)} is not in the graph")
+
+    return graph
+
+
+def plot_degree_distribution(node_to_degree):
+    degree_to_num_nodes = {}
+    for node, degree in node_to_degree.items():
+        if degree_to_num_nodes.get(degree) is None:
+            degree_to_num_nodes[degree] = 1
+        else:
+            degree_to_num_nodes[degree] += 1
+
+    sorted_degrees = list(degree_to_num_nodes.keys())
+    sorted_degrees.sort()
+
+    num_nodes_for_degree = []
+    for degree in sorted_degrees:
+        num_nodes_for_degree.append(degree_to_num_nodes[degree])
+
+    plt.plot(sorted_degrees, num_nodes_for_degree)
+    plt.show()
+    plt.loglog(sorted_degrees, num_nodes_for_degree)
+
+    plt.show()

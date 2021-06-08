@@ -18,7 +18,7 @@ PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
 class TestCentralityMeasures(TestCase):
     def setUp(self) -> None:
         self.graph = utils.build_random_graph(100, 0.10, seed=42)
-        self.facebook_graph, _ = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
+        self.facebook_graph, _ = utils.load_graph_and_clusters(PATH_TO_NODES, PATH_TO_EDGES)
 
         self.small_graph = nx.Graph()
         self.small_graph.add_edge(0, 1)
@@ -122,7 +122,7 @@ class TestCentralityMeasures(TestCase):
             self.assertEqual(approx(expected_authorities[node], rel=1e-1), result_authorities[node])
 
     def test_node_names(self):
-        facebook_graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
+        facebook_graph, true_clusters = utils.load_graph_and_clusters(PATH_TO_NODES, PATH_TO_EDGES)
 
         for i in range(len(facebook_graph)):
             self.assertTrue(facebook_graph.has_node(i))

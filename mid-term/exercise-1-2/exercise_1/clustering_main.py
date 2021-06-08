@@ -4,7 +4,6 @@ import clustering_utils
 import clustering_algorithms
 import sys
 
-sys.path.append('../')
 import utils
 
 PATH_TO_NODES = "../facebook_large/musae_facebook_target.csv"
@@ -12,7 +11,7 @@ PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
 
 
 def main():
-    graph, true_clusters = utils.load_graph(PATH_TO_NODES, PATH_TO_EDGES)
+    graph, true_clusters = utils.load_graph_and_clusters(PATH_TO_NODES, PATH_TO_EDGES)
 
     clustering = clustering_utils.Clustering([
         (clustering_algorithms.hierarchical_optimized, {"seed": 42, "desired_clusters": 4}),
@@ -34,7 +33,7 @@ def main():
         (clustering_algorithms.girvan_newman, {"centrality_measure": "edges_betweenness_centrality", "seed": 42,
                                                "k": 4, "verbose": False, "optimized": True}),
         (clustering_algorithms.spectral, {"k": 4})],
-        graph, true_clusters, draw_graph=False, logger_level=logging.DEBUG)
+        graph, true_clusters, draw_graph=False)
 
     clustering.evaluate_all()
 
