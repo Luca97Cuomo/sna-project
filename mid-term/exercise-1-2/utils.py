@@ -5,6 +5,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import logging_configuration
 import logging
+import numpy as np
 
 
 def build_random_graph(num_of_nodes, probability_of_edge, seed=42):
@@ -108,7 +109,7 @@ def load_network(network_path):
             id_2 = edge.split(" ")[1]
             graph.add_edge(int(id_1), int(id_2))
 
-    logger.info(f"There are {len(graph)} nodes in the graph")
+    logger.info(f"There are {len(graph)} nodes in the graph, and {len(edge_lines)} edges in the graph")
     for i in range(len(graph)):
         if not graph.has_node(i):
             logger.error(f"The node {str(i)} is not in the graph")
@@ -116,7 +117,19 @@ def load_network(network_path):
     return graph
 
 
-def plot_degree_distribution(node_to_degree):
+def analyze_degree_distribution(node_to_degree, network_generation_algorithm, kwargs, save=False):
+    plots_dir = Path('plots')
+    plots_dir.mkdir(exist_ok=True)
+    logger = logging.getLogger()
+
+    if isinstance(node_to_degree, list):
+        logger.info(f"Converting the list into a node_to_degree dictionary")
+        temp = {}
+        for index, value in enumerate(node_to_degree):
+            temp[index] = value
+
+        node_to_degree = temp
+
     degree_to_num_nodes = {}
     for node, degree in node_to_degree.items():
         if degree_to_num_nodes.get(degree) is None:
@@ -131,8 +144,32 @@ def plot_degree_distribution(node_to_degree):
     for degree in sorted_degrees:
         num_nodes_for_degree.append(degree_to_num_nodes[degree])
 
+    np_degrees = np.array(sorted_degrees)
+    degree_mean = np_degrees.mean()
+    degree_std = np_degrees.std()
+    logger.info(f"Degree to num nodes : {sorted(degree_to_num_nodes.items())}")
+    logger.info(
+        f"Mean of the degrees : {degree_mean} standard deviation : {degree_std}")
+
     plt.plot(sorted_degrees, num_nodes_for_degree)
-    plt.show()
-    plt.loglog(sorted_degrees, num_nodes_for_degree)
+    plt.xlabel("Degrees")
+    plt.ylabel("Num of nodes")
+    if save:
+        if kwargs is not None:
+            plt.savefig(f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm} with parameters {str(kwargs)}")
+        else:
+            plt.savefig(f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm}")
 
     plt.show()
+    plt.loglog(sorted_degrees, num_nodes_for_degree)
+    plt.xlabel("Degrees")
+    plt.ylabel("Num of nodes")
+    if save:
+        if kwargs is not None:
+            plt.savefig(f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm} with parameters {str(kwargs)}")
+        else:
+            plt.savefig(f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm}")
+
+    plt.show()
+
+    return degree_mean, degree_std

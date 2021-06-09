@@ -247,6 +247,7 @@ def affiliationG(n, m, q, c, p, s):
 
     return G
 
+"""
 print(randomG(9,0.5).edges())
 print(configurationG([5,3,3,2,2,1,1,1,1]).edges())
 deg_list=power_law_degree(9,2)
@@ -255,3 +256,4 @@ print(configurationG(deg_list).edges())
 print(preferentialG(9,0.75).edges())
 print(GenWS2DG(9, 1, 1, 2).edges())
 print(affiliationG(9, 4, 0.5, 3, 0.8, 2).edges())
+"""

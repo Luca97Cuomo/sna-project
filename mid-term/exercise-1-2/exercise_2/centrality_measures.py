@@ -14,11 +14,11 @@ import numpy as np
 
 def degree_centrality(graph):
     node_to_degree = {}
-    with tqdm(total=len(graph)) as pbar:
-        for node in graph.nodes():
-            node_to_degree[node] = graph.degree(node)
-            pbar.update(1)
-        return node_to_degree
+
+    for node in graph.nodes():
+        node_to_degree[node] = graph.degree(node)
+
+    return node_to_degree
 
 
 def closeness_centrality(graph):

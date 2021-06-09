@@ -13,7 +13,7 @@ def set_logging():
         "version": 1,
         "formatters": {
             "named": {
-                "format": '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+                "format": '%(asctime)s %(funcName)-30s %(levelname)-8s %(message)s'
             },
             "unnamed": {
                 "format": "%(message)s"
@@ -44,7 +44,7 @@ def set_logging():
         "loggers": {
             "root": {
                 "level": "DEBUG",
-                "handlers": ["console-named"]
+                "handlers": ["console-named", "file-named"]
             }
         },
     })
