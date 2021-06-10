@@ -12,12 +12,18 @@ class NetworkAnalyzer:
                  network_clustering_coefficient_threshold, target_network, network_generation_algorithms_with_kwargs):
         self.network_generation_algorithms_with_kwargs = network_generation_algorithms_with_kwargs
         self.target_network = target_network
+        """
         self.target_network_degree_mean, self.target_network_degree_std = analyze_degree_distribution(
             degree_centrality(target_network), "net_1", None, save=True)
         self.target_network_diameter = nx.algorithms.diameter(target_network)
         self.target_network_avg_clustering_coeff = nx.algorithms.cluster.average_clustering(target_network)
+        """
+        self.target_network_degree_mean = 69.40425531914893
+        self.target_network_degree_std = 27.301437554285616
+        self.target_network_diameter = 6
+        self.target_network_avg_clustering_coeff = 0.5745321712547844
         logger.info(
-            f"\nThe target network has: degree mean = {self.target_network_degree_mean}, degree std = {self.target_network_degree_std}, "
+            f"The target network has: degree mean = {self.target_network_degree_mean}, degree std = {self.target_network_degree_std}, "
             f"diameter = {self.target_network_diameter}, average clustering coefficient = {self.target_network_avg_clustering_coeff}")
 
         self.degree_mean_threshold = degree_mean_threshold
@@ -27,7 +33,7 @@ class NetworkAnalyzer:
         self.possible_models = []
 
     def __analyze_and_compare_network(self, network_generation_algorithm, kwargs):
-        logger.info(f"\nEvaluating {network_generation_algorithm.__name__} algorithm, with these arguments : {kwargs}")
+        logger.info(f"Evaluating {network_generation_algorithm.__name__} algorithm, with these arguments : {kwargs}")
         network = network_generation_algorithm(**kwargs)
         node_to_degree = degree_centrality(network)
         degree_mean, degree_std = analyze_degree_distribution(node_to_degree, network_generation_algorithm.__name__,
@@ -43,22 +49,22 @@ class NetworkAnalyzer:
         logger.info(f"Network average clustering coefficient : {avg_clustering_coeff}")
 
         possible_model = True
-        if self.target_network_degree_mean - degree_mean <= self.degree_mean_threshold:
+        if abs(self.target_network_degree_mean - degree_mean) <= self.degree_mean_threshold:
             logger.info(f"The current network has a degree mean that is within the threshold")
         else:
             possible_model = False
 
-        if self.target_network_degree_std - degree_std <= self.degree_std_threshold:
+        if abs(self.target_network_degree_std - degree_std) <= self.degree_std_threshold:
             logger.info(f"The current network has a degree std that is within the threshold")
         else:
             possible_model = False
 
-        if network_diameter is not None and self.target_network_diameter - network_diameter <= self.network_diameter_threshold:
+        if network_diameter is not None and abs(self.target_network_diameter - network_diameter) <= self.network_diameter_threshold:
             logger.info(f"The current network has a diameter that is within the threshold")
         else:
             possible_model = False
 
-        if self.target_network_avg_clustering_coeff - avg_clustering_coeff <= self.network_clustering_coefficient_threshold:
+        if abs(self.target_network_avg_clustering_coeff - avg_clustering_coeff) <= self.network_clustering_coefficient_threshold:
             logger.info(f"The current network has a network clustering coefficient that is within the threshold")
         else:
             possible_model = False

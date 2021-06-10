@@ -156,9 +156,9 @@ def analyze_degree_distribution(node_to_degree, network_generation_algorithm, kw
     plt.ylabel("Num of nodes")
     if save:
         if kwargs is not None:
-            plt.savefig(f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm} with parameters {str(kwargs)}")
+            plt.savefig(f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm} with parameters {kwargs}.jpg")
         else:
-            plt.savefig(f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm}")
+            plt.savefig(f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm}.jpg")
 
     plt.show()
     plt.loglog(sorted_degrees, num_nodes_for_degree)
@@ -166,10 +166,13 @@ def analyze_degree_distribution(node_to_degree, network_generation_algorithm, kw
     plt.ylabel("Num of nodes")
     if save:
         if kwargs is not None:
-            plt.savefig(f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm} with parameters {str(kwargs)}")
+            plt.savefig(f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm} with parameters {kwargs}.jpg")
         else:
-            plt.savefig(f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm}")
+            plt.savefig(f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm}.jpg")
 
     plt.show()
 
     return degree_mean, degree_std
+
+
+
