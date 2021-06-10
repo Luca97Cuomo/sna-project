@@ -3,6 +3,9 @@ import typing
 import networkx as nx
 
 
+CharacteristicFunction = typing.Callable[[nx.Graph, typing.Set], float]
+
+
 def degree(graph: nx.Graph, coalition: typing.Set) -> float:
     added = copy.deepcopy(coalition)
 
