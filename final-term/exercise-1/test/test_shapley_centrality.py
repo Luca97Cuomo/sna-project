@@ -3,7 +3,7 @@ from unittest import TestCase
 import networkx as nx
 
 import characteristic_functions
-from shapley_centrality import naive_shapley_centrality
+from shapley_centrality import naive_shapley_centrality, shapley_degree
 
 
 class Test(TestCase):
@@ -21,9 +21,10 @@ class Test(TestCase):
         actual = naive_shapley_centrality(self.graph, lambda graph, coalition: 42)
         self.assertDictAlmostEqual(expected, actual)
 
+        # slide errate?
         # expected = {1: 10/12, 2: 13/12, 3: 9/12, 4: 13/12, 5: 15/12}
         # actual = naive_shapley_centrality(self.graph, characteristic_functions.degree)
-        # self.assertDictEqual(expected, actual)
+        # self.assertDictAlmostEqual(expected, actual)
 
         expected = {1: 17/6, 2: 11/6, 3: 2/6}
         slide_graph = nx.Graph()
@@ -36,6 +37,11 @@ class Test(TestCase):
                 return 5
             return 2
         actual = naive_shapley_centrality(slide_graph, slide_value)
+        self.assertDictAlmostEqual(expected, actual)
+
+    def test_shapley_degree(self):
+        expected = {1: 10/12, 2: 13/12, 3: 9/12, 4: 13/12, 5: 15/12}
+        actual = shapley_degree(self.graph)
         self.assertDictAlmostEqual(expected, actual)
 
     def assertDictAlmostEqual(self, expected, actual):

@@ -7,14 +7,14 @@ CharacteristicFunction = typing.Callable[[nx.Graph, typing.Set], float]
 
 
 def degree(graph: nx.Graph, coalition: typing.Set) -> float:
-    added = copy.deepcopy(coalition)
+    fringe = copy.deepcopy(coalition)
 
     for node in coalition:
         neighbours = graph.neighbors(node)
         for neighbour in neighbours:
-            added.add(neighbour)
+            fringe.add(neighbour)
 
-    return len(added)
+    return len(fringe)
 
 
 def threshold(graph: nx.Graph, coalition: typing.Set, threshold_value: int) -> float:
