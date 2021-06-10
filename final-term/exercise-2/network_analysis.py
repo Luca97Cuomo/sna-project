@@ -63,7 +63,37 @@ def main():
             (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 7, "q": 2}),
             (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 8, "q": 2}),
             (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 9, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 10, "q": 2})
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 10, "q": 2}),
+
+
+
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 5, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 6, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 7, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 8, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 9, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 10, "q": 3}),
+
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 5, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 6, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 7, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 8, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 9, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 10, "q": 3}),
+
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 5, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 6, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 7, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 8, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 9, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 10, "q": 3}),
+
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 5, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 6, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 7, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 8, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 9, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 10, "q": 3})
         ])
 
     network_analyzer.analyze_all()
