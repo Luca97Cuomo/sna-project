@@ -3,7 +3,7 @@ from unittest import TestCase
 import networkx as nx
 
 import characteristic_functions
-from shapley_centrality import naive_shapley_centrality, shapley_degree
+from shapley_centrality import naive_shapley_centrality, shapley_degree, shapley_threshold
 
 
 class Test(TestCase):
@@ -44,6 +44,18 @@ class Test(TestCase):
         actual = shapley_degree(self.graph)
         self.assertDictAlmostEqual(expected, actual)
 
+    def test_shapley_threshold(self):
+        expected = {1: 10/12, 2: 13/12, 3: 9/12, 4: 13/12, 5: 15/12}
+        actual = shapley_threshold(self.graph, 1)
+        self.assertDictAlmostEqual(expected, actual)
+
+        actual = shapley_threshold(self.graph, 2)
+        self.assertDictNotAlmostEqual(expected, actual)
+
     def assertDictAlmostEqual(self, expected, actual):
         for key, value in expected.items():
             self.assertAlmostEqual(value, actual[key])
+
+    def assertDictNotAlmostEqual(self, expected, actual):
+        for key, value in expected.items():
+            self.assertNotAlmostEqual(value, actual[key])

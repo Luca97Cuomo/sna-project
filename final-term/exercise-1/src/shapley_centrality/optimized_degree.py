@@ -2,8 +2,12 @@ import typing
 
 import networkx as nx
 
+from shapley_centrality import ShapleyValues
 
-def shapley_degree(graph: nx.Graph) -> typing.Dict[int, float]:
+
+def shapley_degree(graph: nx.Graph) -> ShapleyValues:
+    # O(n + m)
+    # this is just a simplified version of shapley_threshold(graph, 1)
     values = {}
 
     degree_view = graph.degree

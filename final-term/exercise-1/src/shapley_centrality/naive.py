@@ -4,6 +4,7 @@ import itertools
 import math
 
 import characteristic_functions
+from shapley_centrality import ShapleyValues
 
 
 def _shapley_value(graph: nx.Graph, characteristic_function: characteristic_functions.CharacteristicFunction, node: int) -> float:
@@ -27,7 +28,7 @@ def _shapley_value(graph: nx.Graph, characteristic_function: characteristic_func
     return value
 
 
-def naive_shapley_centrality(graph: nx.Graph, characteristic_function: characteristic_functions.CharacteristicFunction) -> typing.Dict[int, float]:
+def naive_shapley_centrality(graph: nx.Graph, characteristic_function: characteristic_functions.CharacteristicFunction) -> ShapleyValues:
     shapley_values = {}
     for node in graph.nodes:
         shapley_values[node] = _shapley_value(graph, characteristic_function, node)
