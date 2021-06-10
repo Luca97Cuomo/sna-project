@@ -12,16 +12,10 @@ class NetworkAnalyzer:
                  network_clustering_coefficient_threshold, target_network, network_generation_algorithms_with_kwargs):
         self.network_generation_algorithms_with_kwargs = network_generation_algorithms_with_kwargs
         self.target_network = target_network
-        """
         self.target_network_degree_mean, self.target_network_degree_std = analyze_degree_distribution(
             degree_centrality(target_network), "net_1", None, save=True)
         self.target_network_diameter = nx.algorithms.diameter(target_network)
         self.target_network_avg_clustering_coeff = nx.algorithms.cluster.average_clustering(target_network)
-        """
-        self.target_network_degree_mean = 69.40425531914893
-        self.target_network_degree_std = 27.301437554285616
-        self.target_network_diameter = 6
-        self.target_network_avg_clustering_coeff = 0.5745321712547844
         logger.info(
             f"The target network has: degree mean = {self.target_network_degree_mean}, degree std = {self.target_network_degree_std}, "
             f"diameter = {self.target_network_diameter}, average clustering coefficient = {self.target_network_avg_clustering_coeff}")
@@ -36,8 +30,12 @@ class NetworkAnalyzer:
         logger.info(f"Evaluating {network_generation_algorithm.__name__} algorithm, with these arguments : {kwargs}")
         network = network_generation_algorithm(**kwargs)
         node_to_degree = degree_centrality(network)
-        degree_mean, degree_std = analyze_degree_distribution(node_to_degree, network_generation_algorithm.__name__,
-                                                              list(kwargs.items()), save=True)
+        if network_generation_algorithm.__name__ == "configurationG":
+            degree_mean, degree_std = analyze_degree_distribution(node_to_degree, network_generation_algorithm.__name__,
+                                                                  None, save=True)
+        else:
+            degree_mean, degree_std = analyze_degree_distribution(node_to_degree, network_generation_algorithm.__name__,
+                                                                  list(kwargs.items()), save=True)
         network_diameter = None
         if nx.is_connected(network):
             network_diameter = nx.algorithms.diameter(network)
@@ -59,7 +57,8 @@ class NetworkAnalyzer:
         else:
             possible_model = False
 
-        if network_diameter is not None and abs(self.target_network_diameter - network_diameter) <= self.network_diameter_threshold:
+        if network_diameter is not None and abs(
+                self.target_network_diameter - network_diameter) <= self.network_diameter_threshold:
             logger.info(f"The current network has a diameter that is within the threshold")
         else:
             possible_model = False

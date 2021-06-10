@@ -144,7 +144,7 @@ def analyze_degree_distribution(node_to_degree, network_generation_algorithm, kw
     for degree in sorted_degrees:
         num_nodes_for_degree.append(degree_to_num_nodes[degree])
 
-    np_degrees = np.array(sorted_degrees)
+    np_degrees = np.array(list(node_to_degree.values()))
     degree_mean = np_degrees.mean()
     degree_std = np_degrees.std()
     logger.info(f"Degree to num nodes : {sorted(degree_to_num_nodes.items())}")
