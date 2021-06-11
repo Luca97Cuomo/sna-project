@@ -4,6 +4,7 @@ import networkx as nx
 
 import characteristic_functions
 from shapley_centrality import naive_shapley_centrality, shapley_degree, shapley_threshold, shapley_closeness
+from shapley_centrality.naive import shapley_value_combinations, shapley_value_permutations
 
 
 class Test(TestCase):
@@ -16,27 +17,41 @@ class Test(TestCase):
         self.graph.add_edge(3, 5)
         self.graph.add_edge(4, 5)
 
-    def test_naive_shapley_centrality(self):
-        expected = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-        actual = naive_shapley_centrality(self.graph, lambda graph, coalition: 42)
-        self.assertDictAlmostEqual(expected, actual)
+    def slide_value(self, graph, coalition):
+        if coalition == {1} or coalition == {2} or coalition == {3} or coalition == {2, 3}:
+            return 0
+        if coalition == {1, 2} or coalition == {1, 2, 3}:
+            return 5
+        return 2
 
-        # slide errate?
-        # expected = {1: 10/12, 2: 13/12, 3: 9/12, 4: 13/12, 5: 15/12}
-        # actual = naive_shapley_centrality(self.graph, characteristic_functions.degree)
-        # self.assertDictAlmostEqual(expected, actual)
+    def test_naive_shapley_centrality_combinations(self):
+        expected = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        actual = naive_shapley_centrality(self.graph, lambda graph, coalition: 42, shapley_value_combinations)
+        self.assertDictAlmostEqual(expected, actual)
 
         expected = {1: 17/6, 2: 11/6, 3: 2/6}
         slide_graph = nx.Graph()
         slide_graph.add_edge(1, 2)
         slide_graph.add_edge(1, 3)
-        def slide_value(graph, coalition):
-            if coalition == {1} or coalition == {2} or coalition == {3} or coalition == {2, 3}:
-                return 0
-            if coalition == {1, 2} or coalition == {1, 2, 3}:
-                return 5
-            return 2
-        actual = naive_shapley_centrality(slide_graph, slide_value)
+
+        # Tested shapley value with values in slide 64 of game theory centrality
+
+        actual = naive_shapley_centrality(slide_graph, self.slide_value, shapley_value_combinations)
+        self.assertDictAlmostEqual(expected, actual)
+
+    def test_naive_shapley_centrality_permutations(self):
+        expected = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        actual = naive_shapley_centrality(self.graph, lambda graph, coalition: 42, shapley_value_permutations)
+        self.assertDictAlmostEqual(expected, actual)
+
+        expected = {1: 17/6, 2: 11/6, 3: 2/6}
+        slide_graph = nx.Graph()
+        slide_graph.add_edge(1, 2)
+        slide_graph.add_edge(1, 3)
+
+        # Tested shapley value with values in slide 64 of game theory centrality
+
+        actual = naive_shapley_centrality(slide_graph, self.slide_value, shapley_value_permutations)
         self.assertDictAlmostEqual(expected, actual)
 
     def test_shapley_degree(self):
@@ -45,7 +60,7 @@ class Test(TestCase):
         self.assertDictAlmostEqual(expected, actual)
 
     def test_shapley_degree_equal_to_naive(self):
-        naive = naive_shapley_centrality(self.graph, characteristic_functions.degree)
+        naive = naive_shapley_centrality(self.graph, characteristic_functions.degree, shapley_value_combinations)
         optimized = shapley_degree(self.graph)
         self.assertDictAlmostEqual(naive, optimized)
 
@@ -60,12 +75,13 @@ class Test(TestCase):
     def test_shapley_threshold_equal_to_naive(self):
         threshold = 2
         naive = naive_shapley_centrality(self.graph, lambda graph, coalition:
-                                            characteristic_functions.threshold(graph, coalition, threshold))
+                                         characteristic_functions.threshold(graph, coalition, threshold),
+                                         shapley_value_combinations)
         optimized = shapley_threshold(self.graph, threshold)
         self.assertDictAlmostEqual(naive, optimized)
 
     def test_shapley_closeness_equal_to_naive(self):
-        naive = naive_shapley_centrality(self.graph, characteristic_functions.closeness)
+        naive = naive_shapley_centrality(self.graph, characteristic_functions.closeness, shapley_value_combinations)
         optimized = shapley_closeness(self.graph)
         self.assertDictAlmostEqual(naive, optimized)
 

@@ -36,5 +36,5 @@ class TestCharacteristicFunctions(TestCase):
     def test_closeness(self):
         expected_values = [7, 8, 4, 2]
         for expected, coalition in zip(expected_values, self.coalitions):
-            actual = characteristic_functions.closeness(self.graph, coalition)
+            actual = characteristic_functions.closeness(self.graph, coalition, lambda distance: distance)
             self.assertEqual(expected, actual)
