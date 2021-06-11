@@ -8,8 +8,8 @@ from centrality_measures import *
 
 NETWORK_PATH = "nets/net_1"
 NETWORK_NUM_NODES = 10000
-DEGREE_MEAN_THRESHOLD = 10
-DEGREE_STD_THRESHOLD = 5
+DEGREE_MEAN_THRESHOLD = 15
+DEGREE_STD_THRESHOLD = 10
 DIAMETER_THRESHOLD = 2
 AVG_CLUSTERING_COEF_THRESHOLD = 0.20
 logger = logging.getLogger(__name__)
@@ -19,8 +19,11 @@ def main():
     # {'n': 10000, 'r': 5, 'k': 5, 'q': 2}
     target_network = load_network(NETWORK_PATH)
 
-    node_to_degree = degree_centrality(target_network)
-    target_network_degree_sequence = list(node_to_degree.values())
+    """
+    clusters = nx.algorithms.community.girvan_newman(target_network)
+    clusters = list(sorted(cluster) for cluster in next(clusters))
+    logger.info(f"The network net_1 has : {len(clusters)} that are : {clusters}")
+    """
 
     network_analyzer = NetworkAnalyzer(degree_mean_threshold=DEGREE_MEAN_THRESHOLD,
                                        degree_std_threshold=DEGREE_STD_THRESHOLD,
@@ -47,7 +50,7 @@ La rete presenta le seguenti caratteristiche:
 1) Numero di nodi 10000
 2) Numero di archi 388147
 3) La distribuzione dei gradi dei nodi non segue una power law, ma sembra seguire una gaussiana
-con media 77.6294 e varianza 12.64564176465552 
+con media 69.4 e varianza 27.3. 
 4) il diametro della rete è 6 quindi è uno SMALL WORLD e il suo calcolo impiega circa 7 minuti
 5) La rete è connessa.
 6) il suo coefficiente di clustering è 0.5745321712547844
