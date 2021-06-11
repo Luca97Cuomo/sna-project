@@ -135,10 +135,10 @@ Several experiments were carried out varying the parameter p of the model:
 
 |  p    |   degree mean   | degree std |  diameter | clustering coefficient|
 | ---- | ---- |---- |---- |---- |
-|   0.2   |   2  | 1.1343 | None | 0 |
-|   0.4   |   1.99   | 1.334 | None | 0 |
-|   0.6   |   2   | 1.7093 | None | 0 |
-|   0.8   |   2   | 2.4980 | None | 0 |
+|   0.2   |   2  | 1.13 | None | 0 |
+|   0.4   |   1.99   | 1.33 | None | 0 |
+|   0.6   |   2   | 1.70 | None | 0 |
+|   0.8   |   2   | 2.49 | None | 0 |
 
 All the network generated using this model presented a power law as node degree distribution.
 
@@ -156,9 +156,72 @@ Therefore, it was decided to exclude it on the basis of the theoretical consider
 
 
 ### GenWS2DG
+The experimental analysis show that:
+1) values of the radius less than 5, result in networks whose node degree distribution have a mean and standard deviation lower than that of the target network.
+2) values of the radius greater than 5, result in networks whose node degree distribution have a mean and a standard deviation greater than that of the target network.
+
+The value of the radius used for the creation of the target network is estimated to be 5.
+
+The neighborhood of the radius values was not chosen randomly, but since the network contains 10000 nodes, the GenWS2DG algorithm tends to position the nodes in a space
+sqrt (n) * sqrt (n) and therefore in this case 100 * 100. Considering this, values from 1 to 10 were initially considered reasonable and therefore it was decided to focus on these.
+
+Analyzing the supplied network, it has been pointed out that there are no nodes whose degree is less than 19. So from this the upper limit for the k value was deduced.
+
+Increasing the value of k, the diameter of the network tends to decrease, this is because having each node more weak ties, it is possible to reach any other node in the network
+crossing less edges.
+
+As regards the value q, accordingly with theoretical considerations, it is usually set equal to the node space dimensionality.
+In this case the algorithm uses a two-dimensional space, consequently the values of q equal to 2 and 3 have been analyzed.
+However, increasing q from 2 to 3, the diameter tends to increase, consequently, with values of q equal to 3 values of k closer to the upper limit were analyzed,
+in such a way balancing the growth of the diameter. 
+In fact, a network very similar to the target one was obtained using the combination:
+
+'r':5 - 'k':20 - 'q'= 3:
+
+![Distribuzione rete GenWS2D 'r':5 - 'k':20 - 'q'= 3](../plots/GenWS2DG_5_20_3.jpg)
+
+The network obtained with these parameters presents a diameter equal to 7, slightly greater than the target's one.
+
+Results even closer to the target network are obtained with smaller k and q equal to 2.
+An example is the net obtained using the combination:
+
+'r': 5 - 'k': 3 - 'q': 2:
+
+![Distribuzione rete GenWS2D 'r':5 - 'k':20 - 'q'= 3](../plots/GenWS2DG_5_3_2.jpg)
+
+|   r   |  k    |   q   |  degree mean   | degree std |  diameter | clustering coefficient |
+| ---- | ---- | ---- | ---- | ---- | ---- | ----| 
+|  target  |   target   | target | 77.62 | 12.64| 6 | 0.57 |
+|   5  |   3   |   2   | 77.13 | 12.15 | 6 | 0.57 |
+|   5   |   4   |   2   | 77.97 | 12.14 | 6 | 0.56 |
+|   5  |    5  |   2   | 78.64| 11.84 | 5 | 0.55 |
+|   5  |    10  |   2   | 82.72 | 12.51 | 5 | 0.51 |
+|   5  |   20  |   3   | 77.38 | 12.50 | 7 | 0.58 |
+
+
+Only some of the tests performed have been reported in this table, it is possible to analyze all
+the tests carried out in the files in the results folder.
+
+the GenWS2DG algorithm is probabilistic, in fact the nodes selected for the generation of weak ties 
+are chosen through the numpy.random.choice() function, which uses the system time for the generation
+of the seed, if this is not explicitly provided.
+This implies that, even if the same parameters used for creating the target network are passed to the algorithm,
+it will return a different network.
 
 
 ### affiliationG
+Based on the theoretical considerations and the experimental results obtained from the GenWS2DG model, it was decided not to carry out
+a precise tuning of the parameters of this model, as this would have required a very high amount of time and resources,
+given the number of parameters and their nature. 
+However, a series of tests were carried out, sampling random values as parameters. 
+Even if the parameters of the model have not been carefully chosen, the results of these tests are very
+different from the values of the target network.
+
+Therefore, considering theoretical analysis and experimental results, it was decided to exclude this model.
 
 
+## Model choice
+In conclusion, the GenWS2DG was chosen as the model used to create the target network, with the following input parameters:
+
+'n': 10000 'r': 5 'k': 3-5 'q': 2
 
