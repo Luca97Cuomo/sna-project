@@ -1,4 +1,3 @@
-import copy
 import typing
 
 import networkx as nx
@@ -6,24 +5,12 @@ import networkx as nx
 OpinionsDict = typing.Dict[int, float]
 
 
-def _truncate(f, n):
-    """
-    Truncates/pads a float f to n decimal places without rounding
-    It returns a string
-    """
-    s = '{}'.format(f)
-    if 'e' in s or 'E' in s:
-        return '{0:.{1}f}'.format(f, n)
-    i, p, d = s.partition('.')
-    return '.'.join([i, (d+'0'*n)[:n]])
-
-
 def is_dynamics_converged(prev_opinions: OpinionsDict, current_opinions: OpinionsDict, precision_digits: int) -> bool:
     for node in prev_opinions.keys():
         prev_opinion = prev_opinions[node]
         current_opinion = current_opinions[node]
 
-        if _truncate(prev_opinion, precision_digits) != _truncate(current_opinion, precision_digits):
+        if round(abs(prev_opinion - current_opinion), precision_digits) != 0:
             return False
 
     return True

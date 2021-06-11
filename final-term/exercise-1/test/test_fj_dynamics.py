@@ -19,7 +19,7 @@ class TestFjDynamics(TestCase):
         self.assertTrue(actual)
 
     def test_is_dynamics_converged_false(self):
-        prev_opinions = {3: 6.7865342189, 5: 99.6374829}
+        prev_opinions = {3: 6.7865242189, 5: 99.6374829}
         current_opinions = {3: 6.7865392189, 5: 99.6374839}
         actual = is_dynamics_converged(prev_opinions, current_opinions, 5)
         self.assertFalse(actual)
