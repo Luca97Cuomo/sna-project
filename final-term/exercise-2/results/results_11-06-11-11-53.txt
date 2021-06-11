@@ -1,0 +1,24 @@
+2021-06-11 11:11:53,903 load_network                   INFO     There are 10000 nodes in the graph, and 388147 edges in the graph
+2021-06-11 11:11:53,915 __init__                       INFO     The target network has: degree mean = 77.6294, degree std = 12.64564176465552, diameter = 6, average clustering coefficient = 0.5745321712547844
+2021-06-11 11:11:53,915 analyze_all                    INFO     Starting the analysis of the models proposed
+
+2021-06-11 11:11:53,915 __analyze_and_compare_network  INFO     Evaluating GenWS2DG algorithm, with these arguments : {'n': 10000, 'r': 5, 'k': 8, 'q': 2}
+2021-06-11 11:19:10,631 analyze_degree_distribution    INFO     Degree to num nodes : [(20, 1), (29, 1), (30, 1), (33, 4), (35, 2), (36, 7), (37, 12), (38, 7), (39, 11), (40, 7), (41, 12), (42, 18), (43, 15), (44, 20), (45, 25), (46, 39), (47, 24), (48, 33), (49, 37), (50, 29), (51, 36), (52, 39), (53, 35), (54, 35), (55, 37), (56, 47), (57, 53), (58, 40), (59, 38), (60, 42), (61, 47), (62, 51), (63, 42), (64, 67), (65, 80), (66, 74), (67, 71), (68, 100), (69, 109), (70, 108), (71, 153), (72, 150), (73, 199), (74, 224), (75, 267), (76, 283), (77, 330), (78, 327), (79, 403), (80, 385), (81, 400), (82, 409), (83, 388), (84, 401), (85, 366), (86, 403), (87, 362), (88, 351), (89, 352), (90, 316), (91, 264), (92, 234), (93, 252), (94, 192), (95, 206), (96, 167), (97, 151), (98, 121), (99, 110), (100, 99), (101, 52), (102, 56), (103, 40), (104, 29), (105, 22), (106, 23), (107, 9), (108, 13), (109, 8), (110, 8), (111, 7), (112, 5), (113, 2), (114, 1), (115, 2), (116, 1), (118, 1)]
+2021-06-11 11:19:10,634 analyze_degree_distribution    INFO     Mean of the degrees : 81.232 standard deviation : 12.31261856795702
+2021-06-11 11:40:14,500 __analyze_and_compare_network  INFO     Network diameter : 5
+2021-06-11 11:40:29,329 __analyze_and_compare_network  INFO     Network average clustering coefficient : 0.5294906682598647
+2021-06-11 11:40:29,330 __analyze_and_compare_network  INFO     The current network has a degree mean that is within the threshold
+2021-06-11 11:40:29,330 __analyze_and_compare_network  INFO     The current network has a degree std that is within the threshold
+2021-06-11 11:40:29,330 __analyze_and_compare_network  INFO     The current network has a diameter that is within the threshold
+2021-06-11 11:40:29,330 __analyze_and_compare_network  INFO     The current network has a network clustering coefficient that is within the threshold
+2021-06-11 11:40:29,330 __analyze_and_compare_network  INFO     Evaluating GenWS2DG algorithm, with these arguments : {'n': 10000, 'r': 5, 'k': 9, 'q': 2}
+2021-06-11 11:48:44,847 analyze_degree_distribution    INFO     Degree to num nodes : [(25, 1), (30, 1), (33, 1), (34, 5), (35, 2), (36, 4), (37, 8), (38, 10), (39, 10), (40, 7), (41, 15), (42, 14), (43, 16), (44, 16), (45, 15), (46, 34), (47, 29), (48, 31), (49, 34), (50, 33), (51, 37), (52, 43), (53, 45), (54, 36), (55, 33), (56, 40), (57, 38), (58, 54), (59, 51), (60, 54), (61, 56), (62, 46), (63, 60), (64, 64), (65, 72), (66, 84), (67, 94), (68, 105), (69, 125), (70, 129), (71, 150), (72, 156), (73, 180), (74, 179), (75, 202), (76, 251), (77, 289), (78, 307), (79, 309), (80, 334), (81, 376), (82, 355), (83, 391), (84, 427), (85, 367), (86, 408), (87, 387), (88, 380), (89, 377), (90, 358), (91, 337), (92, 306), (93, 226), (94, 269), (95, 222), (96, 159), (97, 142), (98, 115), (99, 106), (100, 99), (101, 70), (102, 47), (103, 33), (104, 34), (105, 19), (106, 15), (107, 27), (108, 15), (109, 8), (110, 5), (111, 4), (112, 2), (113, 2), (114, 1), (115, 1), (119, 1)]
+2021-06-11 11:48:44,848 analyze_degree_distribution    INFO     Mean of the degrees : 81.5682 standard deviation : 12.400143094335647
+2021-06-11 12:11:52,289 __analyze_and_compare_network  INFO     Network diameter : 5
+2021-06-11 12:12:07,678 __analyze_and_compare_network  INFO     Network average clustering coefficient : 0.523023847354303
+2021-06-11 12:12:07,678 __analyze_and_compare_network  INFO     The current network has a degree mean that is within the threshold
+2021-06-11 12:12:07,679 __analyze_and_compare_network  INFO     The current network has a degree std that is within the threshold
+2021-06-11 12:12:07,679 __analyze_and_compare_network  INFO     The current network has a diameter that is within the threshold
+2021-06-11 12:12:07,679 __analyze_and_compare_network  INFO     The current network has a network clustering coefficient that is within the threshold
+2021-06-11 12:12:07,679 analyze_all                    INFO     The analysis of the proprosed models is finished
+2021-06-11 12:12:07,679 analyze_all                    INFO     This models : [('GenWS2DG', {'n': 10000, 'r': 5, 'k': 8, 'q': 2}), ('GenWS2DG', {'n': 10000, 'r': 5, 'k': 9, 'q': 2})] reflect the target network
