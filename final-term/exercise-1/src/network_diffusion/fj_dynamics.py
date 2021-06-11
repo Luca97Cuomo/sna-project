@@ -6,15 +6,42 @@ import networkx as nx
 OpinionsDict = typing.Dict[int, float]
 
 
+def _truncate(f, n):
+    """
+    Truncates/pads a float f to n decimal places without rounding
+    It returns a string
+    """
+    s = '{}'.format(f)
+    if 'e' in s or 'E' in s:
+        return '{0:.{1}f}'.format(f, n)
+    i, p, d = s.partition('.')
+    return '.'.join([i, (d+'0'*n)[:n]])
+
+
 def is_dynamics_converged(prev_opinions: OpinionsDict, current_opinions: OpinionsDict, precision_digits: int) -> bool:
     for node in prev_opinions.keys():
         prev_opinion = prev_opinions[node]
         current_opinion = current_opinions[node]
 
-        if round(prev_opinion, precision_digits) - round(current_opinion, precision_digits) != 0:
+        if _truncate(prev_opinion, precision_digits) != _truncate(current_opinion, precision_digits):
             return False
 
     return True
+
+
+def _evaluate_max_convergence_error(prev_opinions: OpinionsDict, current_opinions: OpinionsDict) -> float:
+    max_error = 0
+
+    for node in prev_opinions.keys():
+        prev_opinion = prev_opinions[node]
+        current_opinion = current_opinions[node]
+
+        error = abs(prev_opinion - current_opinion)
+
+        if error > max_error:
+            max_error = error
+
+    return max_error
 
 
 def _evaluate_neighborhood_opinion(graph: nx.Graph, node: int, prev_opinions: OpinionsDict):
@@ -57,8 +84,15 @@ def fj_dynamics(graph: nx.Graph, convergence_digits: int = 5) -> OpinionsDict:
             current_opinions[node] = stubbornness * private_belief + (1 - stubbornness) * neighborhood_opinion
 
         is_converged = is_dynamics_converged(prev_opinions, current_opinions, convergence_digits)
+
+        if time_step % 50 == 0:
+            max_convergence_error = _evaluate_max_convergence_error(prev_opinions, current_opinions)
+            print(f"Partial number of iterations: {time_step}. Max convergence error: {max_convergence_error}")
+
         prev_opinions = current_opinions
         current_opinions = {}
+
+
 
     print(f"Number of iterations required to converge: {time_step}")
 
