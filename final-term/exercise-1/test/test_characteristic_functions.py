@@ -1,6 +1,6 @@
 from unittest import TestCase
 import networkx as nx
-import characteristic_functions
+from shapley_centrality import characteristic_functions
 
 
 class TestCharacteristicFunctions(TestCase):

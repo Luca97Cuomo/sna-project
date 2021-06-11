@@ -3,8 +3,7 @@ import networkx as nx
 import itertools
 import math
 
-import characteristic_functions
-from shapley_centrality import ShapleyValues
+from shapley_centrality import ShapleyValues, characteristic_functions
 
 ShapleyValueFunction = typing.Callable[[nx.Graph, characteristic_functions.CharacteristicFunction, int], float]
 

@@ -2,8 +2,8 @@ from unittest import TestCase
 
 import networkx as nx
 
-import characteristic_functions
-from shapley_centrality import naive_shapley_centrality, shapley_degree, shapley_threshold, shapley_closeness
+from shapley_centrality import naive_shapley_centrality, shapley_degree, shapley_threshold, shapley_closeness, \
+    characteristic_functions
 from shapley_centrality.naive import shapley_value_combinations, shapley_value_permutations
 
 
@@ -18,11 +18,17 @@ class Test(TestCase):
         self.graph.add_edge(4, 5)
 
     def slide_value(self, graph, coalition):
+        if len(coalition) == 0:
+            return 0
+
         if coalition == {1} or coalition == {2} or coalition == {3} or coalition == {2, 3}:
             return 0
         if coalition == {1, 2} or coalition == {1, 2, 3}:
             return 5
-        return 2
+        if coalition == {1, 3}:
+            return 2
+
+        raise Exception("Combination non found")
 
     def test_naive_shapley_centrality_combinations(self):
         expected = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}

@@ -2,7 +2,7 @@ import typing
 
 import networkx as nx
 
-from characteristic_functions import adjusted_distance_reciprocal
+from shapley_centrality.characteristic_functions import adjusted_distance_reciprocal
 from shapley_centrality import ShapleyValues
 
 
