@@ -31,14 +31,14 @@ def main():
                                        network_clustering_coefficient_threshold=AVG_CLUSTERING_COEF_THRESHOLD,
                                        target_network=target_network, network_generation_algorithms_with_kwargs=[
 
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 4, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 3, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 6, "q": 2}),
             (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 11, "q": 3}),
             (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 12, "q": 3}),
             (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 13, "q": 3}),
             (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 14, "q": 3}),
             (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 15, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 16, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 17, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 20, "q": 3}),
         ])
 
     network_analyzer.analyze_all()

@@ -39,7 +39,7 @@ This model is an extension of the probabilistic model, but it imposes on the gen
 distribution passed as input. Therefore, if for example a degree sequence from a power law is passed to it, then the
 outgoing network will present a node degree distribution that reflects it.
 
-In general this model has these features:
+In general this model presents these features:
 
 HIGH CLUSTERING COEFFICIENT : NO
 
@@ -149,4 +149,16 @@ These experimental results reflect the theoretical analysis previously carried o
 are completely different from the network in exam, the networks generated are not connected,so the diameter can not be evaluated,
 and the node degree distributions follow a power law. All these differences make it possible to exclude this model.
 
-### 
+### configurationG
+It has been tried to generate a graph using this model and giving it as input exactly the node degree distribution
+of the network in exam. The algorithm was unable to generate an output network in a half-day time span.
+Therefore, it was decided to exclude it on the basis of the theoretical considerations already provided.
+
+
+### GenWS2DG
+
+
+### affiliationG
+
+
+
