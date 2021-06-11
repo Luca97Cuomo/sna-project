@@ -8,8 +8,8 @@ from centrality_measures import *
 
 NETWORK_PATH = "nets/net_1"
 NETWORK_NUM_NODES = 10000
-DEGREE_MEAN_THRESHOLD = 15
-DEGREE_STD_THRESHOLD = 10
+DEGREE_MEAN_THRESHOLD = 10
+DEGREE_STD_THRESHOLD = 5
 DIAMETER_THRESHOLD = 2
 AVG_CLUSTERING_COEF_THRESHOLD = 0.20
 logger = logging.getLogger(__name__)
@@ -19,12 +19,6 @@ def main():
     # {'n': 10000, 'r': 5, 'k': 5, 'q': 2}
     target_network = load_network(NETWORK_PATH)
 
-    """
-    clusters = nx.algorithms.community.girvan_newman(target_network)
-    clusters = list(sorted(cluster) for cluster in next(clusters))
-    logger.info(f"The network net_1 has : {len(clusters)} that are : {clusters}")
-    """
-
     node_to_degree = degree_centrality(target_network)
     target_network_degree_sequence = list(node_to_degree.values())
 
@@ -33,67 +27,13 @@ def main():
                                        network_diameter_threshold=DIAMETER_THRESHOLD,
                                        network_clustering_coefficient_threshold=AVG_CLUSTERING_COEF_THRESHOLD,
                                        target_network=target_network, network_generation_algorithms_with_kwargs=[
-            (configurationG, {"deg": target_network_degree_sequence}),
-            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 10, "q": 0.20, "c": 5, "p": 0.05, "s": 5}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 4, "k": 5, "q": 3}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 5, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 6, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 7, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 8, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 9, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 10, "q": 2}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 5, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 6, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 7, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 8, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 9, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 10, "q": 2}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 5, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 6, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 7, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 8, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 9, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 10, "q": 2}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 5, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 6, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 7, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 8, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 9, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 10, "q": 2}),
-
-
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 5, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 6, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 7, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 8, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 9, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 10, "q": 3}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 5, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 6, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 7, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 8, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 9, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 10, "q": 3}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 5, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 6, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 7, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 8, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 9, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 8, "k": 10, "q": 3}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 5, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 6, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 7, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 8, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 9, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 10, "q": 3})
+            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 3, "q": 0.40, "c": 1, "p": 0.005, "s": 5}),
+            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 5, "q": 0.20, "c": 1, "p": 0.005, "s": 5}),
+            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 7, "q": 0.20, "c": 1, "p": 0.005, "s": 5}),
+            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 10, "q": 0.20, "c": 1, "p": 0.005, "s": 5}),
+            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 10, "q": 0.20, "c": 3, "p": 0.005, "s": 5}),
+            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 15, "q": 0.20, "c": 3, "p": 0.005, "s": 5}),
+            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 20, "q": 0.20, "c": 5, "p": 0.005, "s": 5}),
         ])
 
     network_analyzer.analyze_all()
@@ -107,7 +47,7 @@ La rete presenta le seguenti caratteristiche:
 1) Numero di nodi 10000
 2) Numero di archi 388147
 3) La distribuzione dei gradi dei nodi non segue una power law, ma sembra seguire una gaussiana
-con media 69.4 e varianza 27.3. 
+con media 77.6294 e varianza 12.64564176465552 
 4) il diametro della rete è 6 quindi è uno SMALL WORLD e il suo calcolo impiega circa 7 minuti
 5) La rete è connessa.
 6) il suo coefficiente di clustering è 0.5745321712547844
