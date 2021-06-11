@@ -3,7 +3,7 @@ from unittest import TestCase
 import networkx as nx
 
 import characteristic_functions
-from shapley_centrality import naive_shapley_centrality, shapley_degree, shapley_threshold
+from shapley_centrality import naive_shapley_centrality, shapley_degree, shapley_threshold, shapley_closeness
 
 
 class Test(TestCase):
@@ -44,6 +44,11 @@ class Test(TestCase):
         actual = shapley_degree(self.graph)
         self.assertDictAlmostEqual(expected, actual)
 
+    def test_shapley_degree_equal_to_naive(self):
+        naive = naive_shapley_centrality(self.graph, characteristic_functions.degree)
+        optimized = shapley_degree(self.graph)
+        self.assertDictAlmostEqual(naive, optimized)
+
     def test_shapley_threshold(self):
         expected = {1: 10/12, 2: 13/12, 3: 9/12, 4: 13/12, 5: 15/12}
         actual = shapley_threshold(self.graph, 1)
@@ -51,6 +56,18 @@ class Test(TestCase):
 
         actual = shapley_threshold(self.graph, 2)
         self.assertDictNotAlmostEqual(expected, actual)
+
+    def test_shapley_threshold_equal_to_naive(self):
+        threshold = 2
+        naive = naive_shapley_centrality(self.graph, lambda graph, coalition:
+                                            characteristic_functions.threshold(graph, coalition, threshold))
+        optimized = shapley_threshold(self.graph, threshold)
+        self.assertDictAlmostEqual(naive, optimized)
+
+    def test_shapley_closeness_equal_to_naive(self):
+        naive = naive_shapley_centrality(self.graph, characteristic_functions.closeness)
+        optimized = shapley_closeness(self.graph)
+        self.assertDictAlmostEqual(naive, optimized)
 
     def assertDictAlmostEqual(self, expected, actual):
         for key, value in expected.items():

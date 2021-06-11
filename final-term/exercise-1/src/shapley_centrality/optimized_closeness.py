@@ -10,7 +10,7 @@ def shapley_closeness(graph: nx.Graph,
     # O(nm + n^2log n)
 
     if decreasing_distance_function is None:
-        decreasing_distance_function = distance_characteristic_function
+        decreasing_distance_function = adjusted_distance_reciprocal
 
     values = {node: 0 for node in graph.nodes}
     for node in graph.nodes:
@@ -38,5 +38,15 @@ def shapley_closeness(graph: nx.Graph,
     return values
 
 
-def distance_characteristic_function(distance: float) -> float:
+def adjusted_distance_reciprocal(distance: float) -> float:
+    """
+    It returns 1 if the distance is 0
+    """
     return 1 / (1 + distance)
+
+
+def distance_reciprocal_characteristic_function(distance: float) -> float:
+    if distance == 0:
+        return 0
+
+    return 1 / distance

@@ -30,7 +30,6 @@ def threshold(graph: nx.Graph, coalition: typing.Set, threshold_value: int) -> f
     return len(added)
 
 
-# chiedere per sicurezza a Ferraioli se la closeness è quello che intendiamo noi
 def closeness(graph: nx.Graph, coalition: typing.Set) -> float:
     value = 0
 
