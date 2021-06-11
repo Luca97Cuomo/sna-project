@@ -30,28 +30,15 @@ def main():
                                        network_diameter_threshold=DIAMETER_THRESHOLD,
                                        network_clustering_coefficient_threshold=AVG_CLUSTERING_COEF_THRESHOLD,
                                        target_network=target_network, network_generation_algorithms_with_kwargs=[
-            (affiliationG, {"n": NETWORK_NUM_NODES, "m": 15, "q": 0.30, "c": 5, "p": 0.10, "s": 10}),
 
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 5, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 6, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 7, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 8, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 9, "q": 2}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 9, "k": 10, "q": 2}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 5, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 6, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 7, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 8, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 9, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 6, "k": 10, "q": 3}),
-
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 5, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 6, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 7, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 8, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 9, "q": 3}),
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 7, "k": 10, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 4, "q": 2}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 3, "q": 2}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 6, "q": 2}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 11, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 12, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 13, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 14, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 15, "q": 3}),
         ])
 
     network_analyzer.analyze_all()
