@@ -53,13 +53,13 @@ def nearest_candidate_id(voter_position: float, candidates: typing.List[Candidat
 
 def run_election(graph: nx.Graph, candidates: typing.List[Candidate]) -> typing.Dict[int, int]:
     """
-    The graph contains, for each node, a property "peak_preference" which contains the id of the voted candidate.
+    The graph contains, for each node, a property "private_belief" which contains the id of the voted candidate.
     Returns a dict that maps ids of candidates to their total votes.
     """
     candidates = sorted(candidates, key=lambda candidate: candidate.position)
     votes = {candidate.id: 0 for candidate in candidates}
     for node in graph.nodes:
-        voter_position = graph.nodes[node]['peak_preference']
+        voter_position = graph.nodes[node]['private_belief']
         voted_candidate = nearest_candidate_id(voter_position, candidates)
         votes[voted_candidate] += 1
 

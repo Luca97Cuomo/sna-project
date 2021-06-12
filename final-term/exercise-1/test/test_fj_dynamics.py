@@ -1,9 +1,9 @@
-import random
 from unittest import TestCase
 import networkx as nx
 from tqdm import tqdm
 
 import utils
+from final_term_utils import populate_dynamics_parameters
 from network_diffusion.fj_dynamics import is_dynamics_converged, fj_dynamics
 
 SEED = 42
@@ -67,7 +67,7 @@ class TestFjDynamics(TestCase):
 
         # print(len(graph.edges()))
 
-        self._populate_dynamics_parameters(graph, seed=SEED)
+        populate_dynamics_parameters(graph, seed=SEED)
 
         fj_dynamics(graph)
         self.assertTrue(True)
@@ -81,7 +81,7 @@ class TestFjDynamics(TestCase):
 
         # print(len(graph.edges()))
 
-        self._populate_dynamics_parameters(graph, seed=SEED, stubbornness=0)
+        populate_dynamics_parameters(graph, seed=SEED, stubbornness=0)
 
         fj_dynamics(graph)
         self.assertTrue(True)
@@ -95,7 +95,7 @@ class TestFjDynamics(TestCase):
 
         print(len(graph.edges()))
 
-        self._populate_dynamics_parameters(graph, seed=SEED, stubbornness=0)
+        populate_dynamics_parameters(graph, seed=SEED, stubbornness=0)
 
         fj_dynamics(graph)
         self.assertTrue(True)
@@ -110,7 +110,7 @@ class TestFjDynamics(TestCase):
 
         print(len(graph.edges()))
 
-        self._populate_dynamics_parameters(graph, seed=SEED)
+        populate_dynamics_parameters(graph, seed=SEED)
 
         fj_dynamics(graph)
         self.assertTrue(True)
@@ -124,7 +124,7 @@ class TestFjDynamics(TestCase):
 
         print(len(graph.edges()))
 
-        self._populate_dynamics_parameters(graph, seed=SEED, stubbornness=1/2)
+        populate_dynamics_parameters(graph, seed=SEED, stubbornness=1 / 2)
 
         fj_dynamics(graph)
         self.assertTrue(True)
@@ -138,22 +138,9 @@ class TestFjDynamics(TestCase):
             for i in range(iterations):
                 graph = nx.fast_gnp_random_graph(10000, 0.01, seed=i)
 
-                self._populate_dynamics_parameters(graph, seed=i)
+                populate_dynamics_parameters(graph, seed=i)
 
                 fj_dynamics(graph)
                 self.assertTrue(True)
 
                 pbar.update(1)
-
-    def _populate_dynamics_parameters(self, graph: nx.Graph, seed, private_belief=None, stubbornness=None):
-        random.seed(seed)
-        for node in graph.nodes():
-            if private_belief is not None:
-                graph.nodes[node]["private_belief"] = private_belief
-            else:
-                graph.nodes[node]["private_belief"] = random.random()
-
-            if stubbornness is not None:
-                graph.nodes[node]["stubbornness"] = stubbornness
-            else:
-                graph.nodes[node]["stubbornness"] = random.random()
