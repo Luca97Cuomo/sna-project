@@ -101,7 +101,7 @@ class TestFjDynamics(TestCase):
         self.assertTrue(True)
 
 
-    def test_fj_dynamics_convergence_facebook_graph(self):
+    def test_fj_dynamics_convergence_facebook_graph_random(self):
         """
         It converges in 50 iterations and 6.164 s
         """
@@ -115,6 +115,19 @@ class TestFjDynamics(TestCase):
         fj_dynamics(graph)
         self.assertTrue(True)
 
+    def test_fj_dynamics_convergence_facebook_graph_half_stubborness(self):
+        """
+        It converges in 16 iterations and 2.4 s
+        """
+
+        graph, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
+
+        print(len(graph.edges()))
+
+        self._populate_dynamics_parameters(graph, seed=SEED, stubbornness=1/2)
+
+        fj_dynamics(graph)
+        self.assertTrue(True)
 
     def test_fj_dynamics_convergence_multiple_graphs(self):
         """

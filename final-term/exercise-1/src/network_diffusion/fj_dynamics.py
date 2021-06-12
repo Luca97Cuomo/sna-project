@@ -79,8 +79,6 @@ def fj_dynamics(graph: nx.Graph, convergence_digits: int = 5) -> OpinionsDict:
         prev_opinions = current_opinions
         current_opinions = {}
 
-
-
     print(f"Number of iterations required to converge: {time_step}")
 
     return prev_opinions
