@@ -5,10 +5,6 @@ import random
 from scipy.special import zeta
 import math
 import numpy
-import logging_configuration
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 # Random Graph (Newman, chap. 12)
