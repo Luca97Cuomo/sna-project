@@ -230,7 +230,6 @@ def k_means_one_iteration(graph, seed=42, k=4, centers=None):
 
 '''
 
-
 def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000, centers=None):
     # [[1, 4], [2, 3, 5]]
     last_clustering = [[] for _ in range(k)]

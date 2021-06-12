@@ -1,5 +1,3 @@
-import logging
-
 import clustering_utils
 import clustering_algorithms
 import sys
