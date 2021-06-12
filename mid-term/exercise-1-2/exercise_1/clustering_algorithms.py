@@ -1,59 +1,14 @@
 import time
 import networkx as nx
 import random
-import sys
 import logging
 import logging_configuration
-
-logger = logging.getLogger()
-
-sys.path.append('../')
 from clustering_utils import rand_index, CENTRALITY_MEASURES
 from scipy.sparse import linalg
 from networkx.linalg.laplacianmatrix import laplacian_matrix
 from priorityq import PriorityQueue
 
-
-# n = number of nodes
-# m = number of edges
-# Naive implementation of hierarchical clustering algorithm
-def hierarchical(graph, seed=42):  # O(n^2*logn)
-    # Create a priority queue with each pair of nodes indexed by distance
-    pq = PriorityQueue()
-    for u in graph.nodes():  # O(n^2*logn) in the worst case.
-        for v in graph.nodes():
-            if u != v:
-                if (u, v) in graph.edges() or (v, u) in graph.edges():  # O(1)
-                    pq.add(frozenset([frozenset([u]), frozenset([v])]), 0)
-                else:
-                    pq.add(frozenset([frozenset([u]), frozenset([v])]), 1)
-
-    # Start with a cluster for each node
-    clusters = set(frozenset([u]) for u in graph.nodes())  # O(n)
-
-    done = False
-    while not done:  # O(input*(n*logn)) # The worst case, is input=n, and there will be a single cluster containing all the nodes
-        # Merge closest clusters
-        s = list(pq.pop())  # O(logn)
-        clusters.remove(s[0])  # O(1)
-        clusters.remove(s[1])  # O(1)
-
-        # Update the distance of other clusters from the merged cluster
-        for w in clusters:  # O(n*logn)
-            e1 = pq.remove(frozenset([s[0], w]))
-            e2 = pq.remove(frozenset([s[1], w]))
-            if e1 == 0 or e2 == 0:
-                pq.add(frozenset([s[0] | s[1], w]), 0)
-            else:
-                pq.add(frozenset([s[0] | s[1], w]), 1)
-
-        clusters.add(s[0] | s[1])  # O(1)
-
-        if len(clusters) == 4:
-            done = True
-
-    return list(clusters)
-
+logger = logging.getLogger()
 
 '''
 
@@ -141,8 +96,8 @@ For the k_means_one_iteration clustering algorithm it has been implemented an ad
 In particular it uses data structures, such as dictionaries and set, in order to limit the computation time.
 The main data structures used in the algorithm are:
 
-- current_nodes: it is a list that contains the nodes for which the neighbours must be visited
-- next_nodes: it is a list that contains the nodes that are going to be analyzed after the current_nodes list is empty
+- current_nodes: it is a list that contains the nodes for which the neighbours must be visited.
+- next_nodes: it is a list that contains the nodes that are going to be analyzed after the current_nodes list is empty.
 - node_to_cluster: it is a dictionary that maps each node to the belonging cluster.
 - cluster_to_nodes: it is a dictionary that maps each cluster to the list of nodes inside it.
 - visited_nodes: it is a set that contains all the completely visited nodes in the current iteration.
@@ -258,50 +213,63 @@ The rand index for the clustering algorithm k_means using degree_centrality is 0
 
 ```
 
-05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': None, 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10000, 'centers': None, 'verbose': False}
-05-30 08:30 k_means      INFO     The clustering algorithm: k_means took 10.106914500000002 seconds
-05-30 08:30 k_means      INFO     The rand index for the clustering algorithm k_means is 0.4067197443947051
-05-30 08:30 k_means      DEBUG    The graph was divided in 4
-05-30 08:30 k_means      DEBUG    The length of the cluster_1 is 495
-05-30 08:30 k_means      DEBUG    The length of the cluster_2 is 19401
-05-30 08:30 k_means      DEBUG    The length of the cluster_3 is 2494
-05-30 08:30 k_means      DEBUG    The length of the cluster_4 is 80
+2021-06-12 13:21:39,840 __evaluate                     INFO     Evaluating k_means_one_iteration algorithm, with these arguments : {'seed': 42, 'k': 4}
+2021-06-12 13:21:39,940 __evaluate                     INFO     The clustering algorithm: k_means_one_iteration took 0.09838740000000001 seconds
+2021-06-12 13:21:39,963 __evaluate                     INFO     The rand index for the clustering algorithm k_means_one_iteration is 0.5416639090721305
+2021-06-12 13:21:39,963 __evaluate                     DEBUG    The graph was divided in 4
+2021-06-12 13:21:39,963 __evaluate                     DEBUG    The length of the cluster_1 is 799
+2021-06-12 13:21:39,963 __evaluate                     DEBUG    The length of the cluster_2 is 3615
+2021-06-12 13:21:39,963 __evaluate                     DEBUG    The length of the cluster_3 is 3269
+2021-06-12 13:21:39,963 __evaluate                     DEBUG    The length of the cluster_4 is 14787
 
-05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'degree_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10000, 'centers': None, 'verbose': False}
-05-30 08:30 k_means      INFO     The clustering algorithm: k_means took 1.1127535999999978 seconds
-05-30 08:30 k_means      INFO     The rand index for the clustering algorithm k_means is 0.6354478760362172
-05-30 08:30 k_means      DEBUG    The graph was divided in 4
-05-30 08:30 k_means      DEBUG    The length of the cluster_1 is 3669
-05-30 08:30 k_means      DEBUG    The length of the cluster_2 is 9576
-05-30 08:30 k_means      DEBUG    The length of the cluster_3 is 5056
-05-30 08:30 k_means      DEBUG    The length of the cluster_4 is 4169
+2021-06-12 13:21:39,963 __evaluate                     INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': None, 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 1, 'centers': None}
+2021-06-12 13:21:40,071 __evaluate                     INFO     The clustering algorithm: k_means took 0.10676179999999968 seconds
+2021-06-12 13:21:40,083 __evaluate                     INFO     The rand index for the clustering algorithm k_means is 0.5416639090721305
+2021-06-12 13:21:40,083 __evaluate                     DEBUG    The graph was divided in 4
+2021-06-12 13:21:40,083 __evaluate                     DEBUG    The length of the cluster_1 is 799
+2021-06-12 13:21:40,083 __evaluate                     DEBUG    The length of the cluster_2 is 3615
+2021-06-12 13:21:40,083 __evaluate                     DEBUG    The length of the cluster_3 is 3269
+2021-06-12 13:21:40,083 __evaluate                     DEBUG    The length of the cluster_4 is 14787
 
-05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'closeness_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10, 'centers': None, 'verbose': False}
-05-30 10:23 k_means      INFO     The clustering algorithm: k_means took 6787.46255 seconds
-05-30 10:23 k_means      INFO     The rand index for the clustering algorithm k_means is 0.5567763986272893
-05-30 10:23 k_means      DEBUG    The graph was divided in 4
-05-30 10:23 k_means      DEBUG    The length of the cluster_1 is 12907
-05-30 10:23 k_means      DEBUG    The length of the cluster_2 is 278
-05-30 10:23 k_means      DEBUG    The length of the cluster_3 is 2855
-05-30 10:23 k_means      DEBUG    The length of the cluster_4 is 6430
+2021-06-12 13:21:40,084 __evaluate                     INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': None, 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10000, 'centers': None}
+2021-06-12 13:21:50,116 k_means                        INFO     The algorithm reached the convergence at 89 iteration with rand index metric
+2021-06-12 13:21:50,117 __evaluate                     INFO     The clustering algorithm: k_means took 10.0337714 seconds
+2021-06-12 13:21:50,128 __evaluate                     INFO     The rand index for the clustering algorithm k_means is 0.4067197443947051
+2021-06-12 13:21:50,128 __evaluate                     DEBUG    The graph was divided in 4
+2021-06-12 13:21:50,128 __evaluate                     DEBUG    The length of the cluster_1 is 495
+2021-06-12 13:21:50,128 __evaluate                     DEBUG    The length of the cluster_2 is 19401
+2021-06-12 13:21:50,128 __evaluate                     DEBUG    The length of the cluster_3 is 2494
+2021-06-12 13:21:50,128 __evaluate                     DEBUG    The length of the cluster_4 is 80
 
-05-30 10:23 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'nodes_betweenness_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10, 'centers': None, 'verbose': False}
-05-30 14:07 k_means      INFO     The clustering algorithm: k_means took 13456.140629499998 seconds
-05-30 14:07 k_means      INFO     The rand index for the clustering algorithm k_means is 0.5328093378835772
-05-30 14:07 k_means      DEBUG    The graph was divided in 4
-05-30 14:07 k_means      DEBUG    The length of the cluster_1 is 14483
-05-30 14:07 k_means      DEBUG    The length of the cluster_2 is 3793
-05-30 14:07 k_means      DEBUG    The length of the cluster_3 is 3788
-05-30 14:07 k_means      DEBUG    The length of the cluster_4 is 406
+2021-06-12 13:21:50,129 __evaluate                     INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'degree_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10000, 'centers': None}
+2021-06-12 13:21:50,723 k_means                        INFO     The algorithm reached the convergence at 1 iteration
+2021-06-12 13:21:50,723 __evaluate                     INFO     The clustering algorithm: k_means took 0.5947337999999984 seconds
+2021-06-12 13:21:50,737 __evaluate                     INFO     The rand index for the clustering algorithm k_means is 0.6354478760362172
+2021-06-12 13:21:50,737 __evaluate                     DEBUG    The graph was divided in 4
+2021-06-12 13:21:50,737 __evaluate                     DEBUG    The length of the cluster_1 is 3669
+2021-06-12 13:21:50,737 __evaluate                     DEBUG    The length of the cluster_2 is 9576
+2021-06-12 13:21:50,737 __evaluate                     DEBUG    The length of the cluster_3 is 5056
+2021-06-12 13:21:50,737 __evaluate                     DEBUG    The length of the cluster_4 is 4169
 
-05-30 14:07 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'pagerank', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 50, 'centers': None, 'verbose': False}
-05-30 14:07 k_means      INFO     The clustering algorithm: k_means took 18.678264799997123 seconds
-05-30 14:07 k_means      INFO     The rand index for the clustering algorithm k_means is 0.4661067140459932
-05-30 14:07 k_means      DEBUG    The graph was divided in 4
-05-30 14:07 k_means      DEBUG    The length of the cluster_1 is 17168
-05-30 14:07 k_means      DEBUG    The length of the cluster_2 is 776
-05-30 14:07 k_means      DEBUG    The length of the cluster_3 is 1713
-05-30 14:07 k_means      DEBUG    The length of the cluster_4 is 2813
+2021-06-12 13:21:50,737 __evaluate                     INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'nodes_betweenness_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10, 'centers': None}
+2021-06-12 15:53:59,842 k_means                        INFO     The algorithm reached the convergence at 1 iteration
+2021-06-12 15:53:59,842 __evaluate                     INFO     The clustering algorithm: k_means took 9129.104045099999 seconds
+2021-06-12 15:53:59,854 __evaluate                     INFO     The rand index for the clustering algorithm k_means is 0.5328093378835772
+2021-06-12 15:53:59,854 __evaluate                     DEBUG    The graph was divided in 4
+2021-06-12 15:53:59,854 __evaluate                     DEBUG    The length of the cluster_1 is 14483
+2021-06-12 15:53:59,854 __evaluate                     DEBUG    The length of the cluster_2 is 3793
+2021-06-12 15:53:59,854 __evaluate                     DEBUG    The length of the cluster_3 is 3788
+2021-06-12 15:53:59,855 __evaluate                     DEBUG    The length of the cluster_4 is 406
+
+2021-06-12 15:53:59,855 __evaluate                     INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'pagerank', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 50, 'centers': None}
+2021-06-12 15:54:11,142 k_means                        INFO     The algorithm reached the convergence at 1 iteration
+2021-06-12 15:54:11,143 __evaluate                     INFO     The clustering algorithm: k_means took 11.286865399999442 seconds
+2021-06-12 15:54:11,154 __evaluate                     INFO     The rand index for the clustering algorithm k_means is 0.4661067140459932
+2021-06-12 15:54:11,154 __evaluate                     DEBUG    The graph was divided in 4
+2021-06-12 15:54:11,154 __evaluate                     DEBUG    The length of the cluster_1 is 17168
+2021-06-12 15:54:11,154 __evaluate                     DEBUG    The length of the cluster_2 is 776
+2021-06-12 15:54:11,155 __evaluate                     DEBUG    The length of the cluster_3 is 1713
+2021-06-12 15:54:11,155 __evaluate                     DEBUG    The length of the cluster_4 is 2813
 
 ```
 
@@ -310,6 +278,7 @@ can be explained as follows: starting from K nodes, that are the ones with the m
 explore the graph more homogeneously, avoiding the creation of giant clusters. 
 
 '''
+
 
 def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000, centers=None):
     # [[1, 4], [2, 3, 5]]
@@ -377,7 +346,51 @@ def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-
     return last_clustering
 
 
-def girvan_newman(graph, centrality_measure="edges_betweenness_centrality", seed=42, k=4, verbose=False,
+'''
+
+For the girvan newman clustering algorithm it has been implemented an ad hoc optimization that evaluates the edge
+betweenness only once and not at each iteration as the real algorithm defines. This can lead to solutions that are
+different from the original algorithm ones.
+
+Anyway it uses data structures, such as dictionary and priority queue, in order to limit the computation time.
+The main data structures used in the algorithm are:
+
+- btw_dict: it is a dictionary that maps each edge to the corresponding betweenness.
+- pq: it is a min priority queue, used in order to get edges with the maximum betweenness in logarithmic time.
+
+It does not uses optimization like parallelism or sampling because the bottleneck of the execution time is represented
+by the computation of the edge betweenness centrality measure.
+
+It has been tested only with the optimization parameter set as true, because computing the edge betweenness at each
+iteration, was too time expensive for the purposes of this project.
+
+The obtained rand_index is very low, it is 0.26. In fact, as we can see from the result below, the graph was divided in 
+six clusters, in which it is present a giant component. This can be due to the fact that the network is composed of 
+small communities that are attached to the giant component through bridges.
+
+This algorithm has the following output:
+
+```
+05-30 14:07 girvan_newman INFO     Evaluating girvan_newman algorithm, with these arguments : {'centrality_measure': 'edges_betweenness_centrality', 'seed': 42, 'k': 4, 'optimized': True}
+05-30 15:18 girvan_newman INFO     The clustering algorithm: girvan_newman took 4217 seconds
+05-30 15:18 girvan_newman INFO     The rand index for the clustering algorithm girvan_newman is 0.26791726871754057
+05-30 15:18 girvan_newman DEBUG    The graph was divided in 6
+05-30 15:18 girvan_newman DEBUG    The length of the cluster_1 is 22407
+05-30 15:18 girvan_newman DEBUG    The length of the cluster_2 is 20
+05-30 15:18 girvan_newman DEBUG    The length of the cluster_3 is 14
+05-30 15:18 girvan_newman DEBUG    The length of the cluster_4 is 14
+05-30 15:18 girvan_newman DEBUG    The length of the cluster_5 is 14
+05-30 15:18 girvan_newman DEBUG    The length of the cluster_6 is 1
+```
+
+It is possible to see that the algorithm tends to create clusters that are not homogeneous in size.
+This can due to the fact that when a cluster becomes bigger, the probability that other clusters will be merged with it
+increase.
+
+'''
+
+
+def girvan_newman(graph, centrality_measure="edges_betweenness_centrality", seed=42, k=4,
                   optimized=False, decimal_digits=5):
     copy_graph = graph.copy()
     connected_components = []
@@ -392,6 +405,7 @@ def girvan_newman(graph, centrality_measure="edges_betweenness_centrality", seed
     while len(connected_components) < k:
         edges_to_remove = [pq.pop()]
 
+        # takes all the edges associated with the maximum btw values
         while len(pq) != 0 and round(pq.top()[0], decimal_digits) == -round(btw_dict[edges_to_remove[0]],
                                                                             decimal_digits):
             edges_to_remove.append(pq.pop())
@@ -399,8 +413,7 @@ def girvan_newman(graph, centrality_measure="edges_betweenness_centrality", seed
         copy_graph.remove_edges_from(edges_to_remove)
 
         connected_components = list(nx.connected_components(copy_graph))
-        if verbose:
-            logger.debug(f"The connected components are {len(connected_components)} at the {i} iteration")
+        logger.debug(f"The connected components are {len(connected_components)} at the {i} iteration")
 
         if not optimized:
             btw_dict = CENTRALITY_MEASURES[centrality_measure](copy_graph, seed=seed)
@@ -412,7 +425,38 @@ def girvan_newman(graph, centrality_measure="edges_betweenness_centrality", seed
     return connected_components
 
 
-# Spectral algorithm
+'''
+
+The spectral algorithm has not been optimized because the execution time was already feasible, in the order of seconds.
+The only constraint of this implementation is that at each iteration the algorithm splits each cluster in two sub 
+clusters.
+At the beginning the whole graph is split in two clusters using the `spectral_one_iteration` function:
+
+1. The laplacian matrix of the cluster passed as input is computed.
+2. The the greatest eigenvalue and the associated eigenvector is computed.
+3. The cluster is split in two sub clusters following this rule:
+    - The nodes associated with positive values in the eigenvector are assigned to the first cluster
+    - The nodes associated with negative values in the eigenvector are assigned to the second cluster
+
+This function is repeated until the desired number of cluster (that must be a power of 2) is reached.
+
+```
+05-30 15:18 spectral     INFO     Evaluating spectral algorithm, with these arguments : {'k': 4}
+05-30 15:18 spectral     INFO     The clustering algorithm: spectral took 0.9156270999992557 seconds
+05-30 15:18 spectral     INFO     The rand index for the clustering algorithm spectral is 0.617678996506149
+05-30 15:18 spectral     DEBUG    The graph was divided in 4
+05-30 15:18 spectral     DEBUG    The length of the cluster_1 is 5102
+05-30 15:18 spectral     DEBUG    The length of the cluster_2 is 5259
+05-30 15:18 spectral     DEBUG    The length of the cluster_3 is 6065
+05-30 15:18 spectral     DEBUG    The length of the cluster_4 is 6044
+```
+
+The obtained rand index using this algorithm is one of the best, although the output of this algorithm is hard
+to interpret.
+
+'''
+
+
 def spectral_one_iteration(graph, nodes):
     n = len(nodes)
     time_start = time.perf_counter()
