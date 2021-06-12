@@ -1,3 +1,9 @@
+2021-06-12 10:21:50,604 load_graph_and_clusters        INFO     There are 22470 nodes in the graph
+2021-06-12 10:21:50,610 main                           INFO     The length of the real cluster_1 is: 3327
+2021-06-12 10:21:50,611 main                           INFO     The length of the real cluster_2 is: 6880
+2021-06-12 10:21:50,611 main                           INFO     The length of the real cluster_3 is: 6495
+2021-06-12 10:21:50,611 main                           INFO     The length of the real cluster_4 is: 5768
+
 05-30 08:29 hierarchical_optimized INFO     Evaluating hierarchical_optimized algorithm, with these arguments : {'seed': 42, 'desired_clusters': 4}
 05-30 08:30 hierarchical_optimized INFO     The clustering algorithm: hierarchical_optimized took 5.0078416 seconds
 05-30 08:30 hierarchical_optimized INFO     The rand index for the clustering algorithm hierarchical_optimized is 0.5059052968454207

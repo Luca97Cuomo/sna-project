@@ -1,0 +1,5 @@
+2021-06-12 10:21:50,604 load_graph_and_clusters        INFO     There are 22470 nodes in the graph
+2021-06-12 10:21:50,610 main                           INFO     The length of the real cluster_1 is: 3327
+2021-06-12 10:21:50,611 main                           INFO     The length of the real cluster_2 is: 6880
+2021-06-12 10:21:50,611 main                           INFO     The length of the real cluster_3 is: 6495
+2021-06-12 10:21:50,611 main                           INFO     The length of the real cluster_4 is: 5768
