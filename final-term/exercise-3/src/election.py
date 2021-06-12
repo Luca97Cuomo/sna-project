@@ -51,7 +51,7 @@ def nearest_candidate_id(voter_position: float, candidates: typing.List[Candidat
     return candidates[greater_equal_index].id
 
 
-def election(graph: nx.Graph, candidates: typing.List[Candidate]) -> typing.Dict[int, int]:
+def run_election(graph: nx.Graph, candidates: typing.List[Candidate]) -> typing.Dict[int, int]:
     """
     The graph contains, for each node, a property "peak_preference" which contains the id of the voted candidate.
     Returns a dict that maps ids of candidates to their total votes.

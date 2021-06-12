@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import networkx as nx
 
-from election import nearest_candidate_id, Candidate, election
+from election import nearest_candidate_id, Candidate, run_election
 
 
 class TestElection(TestCase):
@@ -15,7 +15,7 @@ class TestElection(TestCase):
             Candidate(44, 0.7),
         ]
 
-    def test_election(self):
+    def test_run_election(self):
         graph = nx.Graph()
         graph.add_node(1, peak_preference=0.4)  # 41
         graph.add_node(2, peak_preference=0.39)  # 41
@@ -32,7 +32,7 @@ class TestElection(TestCase):
             43: 0,
             44: 2
         }
-        actual = election(graph, self.candidates)
+        actual = run_election(graph, self.candidates)
 
         self.assertDictEqual(expected, actual)
 
