@@ -226,7 +226,88 @@ def k_means_one_iteration(graph, seed=42, k=4, centers=None):
 
 '''
 
+The k_means algorithm execute the k_means_one_iteration `max_iterations` times if it does not converge before.
+The execution of this algorithm depends on the parameters given as input:
 
+1. If a centrality measure is not specified and the centers are not specified:
+    - The centers are randomly chosen at each iteration
+    - The convergence is evaluated using the rand index metric. In particular it is computed the `rand_index`
+    between two consecutive graph clustering. This metric represents a similarity of two clustering. If at the next
+    iteration this similarity doesn't change more than a `equality_threshold`, then the obtained clustering
+    is very similar to the previous one.
+2. If a centrality measure is not specified and the centers are specified:
+    - At the first iteration the algorithm uses the given centers and then it follows the same steps of the first case
+3. If a centrality measure is specified and the centers are not specified:
+    - The centers are computed at each iteration using the K nodes with the highest centrality value. At the first
+    iteration the K centers are chosen from the whole graph.
+    - From the second iteration until the convergence, the new center of each cluster is chosen as the node with the
+    maximum centrality value inside that cluster.
+    - The algorithm converge if the centers of the clusters do not change between two consecutive iterations.
+4. If a centrality measure is specified and the centers are specified:
+    - At the first iteration the algorithm uses the given centers and then it follows the same steps of the third case
+
+It was decided to not parallelize the algorithm because the bottleneck of the execution time is represented by the
+computation of the centrality measures. In fact choosing a centrality measure like the degree_centrality or choosing the
+nodes randomly, it takes few seconds to converge.
+
+Changing the centrality measures, the clustering results differ a lot from each other.
+In particular the best result, in terms of rand index, is obtained with the degree centrality, 
+that is also the fastest one.
+
+The rand index for the clustering algorithm k_means using degree_centrality is 0.63 and it takes 1.11 seconds.
+
+```
+
+05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': None, 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10000, 'centers': None, 'verbose': False}
+05-30 08:30 k_means      INFO     The clustering algorithm: k_means took 10.106914500000002 seconds
+05-30 08:30 k_means      INFO     The rand index for the clustering algorithm k_means is 0.4067197443947051
+05-30 08:30 k_means      DEBUG    The graph was divided in 4
+05-30 08:30 k_means      DEBUG    The length of the cluster_1 is 495
+05-30 08:30 k_means      DEBUG    The length of the cluster_2 is 19401
+05-30 08:30 k_means      DEBUG    The length of the cluster_3 is 2494
+05-30 08:30 k_means      DEBUG    The length of the cluster_4 is 80
+
+05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'degree_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10000, 'centers': None, 'verbose': False}
+05-30 08:30 k_means      INFO     The clustering algorithm: k_means took 1.1127535999999978 seconds
+05-30 08:30 k_means      INFO     The rand index for the clustering algorithm k_means is 0.6354478760362172
+05-30 08:30 k_means      DEBUG    The graph was divided in 4
+05-30 08:30 k_means      DEBUG    The length of the cluster_1 is 3669
+05-30 08:30 k_means      DEBUG    The length of the cluster_2 is 9576
+05-30 08:30 k_means      DEBUG    The length of the cluster_3 is 5056
+05-30 08:30 k_means      DEBUG    The length of the cluster_4 is 4169
+
+05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'closeness_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10, 'centers': None, 'verbose': False}
+05-30 10:23 k_means      INFO     The clustering algorithm: k_means took 6787.46255 seconds
+05-30 10:23 k_means      INFO     The rand index for the clustering algorithm k_means is 0.5567763986272893
+05-30 10:23 k_means      DEBUG    The graph was divided in 4
+05-30 10:23 k_means      DEBUG    The length of the cluster_1 is 12907
+05-30 10:23 k_means      DEBUG    The length of the cluster_2 is 278
+05-30 10:23 k_means      DEBUG    The length of the cluster_3 is 2855
+05-30 10:23 k_means      DEBUG    The length of the cluster_4 is 6430
+
+05-30 10:23 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'nodes_betweenness_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10, 'centers': None, 'verbose': False}
+05-30 14:07 k_means      INFO     The clustering algorithm: k_means took 13456.140629499998 seconds
+05-30 14:07 k_means      INFO     The rand index for the clustering algorithm k_means is 0.5328093378835772
+05-30 14:07 k_means      DEBUG    The graph was divided in 4
+05-30 14:07 k_means      DEBUG    The length of the cluster_1 is 14483
+05-30 14:07 k_means      DEBUG    The length of the cluster_2 is 3793
+05-30 14:07 k_means      DEBUG    The length of the cluster_3 is 3788
+05-30 14:07 k_means      DEBUG    The length of the cluster_4 is 406
+
+05-30 14:07 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'pagerank', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 50, 'centers': None, 'verbose': False}
+05-30 14:07 k_means      INFO     The clustering algorithm: k_means took 18.678264799997123 seconds
+05-30 14:07 k_means      INFO     The rand index for the clustering algorithm k_means is 0.4661067140459932
+05-30 14:07 k_means      DEBUG    The graph was divided in 4
+05-30 14:07 k_means      DEBUG    The length of the cluster_1 is 17168
+05-30 14:07 k_means      DEBUG    The length of the cluster_2 is 776
+05-30 14:07 k_means      DEBUG    The length of the cluster_3 is 1713
+05-30 14:07 k_means      DEBUG    The length of the cluster_4 is 2813
+
+```
+
+The fact that, using the degree centrality to choose the centers, gives a more balanced and better clustering result,
+can be explained as follows: starting from K nodes, that are the ones with the maximum degree, the algorithm is able to
+explore the graph more homogeneously, avoiding the creation of giant clusters. 
 
 '''
 
@@ -234,8 +315,7 @@ def k_means_one_iteration(graph, seed=42, k=4, centers=None):
 def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-3, max_iterations=1000, centers=None):
     # [[1, 4], [2, 3, 5]]
     last_clustering = [[] for _ in range(k)]
-    last_centers = []
-    last_similarity = 0
+    last_similarity = 1  # initialized to 1 in order to avoiding errors due to the second iteration
     convergence = False
     iterations = 0
     centrality_measure_function = CENTRALITY_MEASURES.get(centrality_measure, None)
@@ -256,10 +336,9 @@ def k_means(graph, centrality_measure=None, seed=42, k=4, equality_threshold=1e-
             center = random.choice([node for node in nodes if node_to_centrality[node] == max_value])
             centers.append(nodes.pop(center))
 
-    # If a centrality measure is not specified and the centers are not given as input
-    # the centers are all chosen randomly
     if centrality_measure_function is None and centers is not None:
         random.seed(seed)
+
     last_centers = centers
     while not convergence and iterations < max_iterations:
         # The centers are None only if they are not passed as input and the centrality measure is not specified
