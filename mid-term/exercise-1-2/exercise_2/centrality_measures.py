@@ -7,6 +7,7 @@ from tqdm import tqdm
 import numpy as np
 import logging
 import logging_configuration
+from pytest import approx
 
 logger = logging.getLogger()
 
@@ -93,12 +94,47 @@ def parallel_closeness_centrality(graph, n_jobs):
 
 '''
 
+The `basic_page_rank` is the iterative implementation of the basic page rank algorithm. It was decided in this version
+to not consider the problems due to dead ends and spider traps, because the graph in analysis is undirected and so there
+are no dead ends and spider traps.
+
+The implementation of the iterative loop was optimized because, instead of visiting, for each node, all its neighbours,
+updating their next page rank (O(n + m)), it goes through all the edges of the graph once (O(m)) and updates the page
+rank of each end point of the edge.
+This update is performed using two dictionaries, and so in constant time.
+
+The algorithm uses these data structures:
+
+- current_node_to_rank: it is a dictionary mapping each node to its current page rank 
+- next_node_to_rank: it is a dictionary used to update the page rank at each iteration
+
+The algorithm follows these steps:
+
+1. The current node to rank is initialized for each node to 1/n, while the next node to rank to 0.
+2. For each edge of the graph:
+    - Its endpoint are considered
+    - Updates next rank of one endpoint with the current rank of the other over its degree
+    
+```
+next_rank[first_endpoint] += (current_rank[second_endpoint] / degree(second_endpoint))
+next_rank[second_endpoint] += (current_rank[first_endpoint] / degree(first_endpoint)) 
+```
+
+3. If the convergence is reached, then the algorithm ends. 
+The algorithm reaches the convergence if the difference between two consecutive ranks for all nodes is less than a
+specific threshold given as input.
+4. If the convergence is not reached, then the next rank is inserted in the current rank and reinitialized to 0.
+So repeat the steps from 2.
 
 
+```
+2021-06-12 18:45:45,515 __evaluate      INFO     Evaluating basic_page_rank algorithm
+2021-06-12 18:46:30,403 __evaluate      INFO     The centrality algorithm: basic_page_rank took 44.88 seconds
+```
 '''
 
 
-def basic_page_rank(graph, max_iterations=100, delta=None):
+def basic_page_rank(graph, max_iterations=100, delta_rel=None):
     """
         Page rank using iterative method
 
@@ -110,13 +146,12 @@ def basic_page_rank(graph, max_iterations=100, delta=None):
             stabilized within the delta variable (for accounting for float precision).
     """
 
-    def check_convergence(current_ranks, next_ranks, delta):
-        if delta is None:
+    def check_convergence(current_ranks, next_ranks, delta_rel):
+        if delta_rel is None:
             return False
         for node, rank in current_ranks.items():
             next_rank = next_ranks[node]
-            error = abs(next_rank - rank)
-            if error > delta:
+            if approx(next_rank, rel=delta_rel) != rank:
                 return False
         return True
 
@@ -128,20 +163,19 @@ def basic_page_rank(graph, max_iterations=100, delta=None):
         next_node_to_rank[node] = np.float(0)
 
     with tqdm(total=max_iterations) as pbar:
-        for i in range(max_iterations):  # add convergence check with tolerance
+        for i in range(max_iterations):
             for edge in graph.edges():
                 first_endpoint = edge[0]
                 second_endpoint = edge[1]
 
-                # add alpha parameter
                 # There are no dead ends and spider traps, the graph is undirected
                 next_node_to_rank[first_endpoint] = next_node_to_rank[first_endpoint] + (
                         current_node_to_rank[second_endpoint] * np.float((1 / graph.degree(second_endpoint))))
                 next_node_to_rank[second_endpoint] = next_node_to_rank[second_endpoint] + (
                         current_node_to_rank[first_endpoint] * np.float((1 / graph.degree(first_endpoint))))
 
-            if check_convergence(current_node_to_rank, next_node_to_rank, delta):
-                logger.info(f"The algorithm has reached convergence at iteration {i}.")
+            if check_convergence(current_node_to_rank, next_node_to_rank, delta_rel):
+                logger.info(f"The algorithm has reached convergence at iteration {i}")
                 break
 
             for node, rank in next_node_to_rank.items():
