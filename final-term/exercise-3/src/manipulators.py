@@ -11,6 +11,31 @@ CentralityFunction = typing.Callable[[nx.Graph], CentralityValues]
 logger = logging.getLogger("final_term_exercise_3_logger")
 
 
+def _evaluate_marginal_contribution(graph, candidates, target_candidate_id, node):
+    return 10
+
+
+def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
+                       number_of_seeds: int, seed: int) -> typing.Dict[int, float]:
+    """
+    It takes the nodes with the highest marginal contributions
+    """
+
+    # Evaluate marginal contribution of each node as the only seed
+    nodes_to_contribution_dict = {}
+    for node in graph.nodes():
+        nodes_to_contribution_dict[node] = _evaluate_marginal_contribution(graph, candidates, target_candidate_id, node)
+
+    # sort in ascending order
+    nodes_to_contribution = sorted(nodes_to_contribution_dict.items(), key=lambda element: -element[1])
+
+    seeds = {}
+    for i in range(number_of_seeds):
+        seeds[nodes_to_contribution[i][0]] = nodes_to_contribution[1]
+
+    return seeds
+
+
 def shapley_closeness_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
                                   number_of_seeds: int, seed: int) -> typing.Dict[int, float]:
     return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds,
