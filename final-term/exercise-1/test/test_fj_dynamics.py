@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 import utils
 from final_term_utils import populate_dynamics_parameters
-from network_diffusion.fj_dynamics import is_dynamics_converged, fj_dynamics
+from network_diffusion.fj_dynamics import is_dynamics_converged, fj_dynamics, optimized_fj_dynamics
 
 SEED = 42
 FACEBOOK_PATH_TO_NODES = "../../../mid-term/exercise-1-2/facebook_large/musae_facebook_target.csv"
@@ -127,6 +127,20 @@ class TestFjDynamics(TestCase):
         populate_dynamics_parameters(graph, seed=SEED, stubbornness=1 / 2)
 
         fj_dynamics(graph)
+        self.assertTrue(True)
+
+    def test_optimized_fj_dynamics_convergence_facebook_graph_half_stubborness(self):
+        """
+        It converges in 16 iterations and 6.3 s
+        """
+
+        graph, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
+
+        print(len(graph.edges()))
+
+        populate_dynamics_parameters(graph, seed=SEED, stubbornness=1 / 2)
+
+        optimized_fj_dynamics(graph)
         self.assertTrue(True)
 
     def test_fj_dynamics_convergence_multiple_graphs(self):
