@@ -53,6 +53,7 @@ class TestCentralityMeasures(TestCase):
         results = centrality_measures.parallel_closeness_centrality(self.facebook_graph, n_jobs=4)
         logger.debug('Assert if results are equals')
         self.assertDictEqual(expected, results)
+        # la closeness di networkx restituisce gli stessi identici risultati della nostra closeness parallela e anche di quella normale.
 
     def test_naive_betweenness_centrality(self):
         # required time for: self.graph = utils.build_random_graph(1000, 0.10, seed=42) is:
@@ -77,7 +78,7 @@ class TestCentralityMeasures(TestCase):
     def test_parallel_betweenneess_centrality(self):
         expected = nx.betweenness_centrality(self.graph)
 
-        edge_btw, node_btw = centrality_measures.parallel_betweenness_centrality(self.graph, self.graph.nodes(), 8)
+        edge_btw, node_btw = centrality_measures.parallel_betweenness_centrality(self.graph, 8)
         expected = sorted(expected.items(), key=lambda item: item[1])
         expected_nodes = []
         for entry in expected:
@@ -91,17 +92,17 @@ class TestCentralityMeasures(TestCase):
         self.assertListEqual(expected_nodes, results_nodes)
 
     def test_equality_of_betweenness(self):
-        graph = self.facebook_graph
-        expected_edge_btw, expected_node_btw = centrality_measures.betweenness_centrality(graph, graph.nodes(), None)
+        graph = self.graph
+        expected_edge_btw, expected_node_btw = centrality_measures.betweenness_centrality(graph, graph.nodes())
         number_of_concurrent_jobs = 8
-        resuts_edge_btw, results_node_btw = centrality_measures.parallel_betweenness_centrality(graph, graph.nodes(),
-                                                                                                number_of_concurrent_jobs)
+        resuts_edge_btw, results_node_btw = centrality_measures.parallel_betweenness_centrality(graph, number_of_concurrent_jobs)
 
         for node, btw in results_node_btw.items():
             self.assertEqual(approx(expected_node_btw[node], rel=0.01), results_node_btw[node])
 
         for edge, btw in resuts_edge_btw.items():
             self.assertEqual(approx(expected_edge_btw[edge], rel=0.01), resuts_edge_btw[edge])
+        # Ritornano gli stessi risultati
 
     def test_algebraic_page_rank(self):
         expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5)

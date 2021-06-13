@@ -15,7 +15,7 @@ def main():
 
     centrality = centrality_utils.Centrality([
         (basic_page_rank, {"max_iterations": 10000, "delta_rel": 0.5}),
-        (parallel_betweenness_centrality, {"sample": graph.nodes(), "n_jobs": 8})],
+        (parallel_closeness_centrality, {"n_jobs": 8})],
         graph)
 
     centrality.evaluate_all()

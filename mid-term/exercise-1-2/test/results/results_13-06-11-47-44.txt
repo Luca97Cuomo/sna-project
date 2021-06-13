@@ -1,0 +1,5 @@
+2021-06-13 11:47:44,623 load_graph_and_clusters        INFO     There are 22470 nodes in the graph
+2021-06-13 11:47:44,627 test_parallel_closeness_centrality DEBUG    Evaluating nx closeness centrality
+2021-06-13 12:02:40,476 test_parallel_closeness_centrality DEBUG    Evaluating parallel closeness centrality
+2021-06-13 12:09:11,676 parallel_closeness_centrality  INFO     Aggregating results from parallel jobs
+2021-06-13 12:09:11,680 test_parallel_closeness_centrality DEBUG    Assert if results are equals
