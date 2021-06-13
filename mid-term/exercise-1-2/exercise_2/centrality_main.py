@@ -14,8 +14,7 @@ def main():
     graph, _ = utils.load_graph_and_clusters(PATH_TO_NODES, PATH_TO_EDGES)
 
     centrality = centrality_utils.Centrality([
-        (betweenness_centrality, {"sample": graph.nodes(), "job_number": None}),
-        (parallel_betweenness_centrality, {"sample": graph.nodes(), "n_jobs": 8})],
+        (parallel_closeness_centrality, {"n_jobs": 8})],
         graph)
 
     centrality.evaluate_all()
