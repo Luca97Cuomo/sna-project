@@ -14,7 +14,7 @@ import utils
 from election import Candidate, run_election
 from final_term_utils import populate_dynamics_parameters
 from manipulators import random_manipulator, centrality_based_manipulator, shapley_degree_manipulator, \
-    shapley_threshold_manipulator, shapley_closeness_manipulator
+    shapley_threshold_manipulator, shapley_closeness_manipulator, greedy_manipulator
 from network_diffusion.fj_dynamics import fj_dynamics
 
 FACEBOOK_PATH_TO_NODES = "../../../mid-term/exercise-1-2/facebook_large/musae_facebook_target.csv"
@@ -23,14 +23,14 @@ FACEBOOK_PATH_TO_EDGES = "../../../mid-term/exercise-1-2/facebook_large/musae_fa
 logger = logging.getLogger("final_term_exercise_3_logger")
 
 
-def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate: int, number_of_seeds: int,
+def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int, number_of_seeds: int,
                    compute_seeds: typing.Callable, seed: int,
                    max_results_to_print: int = 10) -> typing.Tuple[int, int]:
     """
     :param graph:                   The graph of the voters. Each node has the attributes private_belief
                                     and stubbornness. The stubbornness value should 0.5 for each node.
     :param candidates:
-    :param target_candidate:        The id of the candidate that has to be publicized.
+    :param target_candidate_id:        The id of the candidate that has to be publicized.
     :param number_of_seeds:
     :param compute_seeds:
     :param seed:
@@ -43,11 +43,11 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
     # check input
     target_is_in_candidate = False
     for candidate in candidates:
-        if target_candidate == candidate.id:
+        if target_candidate_id == candidate.id:
             target_is_in_candidate = True
             break
     if not target_is_in_candidate:
-        raise Exception(f"Target candidate {target_candidate} is not in candidates")
+        raise Exception(f"Target candidate {target_candidate_id} is not in candidates")
 
     if number_of_seeds > len(graph.nodes):
         raise Exception(f"Number of seeds {number_of_seeds} is greater that tha number of nodes {len(graph.nodes)}")
@@ -65,7 +65,7 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
     logger.debug("TRUTHFUL ELECTION RESULTS")
     _log_election_results(results, max_results_to_print)
 
-    truthful_score = results[target_candidate]
+    truthful_score = results[target_candidate_id]
 
     ##########
 
@@ -84,12 +84,12 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
     logger.debug("ELECTION RESULTS AFTER DYNAMICS")
     _log_election_results(results, max_results_to_print)
 
-    dynamics_score = results[target_candidate]
+    dynamics_score = results[target_candidate_id]
 
     ##########
 
     # compute seeds
-    seeds = compute_seeds(graph, candidates, target_candidate, number_of_seeds, seed)
+    seeds = compute_seeds(graph, candidates, target_candidate_id, number_of_seeds, seed)
     if len(seeds) > number_of_seeds:
         raise Exception(f"The length of computed seeds {len(seeds)} is greater "
                         f"than the number of seeds {number_of_seeds}")
@@ -113,7 +113,7 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
     logger.debug("MANIPULATED ELECTION RESULTS")
     _log_election_results(results, max_results_to_print)
 
-    manipulated_score = results[target_candidate]
+    manipulated_score = results[target_candidate_id]
 
     ##########
 
@@ -183,7 +183,7 @@ def main():
     NUMBER_OF_CANDIDATES = 10
     TARGET_CANDIDATE = random.randint(0, NUMBER_OF_CANDIDATES - 1)
     NUMBER_OF_SEEDS = 200
-    COMPUTE_SEEDS = shapley_closeness_manipulator
+    COMPUTE_SEEDS = greedy_manipulator
     GRAPH_NAME = "Facebook Graph"
     GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
     STUBBORNNESS = 0.5
