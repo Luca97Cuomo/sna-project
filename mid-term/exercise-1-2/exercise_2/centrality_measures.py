@@ -10,6 +10,18 @@ import logging_configuration
 
 logger = logging.getLogger()
 
+'''
+
+The degree centrality measure has been implemented only with the naive algorithm
+because the running time is already feasible. In fact it takes less one seconds as you can see from the results below.
+
+```
+2021-06-12 18:20:58,730 __evaluate      INFO     Evaluating degree_centrality algorithm
+2021-06-12 18:20:58,756 __evaluate      INFO     The centrality algorithm: degree_centrality took 0.025079 seconds
+```
+
+'''
+
 
 def degree_centrality(graph):
     node_to_degree = {}
@@ -20,17 +32,70 @@ def degree_centrality(graph):
     return node_to_degree
 
 
-def closeness_centrality(graph):
-    node_to_closeness = {}
-    with tqdm(total=len(graph)) as pbar:
-        for node in graph.nodes():
-            # Dictionary mapping each node to its distance from the current node
-            distances_from_node = utils.bfs(graph, node)
+'''
 
-            node_to_closeness[node] = (len(graph.nodes) - 1) / (sum(distances_from_node.values()))
-            pbar.update(1)
+For the closeness centrality measure a naive and a parallel version has been implemented.
+The naive implementation, for each node given as input:
+
+1. Compute the distances from the node to all the others nodes of the graph, using the BFS
+2. Evaluates the closeness of the node as the inverse of the average node distance from the others
+                                
+                                (n-1)/sum(distances_from_graph_nodes)
+
+```
+2021-06-12 18:20:58,828 __evaluate      INFO     Evaluating closeness_centrality algorithm
+2021-06-12 18:45:45,490 __evaluate      INFO     The centrality algorithm: closeness_centrality took 1486.66 seconds
+```
+
+Even if the naive implementation took more or less half of an hour, a parallel version has been implemented
+that splits the nodes of the graph into different chunks (one for each job) and compute the closeness on different jobs.
+
+```
+2021-06-12 18:20:58,828 __evaluate      INFO     Evaluating closeness_centrality algorithm
+2021-06-12 18:45:45,490 __evaluate      INFO     The centrality algorithm: closeness_centrality took 1486.66 seconds
+```
+
+The results of the naive, the parallel implementation and the networkx implementation, have been compared in time and
+in precision. The time of the naive and the networkx implementation is almost the same, while the parallel
+implementation performs better.
+
+The closeness computed by each implementation is exactly the same.
+
+'''
+
+
+def closeness_centrality(graph, samples):
+    node_to_closeness = {}
+    for node in samples:
+        # Dictionary mapping each node to its distance from the current node
+        distances_from_node = utils.bfs(graph, node)
+
+        node_to_closeness[node] = (len(graph.nodes) - 1) / (sum(distances_from_node.values()))
 
     return node_to_closeness
+
+
+def parallel_closeness_centrality(graph, n_jobs):
+    node_to_closeness = {i: 0 for i in graph.nodes()}
+
+    with Parallel(n_jobs=n_jobs) as parallel:
+        partial_results = parallel(delayed(closeness_centrality)(graph, chunk) for chunk in
+                                   utils.chunks(graph.nodes(), math.ceil(len(graph.nodes()) / n_jobs)))
+
+        logger.info(f"Aggregating results from parallel jobs")
+
+        for job_node_to_closeness in partial_results:
+            for node in job_node_to_closeness.keys():
+                node_to_closeness[node] += job_node_to_closeness[node]
+
+    return node_to_closeness
+
+
+'''
+
+
+
+'''
 
 
 def basic_page_rank(graph, max_iterations=100, delta=None):
@@ -300,15 +365,15 @@ def parallel_hits(graph, max_iterations=100, jobs=4):
     return node_to_hubs, node_to_authorities
 
 
-def parallel_betweenness_centrality(graph, sample, n_jobs):
+def parallel_betweenness_centrality(graph, n_jobs):
     edge_btw = {frozenset(e): 0 for e in graph.edges()}
     node_btw = {i: 0 for i in graph.nodes()}
 
     with Parallel(n_jobs=n_jobs) as parallel:
-        partial_results = parallel(delayed(betweenness_centrality)(graph, X, job_number) for job_number, X in
-                                   enumerate(utils.chunks(sample, math.ceil(len(sample) / n_jobs))))
+        partial_results = parallel(delayed(betweenness_centrality)(graph, chunk) for chunk in
+                                   utils.chunks(graph.nodes(), math.ceil(len(graph.nodes()) / n_jobs)))
 
-        logger.info(f"Aggregating results from parallel jobs...")
+        logger.info(f"Aggregating results from parallel jobs")
 
         for job_result in partial_results:
             for key in job_result[0].keys():
@@ -321,14 +386,9 @@ def parallel_betweenness_centrality(graph, sample, n_jobs):
     return edge_btw, node_btw
 
 
-def betweenness_centrality(graph, sample, job_number=None):
+def betweenness_centrality(graph, sample):
     edge_btw = {frozenset(e): 0 for e in graph.edges()}
     node_btw = {i: 0 for i in graph.nodes()}
-
-    if job_number is not None:
-        progbar = tqdm(total=len(sample), position=job_number, desc=f"Job #{job_number}")
-    else:
-        progbar = None
 
     for s in sample:
         # Compute the number of shortest paths from s to every other node
@@ -338,7 +398,8 @@ def betweenness_centrality(graph, sample, job_number=None):
         # distance = {i: -1 for i in graph.nodes()}  # the number of shortest paths starting from s that use the edge e
         # eflow = {frozenset(e): 0 for e in graph.edges()}  # the number of shortest paths starting from s that use the edge e
         distance = {}
-        vflow = {i: 1 for i in graph.nodes()}  # the number of shortest paths starting from s that use the vertex i. It is initialized to 1 because the shortest path from s to i is assumed to uses that vertex once.
+        vflow = {i: 1 for i in
+                 graph.nodes()}  # the number of shortest paths starting from s that use the vertex i. It is initialized to 1 because the shortest path from s to i is assumed to uses that vertex once.
 
         # BFS
         queue = [s]
@@ -359,16 +420,14 @@ def betweenness_centrality(graph, sample, job_number=None):
         while tree != []:
             c = tree.pop()
             for i in parents[c]:
-                eflow = vflow[c] * (spnum[i] / spnum[c])  # the number of shortest paths using vertex c is split among the edges towards its parents proportionally to the number of shortest paths that the parents contributes
-                vflow[i] += eflow  # each shortest path that use an edge (i,c) where i is closest to s than c must use also vertex i
-                edge_btw[frozenset({c, i})] += eflow  # betweenness of an edge is the sum over all s of the number of shortest paths from s to other nodes using that edge
+                eflow = vflow[c] * (spnum[i] / spnum[
+                    c])  # the number of shortest paths using vertex c is split among the edges towards its parents proportionally to the number of shortest paths that the parents contributes
+                vflow[
+                    i] += eflow  # each shortest path that use an edge (i,c) where i is closest to s than c must use also vertex i
+                edge_btw[frozenset({c,
+                                    i})] += eflow  # betweenness of an edge is the sum over all s of the number of shortest paths from s to other nodes using that edge
             if c != s:
-                node_btw[c] += vflow[c]  # betweenness of a vertex is the sum over all s of the number of shortest paths from s to other nodes using that vertex
-
-        if progbar is not None:
-            progbar.update()
-
-    if progbar is not None:
-        progbar.close()
+                node_btw[c] += vflow[
+                    c]  # betweenness of a vertex is the sum over all s of the number of shortest paths from s to other nodes using that vertex
 
     return edge_btw, node_btw

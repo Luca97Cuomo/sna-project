@@ -4,13 +4,13 @@ import networkx as nx
 import sys
 import numpy as np
 from pytest import approx
-
-sys.path.append("../")
 import utils
-
 from exercise_2 import centrality_measures, centrality_utils
 from exercise_2 import betweenness_centrality
+import logging
+import logging_configuration
 
+logger = logging.getLogger()
 PATH_TO_NODES = "../facebook_large/musae_facebook_target.csv"
 PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
 
@@ -43,7 +43,15 @@ class TestCentralityMeasures(TestCase):
 
     def test_closeness_centrality(self):
         expected = nx.closeness_centrality(self.graph)
-        results = centrality_measures.closeness_centrality(self.graph)
+        results = centrality_measures.closeness_centrality(self.graph, self.graph.nodes())
+        self.assertDictEqual(expected, results)
+
+    def test_parallel_closeness_centrality(self):
+        logger.debug('Evaluating nx closeness centrality')
+        expected = nx.closeness_centrality(self.facebook_graph)
+        logger.debug('Evaluating parallel closeness centrality')
+        results = centrality_measures.parallel_closeness_centrality(self.facebook_graph, n_jobs=4)
+        logger.debug('Assert if results are equals')
         self.assertDictEqual(expected, results)
 
     def test_naive_betweenness_centrality(self):
