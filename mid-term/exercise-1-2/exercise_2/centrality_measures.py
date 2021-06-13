@@ -578,3 +578,8 @@ def betweenness_centrality(graph, sample):
                     c]  # betweenness of a vertex is the sum over all s of the number of shortest paths from s to other nodes using that vertex
 
     return edge_btw, node_btw
+
+
+def parallel_edges_betweenness_centrality(graph, **kwargs):
+    edge_btw, _ = parallel_betweenness_centrality(graph, n_jobs=16)
+    return edge_btw
