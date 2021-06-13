@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import logging_configuration
 import logging
 import numpy as np
+import itertools as it
 
 
 def build_random_graph(num_of_nodes, probability_of_edge, seed=42):
@@ -95,6 +96,15 @@ def bfs(graph, node):
     return node_distances
 
 
+def chunks(data, dim_chunk):
+    """
+    Creates chunks of nodes
+    """
+    idata = iter(data)
+    for i in range(0, len(data), dim_chunk):
+        yield [k for k in it.islice(idata, dim_chunk)]
+
+
 def load_network(network_path):
     logger = logging.getLogger(f"{load_network.__name__}")
     network_path = Path(network_path).absolute()
@@ -156,7 +166,8 @@ def analyze_degree_distribution(node_to_degree, network_generation_algorithm, kw
     plt.ylabel("Num of nodes")
     if save:
         if kwargs is not None:
-            plt.savefig(f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm} with parameters {kwargs}.jpg")
+            plt.savefig(
+                f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm} with parameters {kwargs}.jpg")
         else:
             plt.savefig(f"{plots_dir.absolute()}/degree normal plot of {network_generation_algorithm}.jpg")
 
@@ -166,13 +177,11 @@ def analyze_degree_distribution(node_to_degree, network_generation_algorithm, kw
     plt.ylabel("Num of nodes")
     if save:
         if kwargs is not None:
-            plt.savefig(f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm} with parameters {kwargs}.jpg")
+            plt.savefig(
+                f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm} with parameters {kwargs}.jpg")
         else:
             plt.savefig(f"{plots_dir.absolute()}/degree loglog plot of {network_generation_algorithm}.jpg")
 
     plt.show()
 
     return degree_mean, degree_std
-
-
-

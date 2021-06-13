@@ -17,7 +17,7 @@ PATH_TO_EDGES = "../facebook_large/musae_facebook_edges.csv"
 
 class TestCentralityMeasures(TestCase):
     def setUp(self) -> None:
-        self.graph = utils.build_random_graph(100, 0.10, seed=42)
+        self.graph = utils.build_random_graph(1000, 0.10, seed=42)
         self.facebook_graph, _ = utils.load_graph_and_clusters(PATH_TO_NODES, PATH_TO_EDGES)
 
         self.small_graph = nx.Graph()
@@ -31,13 +31,13 @@ class TestCentralityMeasures(TestCase):
 
         expected = sorted(expected.items(), key=lambda item: item[1])
         expected_nodes = []
-        for tuple in expected:
-            expected_nodes.append(tuple[0])
+        for entry in expected:
+            expected_nodes.append(entry[0])
 
         node_btw = sorted(results.items(), key=lambda item: item[1])
         results_nodes = []
-        for tuple in node_btw:
-            results_nodes.append(tuple[0])
+        for entry in node_btw:
+            results_nodes.append(entry[0])
 
         self.assertListEqual(expected_nodes, results_nodes)
 
@@ -52,6 +52,7 @@ class TestCentralityMeasures(TestCase):
 
         expected = nx.betweenness_centrality(self.graph)
         edge_btw, node_btw = betweenness_centrality.lecture_betweenness_centrality(self.graph)
+        print(edge_btw)
 
         expected = sorted(expected.items(), key=lambda item: item[1])
         expected_nodes = []
@@ -65,6 +66,35 @@ class TestCentralityMeasures(TestCase):
 
         self.assertListEqual(expected_nodes, results_nodes)
 
+    def test_parallel_betweenneess_centrality(self):
+        expected = nx.betweenness_centrality(self.graph)
+
+        edge_btw, node_btw = centrality_measures.parallel_betweenness_centrality(self.graph, self.graph.nodes(), 8)
+        expected = sorted(expected.items(), key=lambda item: item[1])
+        expected_nodes = []
+        for entry in expected:
+            expected_nodes.append(entry[0])
+
+        node_btw = sorted(node_btw.items(), key=lambda item: item[1])
+        results_nodes = []
+        for entry in node_btw:
+            results_nodes.append(entry[0])
+
+        self.assertListEqual(expected_nodes, results_nodes)
+
+    def test_equality_of_betweenness(self):
+        graph = self.facebook_graph
+        expected_edge_btw, expected_node_btw = centrality_measures.betweenness_centrality(graph, graph.nodes(), None)
+        number_of_concurrent_jobs = 8
+        resuts_edge_btw, results_node_btw = centrality_measures.parallel_betweenness_centrality(graph, graph.nodes(),
+                                                                                                number_of_concurrent_jobs)
+
+        for node, btw in results_node_btw.items():
+            self.assertEqual(approx(expected_node_btw[node], rel=0.01), results_node_btw[node])
+
+        for edge, btw in resuts_edge_btw.items():
+            self.assertEqual(approx(expected_edge_btw[edge], rel=0.01), resuts_edge_btw[edge])
+
     def test_algebraic_page_rank(self):
         expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5)
         results = centrality_measures.algebraic_page_rank(self.facebook_graph, max_iterations=200, alpha=1, delta=1e-5)
@@ -72,11 +102,11 @@ class TestCentralityMeasures(TestCase):
             self.assertEqual(approx(expected[node], rel=0.5), results[node])
 
     def test_parallel_page_rank(self):
-        actual = centrality_measures.parallel_basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5, jobs=4)
+        actual = centrality_measures.parallel_basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5,
+                                                              jobs=4)
         expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5)
         for node in self.facebook_graph.nodes():
             self.assertEqual(approx(expected[node], rel=0.5), actual[node])
-
 
     def test_transition_matrix(self):
         alpha = 1
@@ -111,7 +141,6 @@ class TestCentralityMeasures(TestCase):
             self.assertEqual(approx(nx_hubs[node], rel=1e-1), hubs[node])
             self.assertEqual(approx(nx_authorities[node], rel=1e-1), authorities[node])
 
-
     def test_parallel_hits(self):
         graph = self.graph
         expected_hubs, expected_authorities = centrality_measures.hits(graph, max_iterations=100)
@@ -126,7 +155,6 @@ class TestCentralityMeasures(TestCase):
 
         for i in range(len(facebook_graph)):
             self.assertTrue(facebook_graph.has_node(i))
-
 
     def test_naive_betweenness_bfs(self):
         bfs_graph = nx.Graph()

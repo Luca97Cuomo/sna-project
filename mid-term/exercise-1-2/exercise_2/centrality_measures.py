@@ -1,15 +1,14 @@
 import math
-import sys
 from collections import defaultdict
-
 from joblib import Parallel, delayed
-
 import networkx as nx
-
-sys.path.append("../")
 import utils
 from tqdm import tqdm
 import numpy as np
+import logging
+import logging_configuration
+
+logger = logging.getLogger()
 
 
 def degree_centrality(graph):
@@ -25,6 +24,7 @@ def closeness_centrality(graph):
     node_to_closeness = {}
     with tqdm(total=len(graph)) as pbar:
         for node in graph.nodes():
+            # Dictionary mapping each node to its distance from the current node
             distances_from_node = utils.bfs(graph, node)
 
             node_to_closeness[node] = (len(graph.nodes) - 1) / (sum(distances_from_node.values()))
@@ -76,7 +76,7 @@ def basic_page_rank(graph, max_iterations=100, delta=None):
                         current_node_to_rank[first_endpoint] * np.float((1 / graph.degree(first_endpoint))))
 
             if check_convergence(current_node_to_rank, next_node_to_rank, delta):
-                print(f"The algorithm has reached convergence at iteration {i}.")
+                logger.info(f"The algorithm has reached convergence at iteration {i}.")
                 break
 
             for node, rank in next_node_to_rank.items():
@@ -112,7 +112,7 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta=None):
             next_v = np.dot(current_v, matrix)
             pbar.update(1)
             if check_convergence(current_v, next_v, delta):
-                print(f"The algorithm has reached convergence at iteration {i}.")
+                logger.info(f"The algorithm has reached convergence at iteration {i}.")
                 break
             current_v = next_v
 
@@ -298,3 +298,77 @@ def parallel_hits(graph, max_iterations=100, jobs=4):
                 pbar.update(1)
 
     return node_to_hubs, node_to_authorities
+
+
+def parallel_betweenness_centrality(graph, sample, n_jobs):
+    edge_btw = {frozenset(e): 0 for e in graph.edges()}
+    node_btw = {i: 0 for i in graph.nodes()}
+
+    with Parallel(n_jobs=n_jobs) as parallel:
+        partial_results = parallel(delayed(betweenness_centrality)(graph, X, job_number) for job_number, X in
+                                   enumerate(utils.chunks(sample, math.ceil(len(sample) / n_jobs))))
+
+        logger.info(f"Aggregating results from parallel jobs...")
+
+        for job_result in partial_results:
+            for key in job_result[0].keys():
+                # this is partial edge_btw
+                edge_btw[key] += job_result[0][key]
+            for key in job_result[1].keys():
+                # this is partial node_btw
+                node_btw[key] += job_result[1][key]
+
+    return edge_btw, node_btw
+
+
+def betweenness_centrality(graph, sample, job_number=None):
+    edge_btw = {frozenset(e): 0 for e in graph.edges()}
+    node_btw = {i: 0 for i in graph.nodes()}
+
+    if job_number is not None:
+        progbar = tqdm(total=len(sample), position=job_number, desc=f"Job #{job_number}")
+    else:
+        progbar = None
+
+    for s in sample:
+        # Compute the number of shortest paths from s to every other node
+        tree = []  # it lists the nodes in the order in which they are visited
+        spnum = {i: 0 for i in graph.nodes()}  # it saves the number of shortest paths from s to i
+        parents = {i: [] for i in graph.nodes()}  # it saves the parents of i in each of the shortest paths from s to i
+        # distance = {i: -1 for i in graph.nodes()}  # the number of shortest paths starting from s that use the edge e
+        # eflow = {frozenset(e): 0 for e in graph.edges()}  # the number of shortest paths starting from s that use the edge e
+        distance = {}
+        vflow = {i: 1 for i in graph.nodes()}  # the number of shortest paths starting from s that use the vertex i. It is initialized to 1 because the shortest path from s to i is assumed to uses that vertex once.
+
+        # BFS
+        queue = [s]
+        spnum[s] = 1
+        distance[s] = 0
+        while queue != []:
+            c = queue.pop(0)
+            tree.append(c)
+            for i in graph[c]:
+                if i not in distance:  # if vertex i has not been visited
+                    queue.append(i)
+                    distance[i] = distance[c] + 1
+                if distance[i] == distance[c] + 1:  # if we have just found another shortest path from s to i
+                    spnum[i] += spnum[c]
+                    parents[i].append(c)
+
+        # BOTTOM-UP PHASE
+        while tree != []:
+            c = tree.pop()
+            for i in parents[c]:
+                eflow = vflow[c] * (spnum[i] / spnum[c])  # the number of shortest paths using vertex c is split among the edges towards its parents proportionally to the number of shortest paths that the parents contributes
+                vflow[i] += eflow  # each shortest path that use an edge (i,c) where i is closest to s than c must use also vertex i
+                edge_btw[frozenset({c, i})] += eflow  # betweenness of an edge is the sum over all s of the number of shortest paths from s to other nodes using that edge
+            if c != s:
+                node_btw[c] += vflow[c]  # betweenness of a vertex is the sum over all s of the number of shortest paths from s to other nodes using that vertex
+
+        if progbar is not None:
+            progbar.update()
+
+    if progbar is not None:
+        progbar.close()
+
+    return edge_btw, node_btw
