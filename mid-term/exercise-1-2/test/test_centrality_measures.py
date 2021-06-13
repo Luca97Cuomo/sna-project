@@ -95,7 +95,8 @@ class TestCentralityMeasures(TestCase):
         graph = self.graph
         expected_edge_btw, expected_node_btw = centrality_measures.betweenness_centrality(graph, graph.nodes())
         number_of_concurrent_jobs = 8
-        resuts_edge_btw, results_node_btw = centrality_measures.parallel_betweenness_centrality(graph, number_of_concurrent_jobs)
+        resuts_edge_btw, results_node_btw = centrality_measures.parallel_betweenness_centrality(graph,
+                                                                                                number_of_concurrent_jobs)
 
         for node, btw in results_node_btw.items():
             self.assertEqual(approx(expected_node_btw[node], rel=0.01), results_node_btw[node])
@@ -105,17 +106,18 @@ class TestCentralityMeasures(TestCase):
         # Ritornano gli stessi risultati
 
     def test_algebraic_page_rank(self):
-        expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5)
-        results = centrality_measures.algebraic_page_rank(self.facebook_graph, max_iterations=200, alpha=1, delta=1e-5)
-        for node in self.facebook_graph.nodes():
+        expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=500, delta_rel=0.2)
+        results = centrality_measures.algebraic_page_rank(self.facebook_graph, max_iterations=500, alpha=1,
+                                                          delta_rel=0.2)
+        for node in expected.keys():
             self.assertEqual(approx(expected[node], rel=0.5), results[node])
 
     def test_parallel_page_rank(self):
-        actual = centrality_measures.parallel_basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5,
+        results = centrality_measures.parallel_basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5,
                                                               jobs=4)
-        expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5)
-        for node in self.facebook_graph.nodes():
-            self.assertEqual(approx(expected[node], rel=0.5), actual[node])
+        expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta_rel=1e-5)
+        for node in results.keys():
+            self.assertEqual(approx(expected[node], rel=0.5), results[node])
 
     def test_transition_matrix(self):
         alpha = 1

@@ -52,8 +52,8 @@ Even if the naive implementation took more or less half of an hour, a parallel v
 that splits the nodes of the graph into different chunks (one for each job) and compute the closeness on different jobs.
 
 ```
-2021-06-12 18:20:58,828 __evaluate      INFO     Evaluating closeness_centrality algorithm
-2021-06-12 18:45:45,490 __evaluate      INFO     The centrality algorithm: closeness_centrality took 1486.66 seconds
+2021-06-13 12:13:01,319 __evaluate      INFO     Evaluating parallel_closeness_centrality algorithm, with these arguments : {'n_jobs': 8}
+2021-06-13 12:17:39,897 __evaluate      INFO     The centrality algorithm: parallel_closeness_centrality took 278.57 seconds
 ```
 
 The results of the naive, the parallel implementation and the networkx implementation, have been compared in time and
@@ -122,15 +122,32 @@ next_rank[second_endpoint] += (current_rank[first_endpoint] / degree(first_endpo
 
 3. If the convergence is reached, then the algorithm ends. 
 The algorithm reaches the convergence if the difference between two consecutive ranks for all nodes is less than a
-specific threshold given as input.
+specific threshold that is not absolute, but is relative to the order of magnitude associated to the rank value.
 4. If the convergence is not reached, then the next rank is inserted in the current rank and reinitialized to 0.
 So repeat the steps from 2.
 
+```
+2021-06-13 15:25:48,120 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.2}
+2021-06-13 15:27:03,518 basic_page_rank                INFO     The algorithm has reached convergence at iteration 161
+2021-06-13 15:27:03,523 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 75.40 seconds
 
+2021-06-13 16:06:28,041 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.4}
+2021-06-13 16:07:33,329 basic_page_rank                INFO     The algorithm has reached convergence at iteration 135
+2021-06-13 16:07:33,331 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 65.289 seconds
+
+2021-06-13 16:10:47,365 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.6}
+2021-06-13 16:11:45,624 basic_page_rank                INFO     The algorithm has reached convergence at iteration 121
+2021-06-13 16:11:45,625 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 58.260 seconds
+
+2021-06-13 16:14:37,236 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.8}
+2021-06-13 16:15:28,762 basic_page_rank                INFO     The algorithm has reached convergence at iteration 109
+2021-06-13 16:15:28,762 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 51.526 seconds
+
+2021-06-13 16:18:03,536 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 1}
+2021-06-13 16:18:51,097 basic_page_rank                INFO     The algorithm has reached convergence at iteration 101
+2021-06-13 16:18:51,097 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 47.562 seconds
 ```
-2021-06-12 18:45:45,515 __evaluate      INFO     Evaluating basic_page_rank algorithm
-2021-06-12 18:46:30,403 __evaluate      INFO     The centrality algorithm: basic_page_rank took 44.88 seconds
-```
+
 '''
 
 
@@ -142,8 +159,8 @@ def basic_page_rank(graph, max_iterations=100, delta_rel=None):
             Undirected graph
 
         max_iterations: number of max iterations to perform
-        delta: tolerance threshold for determining convergence. If given, the algorithm stops when the ranks are
-            stabilized within the delta variable (for accounting for float precision).
+        delta_rel: tolerance threshold for determining convergence. If given, the algorithm stops when the ranks are
+            stabilized within the delta_rel variable (for accounting for float precision).
     """
 
     def check_convergence(current_ranks, next_ranks, delta_rel):
@@ -187,14 +204,53 @@ def basic_page_rank(graph, max_iterations=100, delta_rel=None):
     return current_node_to_rank
 
 
-def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta=None):
-    def check_convergence(current_ranks, next_ranks, delta):
-        if delta is None:
+'''
+
+The `algebraic_page_rank` is the algebraic implementation of the page rank algorithm.
+
+The algorithm follows these steps:
+1. Initialize the rank vector v with the value 1/n 
+2. Compute the transition matrix
+3. At each iteration:
+    - The rank vector is updated with its product with the transition matrix
+    - If the convergence is reached, then the algorithm ends, else repeat from 3.
+
+4. If the algorithm does not reaches the convergence in max iterations then it ends.
+
+The check of the convergence is the same used in the basic_page_rank.
+
+```
+2021-06-13 15:53:15,668 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.2}
+2021-06-13 15:54:22,941 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 161.
+2021-06-13 15:54:23,262 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 67.59438390000003 seconds
+
+2021-06-13 16:09:55,159 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.4}
+2021-06-13 16:10:47,003 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 135.
+2021-06-13 16:10:47,309 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 52.149115600000016 seconds
+
+2021-06-13 16:13:45,160 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.6}
+2021-06-13 16:14:36,877 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 121.
+2021-06-13 16:14:37,178 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 52.017438700000014 seconds
+
+2021-06-13 16:17:18,057 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.8}
+2021-06-13 16:18:03,043 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 109.
+2021-06-13 16:18:03,371 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 45.31399070000009 seconds
+
+2021-06-13 16:20:34,706 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 1}
+2021-06-13 16:21:20,211 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 101.
+2021-06-13 16:21:20,529 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 45.822299099999896 seconds
+```
+
+'''
+
+
+def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta_rel=None):
+    def check_convergence(current_ranks, next_ranks, delta_rel):
+        if delta_rel is None:
             return False
 
         for current_rank, next_rank in zip(current_ranks.flat, next_ranks.flat):
-            error = abs(current_rank - next_rank)
-            if error > delta:
+            if approx(next_rank, rel=delta_rel) != current_rank:
                 return False
         return True
 
@@ -210,7 +266,7 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta=None):
         for i in range(max_iterations):
             next_v = np.dot(current_v, matrix)
             pbar.update(1)
-            if check_convergence(current_v, next_v, delta):
+            if check_convergence(current_v, next_v, delta_rel):
                 logger.info(f"The algorithm has reached convergence at iteration {i}.")
                 break
             current_v = next_v
@@ -224,14 +280,67 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta=None):
     return node_to_rank
 
 
-def parallel_basic_page_rank(graph, max_iterations=100, jobs=4, delta=None):
-    def check_convergence(current_ranks, next_ranks, delta):
-        if delta is None:
+'''
+
+The parallel_basic_page_rank is the parallel implementation of the basic_page_rank algorithm.
+In particular it is exactly the same algorithm, but the edges of the graph are split in non overlapping chunks 
+that are given in input to different jobs.
+
+Each job, computes a partial next rank for the endpoints of the given edges, considering
+only the rank coming from the edges given as input.
+ 
+The aggregation phase is very simple, because it consists in the sum of all the partial
+results computed by the jobs.
+
+```
+2021-06-13 15:50:27,804 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.2, 'jobs': 8}
+2021-06-13 15:53:15,617 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 161.
+2021-06-13 15:53:15,624 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 167.82 seconds
+
+2021-06-13 16:07:33,403 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.4, 'jobs': 8}
+2021-06-13 16:09:55,129 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 135.
+2021-06-13 16:09:55,137 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 141.73seconds
+
+2021-06-13 16:11:45,796 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.6, 'jobs': 8}
+2021-06-13 16:13:45,033 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 121.
+2021-06-13 16:13:45,040 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 119.244 seconds
+
+2021-06-13 16:15:28,789 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.8, 'jobs': 8}
+2021-06-13 16:17:18,017 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 109.
+2021-06-13 16:17:18,024 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 109.236 seconds
+
+2021-06-13 16:18:51,124 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 1, 'jobs': 8}
+2021-06-13 16:20:34,558 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 101.
+2021-06-13 16:20:34,568 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 103.4429374 seconds
+```
+
+
+Comparison between the different implementation of the page rank algorithm:
+
+As it is evident from the results, the higher the parameter delta_rel is, the lower is the number of iterations and consequently the running
+time of the algorithm.
+
+The results obtained from the parallel version are exactly the same to the ones obtained with the basic one. Instead the results
+obtained with the algebraic version are almost equal, except for small variations in the lasts decimal digits.
+
+The parallel version is the slowest, this can due to the fact that the algorithm itself is fast, and so the time overhead
+due to the creation of the different jobs, the creation of the chunks and the aggregation phase, is greater than the speed up of the algorithm itself.
+
+The algebraic version of the algorithm is the fastest, but it is very memory expensive due to the computation of the transition matrix, infact this 
+matrix is in the order of n^2 in memory, that for the given network is more or less 12 GB. 
+
+The basic version is almost as fast as the algebraic one, but it is not as memory expensive as the algebraic one.
+
+'''
+
+
+def parallel_basic_page_rank(graph, max_iterations=100, jobs=8, delta_rel=None):
+    def check_convergence(current_ranks, next_ranks, delta_rel):
+        if delta_rel is None:
             return False
         for node, rank in current_ranks.items():
             next_rank = next_ranks[node]
-            error = abs(next_rank - rank)
-            if error > delta:
+            if approx(next_rank, rel=delta_rel) != rank:
                 return False
         return True
 
@@ -241,8 +350,6 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=4, delta=None):
             first_endpoint = edge[0]
             second_endpoint = edge[1]
 
-            # add alpha parameter
-            # There are no dead ends and spider traps, the graph is undirected
             next_node_to_rank[first_endpoint] = next_node_to_rank[first_endpoint] + (
                     current_node_to_rank[second_endpoint] * np.float((1 / graph.degree(second_endpoint))))
             next_node_to_rank[second_endpoint] = next_node_to_rank[second_endpoint] + (
@@ -250,7 +357,7 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=4, delta=None):
         return next_node_to_rank
 
     def aggregate_results(results):
-        aggregated = defaultdict(int)
+        aggregated = defaultdict(int)  # If the key is not already in the dict, then it is initialized with 0
         for result in results:
             for node, rank in result.items():
                 aggregated[node] += rank
@@ -268,18 +375,24 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=4, delta=None):
             for i in range(jobs):
                 edges_chunks.append(list(graph.edges())[i * chunk_size: (i + 1) * chunk_size])
 
-            for i in range(max_iterations):  # add convergence check with tolerance
+            for i in range(max_iterations):
                 results = parallel(
                     delayed(chunked_page_rank_step)(edges_chunk, current_node_to_rank) for edges_chunk in edges_chunks)
                 next_node_to_rank = aggregate_results(results)
-                if check_convergence(current_node_to_rank, next_node_to_rank, delta):
-                    print(f"The algorithm has reached convergence at iteration {i}.")
+                if check_convergence(current_node_to_rank, next_node_to_rank, delta_rel):
+                    logger.info(f"The algorithm has reached convergence at iteration {i}.")
                     break
 
                 current_node_to_rank = next_node_to_rank
                 pbar.update(1)
 
     return current_node_to_rank
+
+
+
+
+
+
 
 
 def hits(graph, max_iterations=100):
