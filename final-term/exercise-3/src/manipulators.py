@@ -171,7 +171,7 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
     Evaluating the marginal contribution takes around 2s, so it is infeasible to do that for each node of the graph.
     """
 
-    NUMBER_OF_DIGITS = 2
+    NUMBER_OF_DIGITS = 5
 
     target_candidate = get_candidate_by_id(candidates, target_candidate_id)
     if target_candidate is None:
@@ -189,7 +189,7 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
     score = results[target_candidate.id]
 
     # Evaluate marginal contribution of each node
-    max_number_of_nodes_to_evaluate = 2000
+    max_number_of_nodes_to_evaluate = len(graph.nodes())
     number_of_nodes_to_evaluate = number_of_seeds
     if number_of_nodes_to_evaluate < max_number_of_nodes_to_evaluate:
         number_of_nodes_to_evaluate = max_number_of_nodes_to_evaluate
