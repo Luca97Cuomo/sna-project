@@ -83,7 +83,7 @@ class TestCentralityMeasures(TestCase):
         self.assertListEqual(expected_nodes, results_nodes)
 
     def test_equality_of_betweenness(self):
-        graph = self.facebook_graph
+        graph = self.graph
         expected_edge_btw, expected_node_btw = centrality_measures.betweenness_centrality(graph, graph.nodes(), None)
         number_of_concurrent_jobs = 8
         resuts_edge_btw, results_node_btw = centrality_measures.parallel_betweenness_centrality(graph, graph.nodes(),
@@ -94,6 +94,7 @@ class TestCentralityMeasures(TestCase):
 
         for edge, btw in resuts_edge_btw.items():
             self.assertEqual(approx(expected_edge_btw[edge], rel=0.01), resuts_edge_btw[edge])
+        # Ritornano gli stessi risultati
 
     def test_algebraic_page_rank(self):
         expected = centrality_measures.basic_page_rank(self.facebook_graph, max_iterations=200, delta=1e-5)
