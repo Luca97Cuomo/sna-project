@@ -3,11 +3,11 @@ import typing
 import networkx as nx
 
 from shapley_centrality.characteristic_functions import adjusted_distance_reciprocal
-from shapley_centrality import ShapleyValues
+from shapley_centrality import CentralityValues
 
 
 def shapley_closeness(graph: nx.Graph,
-                      decreasing_distance_function: typing.Callable[[float], float] = None) -> ShapleyValues:
+                      decreasing_distance_function: typing.Callable[[float], float] = None) -> CentralityValues:
     # O(nm + n^2log n)
 
     if decreasing_distance_function is None:

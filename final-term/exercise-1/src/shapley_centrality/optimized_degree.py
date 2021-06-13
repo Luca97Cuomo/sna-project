@@ -2,10 +2,10 @@ import typing
 
 import networkx as nx
 
-from shapley_centrality import ShapleyValues
+from shapley_centrality import CentralityValues
 
 
-def shapley_degree(graph: nx.Graph) -> ShapleyValues:
+def shapley_degree(graph: nx.Graph) -> CentralityValues:
     # O(n + m)
     # this is just a simplified version of shapley_threshold(graph, 1)
     values = {}

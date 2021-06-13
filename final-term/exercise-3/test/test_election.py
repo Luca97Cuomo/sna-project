@@ -17,13 +17,13 @@ class TestElection(TestCase):
 
     def test_run_election(self):
         graph = nx.Graph()
-        graph.add_node(1, private_belief=0.4)  # 41
-        graph.add_node(2, private_belief=0.39)  # 41
-        graph.add_node(3, private_belief=0.5)  # 42
-        graph.add_node(4, private_belief=0.0)  # 40
-        graph.add_node(5, private_belief=1.0)  # 44
-        graph.add_node(6, private_belief=0.66)  # 44
-        graph.add_node(7, private_belief=0.52)  # 42
+        graph.add_node(1, peak_preference=0.4)  # 41
+        graph.add_node(2, peak_preference=0.39)  # 41
+        graph.add_node(3, peak_preference=0.5)  # 42
+        graph.add_node(4, peak_preference=0.0)  # 40
+        graph.add_node(5, peak_preference=1.0)  # 44
+        graph.add_node(6, peak_preference=0.66)  # 44
+        graph.add_node(7, peak_preference=0.52)  # 42
 
         expected = {
             40: 1,

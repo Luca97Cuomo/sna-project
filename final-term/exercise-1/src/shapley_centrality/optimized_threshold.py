@@ -1,9 +1,9 @@
 import networkx as nx
 
-from shapley_centrality import ShapleyValues
+from shapley_centrality import CentralityValues
 
 
-def shapley_threshold(graph: nx.Graph, k: int) -> ShapleyValues:
+def shapley_threshold(graph: nx.Graph, k: int) -> CentralityValues:
     # O(n + m)
     values = {}
 

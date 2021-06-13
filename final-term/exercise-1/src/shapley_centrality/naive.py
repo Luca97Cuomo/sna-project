@@ -3,7 +3,7 @@ import networkx as nx
 import itertools
 import math
 
-from shapley_centrality import ShapleyValues, characteristic_functions
+from shapley_centrality import CentralityValues, characteristic_functions
 
 ShapleyValueFunction = typing.Callable[[nx.Graph, characteristic_functions.CharacteristicFunction, int], float]
 
@@ -62,7 +62,7 @@ def shapley_value_permutations(graph: nx.Graph, characteristic_function: charact
 
 
 def naive_shapley_centrality(graph: nx.Graph, characteristic_function: characteristic_functions.CharacteristicFunction,
-                             shapley_value_function: ShapleyValueFunction) -> ShapleyValues:
+                             shapley_value_function: ShapleyValueFunction) -> CentralityValues:
     shapley_values = {}
     for node in graph.nodes:
         shapley_values[node] = shapley_value_function(graph, characteristic_function, node)

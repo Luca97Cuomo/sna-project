@@ -3,7 +3,7 @@ from unittest import TestCase
 import networkx as nx
 
 from election import Candidate
-from manipulators import bogo_manipulator, get_candidate_by_id
+from manipulators import random_manipulator, get_candidate_by_id
 
 SEED = 42
 
@@ -30,7 +30,7 @@ class TestManipulators(TestCase):
     def test_bogo_manipulator(self):
         target_candidate_id = 41
 
-        seeds = bogo_manipulator(self.graph, self.candidates, target_candidate_id, 2, SEED)
+        seeds = random_manipulator(self.graph, self.candidates, target_candidate_id, 2, SEED)
 
         seeds_set = set()
 

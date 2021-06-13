@@ -72,9 +72,11 @@ def fj_dynamics(graph: nx.Graph, convergence_digits: int = 5) -> OpinionsDict:
 
         is_converged = is_dynamics_converged(prev_opinions, current_opinions, convergence_digits)
 
+        """
         if time_step % 50 == 0:
             max_convergence_error = _evaluate_max_convergence_error(prev_opinions, current_opinions)
             print(f"Partial number of iterations: {time_step}. Max convergence error: {max_convergence_error}")
+        """
 
         prev_opinions = current_opinions
         current_opinions = {}

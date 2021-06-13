@@ -9,6 +9,8 @@ from shapley_centrality.naive import shapley_value_combinations, shapley_value_p
 
 class Test(TestCase):
     def setUp(self) -> None:
+        self.seed = 42
+
         self.graph = nx.Graph()
         self.graph.add_edge(1, 2)
         self.graph.add_edge(1, 4)
@@ -16,6 +18,9 @@ class Test(TestCase):
         self.graph.add_edge(2, 5)
         self.graph.add_edge(3, 5)
         self.graph.add_edge(4, 5)
+
+        # with n = 10,000 and p = 0,01 we have 500,000 edges
+        self.big_graph = nx.fast_gnp_random_graph(10000, 0.01, seed=self.seed)
 
     def slide_value(self, graph, coalition):
         if len(coalition) == 0:
@@ -90,6 +95,24 @@ class Test(TestCase):
         naive = naive_shapley_centrality(self.graph, characteristic_functions.closeness, shapley_value_combinations)
         optimized = shapley_closeness(self.graph)
         self.assertDictAlmostEqual(naive, optimized)
+
+    def test_shapley_degree_time(self):
+        # time 2.268s (LordCatello)
+
+        shapley_degree(self.big_graph)
+        self.assertTrue(True)
+
+    def test_shapley_threshold_time(self):
+        # time 2.131s (LordCatello)
+
+        shapley_threshold(self.big_graph, 5)
+        self.assertTrue(True)
+
+    def test_shapley_closeness_time(self):
+        # time 490.042s (LordCatello)
+
+        shapley_closeness(self.big_graph)
+        self.assertTrue(True)
 
     def assertDictAlmostEqual(self, expected, actual):
         for key, value in expected.items():
