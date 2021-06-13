@@ -12,14 +12,11 @@ class NetworkAnalyzer:
                  network_clustering_coefficient_threshold, target_network, network_generation_algorithms_with_kwargs):
         self.network_generation_algorithms_with_kwargs = network_generation_algorithms_with_kwargs
         self.target_network = target_network
-        # self.target_network_degree_mean, self.target_network_degree_std = analyze_degree_distribution(
-        #     degree_centrality(target_network), "net_1", None, save=True)
-        # self.target_network_diameter = nx.algorithms.diameter(target_network)
-        # self.target_network_avg_clustering_coeff = nx.algorithms.cluster.average_clustering(target_network)
-        self.target_network_degree_mean = 77.6294
-        self.target_network_degree_std = 12.64564176465552
-        self.target_network_diameter = 6
-        self.target_network_avg_clustering_coeff = 0.5745321712547844
+        self.target_network_degree_mean, self.target_network_degree_std = analyze_degree_distribution(
+             degree_centrality(target_network), "net_1", None, save=True)
+        self.target_network_diameter = nx.algorithms.diameter(target_network)
+        self.target_network_avg_clustering_coeff = nx.algorithms.cluster.average_clustering(target_network)
+
         logger.info(
             f"The target network has: degree mean = {self.target_network_degree_mean}, degree std = {self.target_network_degree_std}, "
             f"diameter = {self.target_network_diameter}, average clustering coefficient = {self.target_network_avg_clustering_coeff}")
