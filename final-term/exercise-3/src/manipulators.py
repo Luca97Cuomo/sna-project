@@ -17,7 +17,8 @@ CentralityFunction = typing.Callable[[nx.Graph], CentralityValues]
 logger = logging.getLogger("final_term_exercise_3_logger")
 
 
-def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate, chunk, truthful_score, index):
+def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate, chunk,
+                                            truthful_score, index, number_of_digits):
     marginal_contributions = {}
 
     if index == 0:
@@ -25,7 +26,8 @@ def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate,
         with tqdm(total=len(chunk)) as bar:
             for node in chunk:
                 marginal_contribution = _compute_marginal_contribution(graph, candidates,
-                                                                       target_candidate, node, truthful_score)
+                                                                       target_candidate, node, truthful_score,
+                                                                       number_of_digits)
                 marginal_contributions[node] = marginal_contribution
                 print(f"marginal contribution of {node} is {marginal_contribution}")
 
@@ -33,14 +35,16 @@ def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate,
     else:
         for node in chunk:
             marginal_contribution = _compute_marginal_contribution(graph, candidates,
-                                                           target_candidate, node, truthful_score)
+                                                                   target_candidate, node, truthful_score,
+                                                                   number_of_digits)
             marginal_contributions[node] = marginal_contribution
             print(f"marginal contribution of {node} is {marginal_contribution}")
 
     return marginal_contributions
 
 
-def _compute_marginal_contribution(graph, candidates, target_candidate, seed_node, dynamics_score):
+def _compute_marginal_contribution(graph, candidates, target_candidate, seed_node,
+                                   dynamics_score, number_of_digits: int):
     seed_preference = target_candidate.position
 
     # set seed
@@ -50,7 +54,7 @@ def _compute_marginal_contribution(graph, candidates, target_candidate, seed_nod
     graph.nodes[seed_node]["private_belief"] = seed_preference
     graph.nodes[seed_node]["stubbornness"] = 1
 
-    preferences = fj_dynamics(graph)
+    preferences = fj_dynamics(graph, convergence_digits=number_of_digits)
 
     # update graph after dynamics
     for node, preference in preferences.items():
@@ -70,6 +74,8 @@ def _compute_marginal_contribution(graph, candidates, target_candidate, seed_nod
 
 def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
                                    number_of_seeds: int, seed: int, number_of_jobs: int) -> typing.Dict[int, float]:
+    NUMBER_OF_DIGITS = 2
+
     # The graph has to be copied because it will be modified by this function
     copied_graph = copy.deepcopy(graph)
 
@@ -89,14 +95,15 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
     nodes_for_each_iteration = math.floor(number_of_iterations / number_of_seeds)
 
     logger.info(f"\nTOTAL NUMBER OF ITERATIONS: {number_of_iterations},"
-                f" NUMBER OF NODES FOR EACH ITERATION: {nodes_for_each_iteration}\n")
+                f" NUMBER OF NODES FOR EACH ITERATION: {nodes_for_each_iteration}\n"
+                f"\nNUMBER_OF_DIGITS: {NUMBER_OF_DIGITS}\n")
 
     random.seed(seed)
 
     with tqdm(total=number_of_seeds) as bar:
         for i in range(number_of_seeds):
             # evaluate score with seeds
-            preferences = fj_dynamics(copied_graph)
+            preferences = fj_dynamics(copied_graph, NUMBER_OF_DIGITS)
 
             # update graph after dynamics
             for node, preference in preferences.items():
@@ -126,8 +133,10 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
                     chunks.append(chosen_nodes[k * chunk_size: (k + 1) * chunk_size])
 
                 results = parallel(
-                    delayed(_compute_marginal_contribution_on_nodes)(copied_graph, candidates, target_candidate, chunk, score,
-                                                                     index + 1) for index, chunk in enumerate(chunks))
+                    delayed(_compute_marginal_contribution_on_nodes)(copied_graph, candidates,
+                                                                     target_candidate, chunk, score,
+                                                                     index + 1,
+                                                                     NUMBER_OF_DIGITS) for index, chunk in enumerate(chunks))
 
             nodes_to_contribution_dict = {}
             for result in results:
@@ -162,12 +171,14 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
     Evaluating the marginal contribution takes around 2s, so it is infeasible to do that for each node of the graph.
     """
 
+    NUMBER_OF_DIGITS = 2
+
     target_candidate = get_candidate_by_id(candidates, target_candidate_id)
     if target_candidate is None:
         raise Exception("The target candidate is None")
 
     # evaluate score without seeds
-    preferences = fj_dynamics(graph)
+    preferences = fj_dynamics(graph, NUMBER_OF_DIGITS)
 
     # update graph after dynamics
     for node, preference in preferences.items():
@@ -183,7 +194,8 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
     if number_of_nodes_to_evaluate < max_number_of_nodes_to_evaluate:
         number_of_nodes_to_evaluate = max_number_of_nodes_to_evaluate
 
-    logger.info(f"\nNUMBER OF NODES TO EVALUATE: {number_of_nodes_to_evaluate}\n")
+    logger.info(f"\nNUMBER OF NODES TO EVALUATE: {number_of_nodes_to_evaluate}"
+                f"\nNUMBER_OF_DIGITS: {NUMBER_OF_DIGITS}\n")
 
     random.seed(seed)
 
@@ -199,7 +211,7 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
 
         results = parallel(
             delayed(_compute_marginal_contribution_on_nodes)(graph, candidates, target_candidate, chunk,
-                                                             score, index) for index, chunk in enumerate(chunks))
+                                                             score, index, NUMBER_OF_DIGITS) for index, chunk in enumerate(chunks))
     nodes_to_contribution_dict = {}
     for result in results:
         for node, value in result.items():

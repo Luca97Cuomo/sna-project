@@ -183,7 +183,7 @@ def main():
     NUMBER_OF_CANDIDATES = 10
     TARGET_CANDIDATE = random.randint(0, NUMBER_OF_CANDIDATES - 1)
     NUMBER_OF_SEEDS = 200
-    COMPUTE_SEEDS = multi_level_greedy_manipulator
+    COMPUTE_SEEDS = greedy_manipulator
     GRAPH_NAME = "Facebook Graph"
     GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
     STUBBORNNESS = 0.5
