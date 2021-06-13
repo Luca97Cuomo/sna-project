@@ -87,10 +87,14 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
         raise Exception("The target candidate is None")
 
     # fix the max number of iterations
-    MIN_NUMBER_OF_ITERATIONS = 2000
+    MIN_NUMBER_OF_ITERATIONS = len(graph.nodes()) * 2
     number_of_iterations = number_of_seeds
     if number_of_iterations < MIN_NUMBER_OF_ITERATIONS:
         number_of_iterations = MIN_NUMBER_OF_ITERATIONS
+
+    if number_of_iterations > number_of_seeds * len(graph.nodes()):
+        log.info(f"\nWARNING: NUMBER OF ITERATIONS IS GREATER THE NUMBER_OF_SEEDS * NUMBER OF NODES"
+                 f" .SO FEW ITERATIONS WILL BE COMPUTED")
 
     nodes_for_each_iteration = math.floor(number_of_iterations / number_of_seeds)
 
@@ -123,7 +127,11 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
 
             # compute chosen nodes
             all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
-            chosen_nodes = random.sample(all_nodes_without_seeds, number_of_nodes)
+
+            # if number of nodes is greater that the available nodes then pick few nodes
+            min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
+
+            chosen_nodes = random.sample(all_nodes_without_seeds, min_number_of_nodes)
 
             with Parallel(n_jobs=number_of_jobs) as parallel:
                 # compute chunks
@@ -193,6 +201,9 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
     number_of_nodes_to_evaluate = number_of_seeds
     if number_of_nodes_to_evaluate < max_number_of_nodes_to_evaluate:
         number_of_nodes_to_evaluate = max_number_of_nodes_to_evaluate
+
+    if number_of_nodes_to_evaluate > len(graph.nodes()):
+        raise Exception("The number of nodes to evaluate has to be smaller that the size of the graph")
 
     logger.info(f"\nNUMBER OF NODES TO EVALUATE: {number_of_nodes_to_evaluate}"
                 f"\nNUMBER_OF_DIGITS: {NUMBER_OF_DIGITS}\n")
