@@ -64,3 +64,19 @@ def run_election(graph: nx.Graph, candidates: typing.List[Candidate]) -> typing.
         votes[voted_candidate] += 1
 
     return votes
+
+
+def get_full_results_election(graph: nx.Graph,
+                              candidates: typing.List[Candidate]) -> typing.Tuple[typing.Dict[int, int],
+                                                                                  typing.Dict[int, int]]:
+    candidates = sorted(candidates, key=lambda candidate: candidate.position)
+    votes = {candidate.id: 0 for candidate in candidates}
+    voters_to_candidates = {}
+    for node in graph.nodes:
+        voter_position = graph.nodes[node]['peak_preference']
+        voted_candidate = nearest_candidate_id(voter_position, candidates)
+        votes[voted_candidate] += 1
+
+        voters_to_candidates[node] = voted_candidate
+
+    return votes, voters_to_candidates

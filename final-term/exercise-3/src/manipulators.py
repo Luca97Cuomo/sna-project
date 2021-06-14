@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 import networkx as nx
 
-from election import Candidate, run_election
+from election import Candidate, run_election, get_full_results_election
 from network_diffusion.fj_dynamics import fj_dynamics
 from shapley_centrality import CentralityValues, shapley_degree, shapley_threshold, shapley_closeness
 
@@ -18,8 +18,10 @@ logger = logging.getLogger("final_term_exercise_3_logger")
 
 
 NUMBER_OF_DIGITS = 2
-MIN_NUMBER_OF_ITERATIONS = 44940
-N_PREFERENCES = 5
+MIN_NUMBER_OF_ITERATIONS = 2000
+N_PREFERENCES = 1
+
+logger.info(f"\nNUMBER OF PREFERENCES: {N_PREFERENCES}")
 
 
 def _get_preferences(target_candidate_position: float, n_preferences: int):
@@ -115,8 +117,14 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
                 copied_graph.nodes[node]["peak_preference"] = preference
 
             # run election after dynamics
-            results = run_election(copied_graph, candidates)
+            results, voters_to_candidates = get_full_results_election(copied_graph, candidates)
             score = results[target_candidate.id]
+
+            # get nodes to exclude
+            nodes_to_exclude = []
+            for node, candidate_id in voters_to_candidates.items():
+                if candidate_id == target_candidate_id:
+                    nodes_to_exclude.append(node)
 
             ##########
             # evaluate marginal contributions
@@ -128,6 +136,13 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
 
             # compute chosen nodes
             all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
+
+            print(f"len all_nodes: {len(all_nodes_without_seeds)} - len to exclude: {len(nodes_to_exclude)}")
+
+            # exclude also node that vote for me
+            all_nodes_without_seeds = list(filter(lambda element: element not in nodes_to_exclude, all_nodes_without_seeds))
+
+            print(f"len all_nodes after exclusion: {len(all_nodes_without_seeds)}")
 
             # if number of nodes is greater that the available nodes then pick few nodes
             min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
