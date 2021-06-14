@@ -185,3 +185,13 @@ def analyze_degree_distribution(node_to_degree, network_generation_algorithm, kw
     plt.show()
 
     return degree_mean, degree_std
+
+
+def check_hits_convergence(graph, current_node_to_hubs, last_node_to_hubs, tol):
+    if tol is None:
+        return False
+    err = sum([abs(current_node_to_hubs[node] - last_node_to_hubs[node]) for node in graph.nodes()])
+    if err < tol:
+        return True
+    else:
+        return False

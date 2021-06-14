@@ -3,6 +3,7 @@ from collections import defaultdict
 from joblib import Parallel, delayed
 import networkx as nx
 import utils
+from utils import check_hits_convergence
 from tqdm import tqdm
 import numpy as np
 import logging
@@ -390,15 +391,6 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=8, delta_rel=None):
 
 
 def hits(graph, max_iterations=100, tol=1e-8):
-    def check_convergence(current_node_to_hubs, last_node_to_hubs, tol):
-        if tol is None:
-            return False
-        err = sum([abs(current_node_to_hubs[node] - last_node_to_hubs[node]) for node in graph.nodes()])
-        if err < tol:
-            return True
-        else:
-            return False
-
     node_to_authorities = {}
     node_to_hubs = {}
     last_node_to_hubs = {}
@@ -437,7 +429,7 @@ def hits(graph, max_iterations=100, tol=1e-8):
             for node in graph.nodes():
                 node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
 
-            if i > 0 and check_convergence(node_to_hubs, last_node_to_hubs, tol):
+            if i > 0 and check_hits_convergence(graph, node_to_hubs, last_node_to_hubs, tol):
                 logger.info(f"The algorithm has reached convergence at iteration {i}.")
                 break
 
@@ -448,15 +440,6 @@ def hits(graph, max_iterations=100, tol=1e-8):
 
 
 def parallel_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
-    def check_convergence(current_node_to_hubs, last_node_to_hubs, tol):
-        if tol is None:
-            return False
-        err = sum([abs(current_node_to_hubs[node] - last_node_to_hubs[node]) for node in graph.nodes()])
-        if err < tol:
-            return True
-        else:
-            return False
-
     def chunked_update_authorities_step(edges, node_to_hubs):
         partial_node_to_authorities = {node: 0 for node in graph.nodes()}
         for edge in edges:
@@ -522,12 +505,48 @@ def parallel_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
                 for node in graph.nodes():
                     node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
 
-                if i > 0 and check_convergence(node_to_hubs, last_node_to_hubs, tol):
+                if i > 0 and check_hits_convergence(graph, node_to_hubs, last_node_to_hubs, tol):
                     logger.info(f"The algorithm has reached convergence at iteration {i}.")
                     break
 
                 last_node_to_hubs = node_to_hubs.copy()
                 pbar.update(1)
+
+    return node_to_hubs, node_to_authorities
+
+
+def naive_hits(graph, max_iterations=100, tol=1e-8):
+    node_to_authorities = {}
+    node_to_hubs = {}
+    last_node_to_hubs = {}
+
+    for node in graph.nodes():
+        node_to_hubs[node] = 1
+
+    with tqdm(total=max_iterations) as pbar:
+        for i in range(max_iterations):
+            for node in graph.nodes():
+                node_to_authorities[node] = sum([node_to_hubs[neighbour] for neighbour in graph[node]])
+
+            sum_of_authorities = sum(node_to_authorities.values())
+
+            for node in graph.nodes():
+                node_to_authorities[node] = node_to_authorities[node] / sum_of_authorities
+
+            for node in graph.nodes():
+                node_to_hubs[node] = sum([node_to_authorities[neighbour] for neighbour in graph[node]])
+
+            sum_of_hubs = sum(node_to_hubs.values())
+
+            for node in graph.nodes():
+                node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
+
+            if i > 0 and check_hits_convergence(graph, node_to_hubs, last_node_to_hubs, tol):
+                logger.info(f"The algorithm has reached convergence at iteration {i}.")
+                break
+
+            last_node_to_hubs = node_to_hubs.copy()
+            pbar.update(1)
 
     return node_to_hubs, node_to_authorities
 
