@@ -409,21 +409,28 @@ The algorithm uses these data structures:
 The algorithm follows these steps:
 
 1. The current node to hubs are initialized, for each node, to 1.
-2. 
-2. For each edge of the graph:
+2. For each node the authorities are initialized to 0
+3. For each edge of the graph:
     - Its endpoint are considered
-    - Updates next rank of one endpoint with the current rank of the other over its degree
-    
-```
-next_rank[first_endpoint] += (current_rank[second_endpoint] / degree(second_endpoint))
-next_rank[second_endpoint] += (current_rank[first_endpoint] / degree(first_endpoint)) 
+    - Updates the authority value of one endpoint with the current hub value of the other
+4. All the authority values are normalized
+5. All the hubs are re initialized to 0
+6. For each edge of the graph:
+    - Its endpoint are considered
+    - Updates the hub value of one endpoint with the current authority value of the other
+7. All the hub values are normalized
+8. If the convergence or the maximum number of iteration has been reached, the algorithm ends and returns the two dictionaries
+The algorithm reaches the convergence if the sum of the absolute value of the differences between two consecutive hub
+values is lower than the specified threshold.
+9. Else repeat from step 2.
+
 ```
 
-3. If the convergence is reached, then the algorithm ends. 
-The algorithm reaches the convergence if the difference between two consecutive ranks for all nodes is less than a
-specific threshold that is not absolute, but is relative to the order of magnitude associated to the rank value.
-4. If the convergence is not reached, then the next rank is inserted in the current rank and reinitialized to 0.
-So repeat the steps from 2.
+2021-06-14 11:51:22,728 __evaluate          INFO     Evaluating naive_edge_hits algorithm, with these arguments : {'max_iterations': 100}
+2021-06-14 11:51:26,834 naive_edge_hits     INFO     The algorithm has reached convergence at iteration 22.
+2021-06-14 11:51:26,836 __evaluate          INFO     The centrality algorithm: naive_edge_hits took 4.10 seconds
+ 
+```
 
 '''
 
@@ -439,7 +446,7 @@ def naive_edge_hits(graph, max_iterations=100, tol=1e-8):
     with tqdm(total=max_iterations) as pbar:
         for i in range(max_iterations):
 
-            for node in graph.nodes():  # O(n)
+            for node in graph.nodes():
                 node_to_authorities[node] = 0
 
             for edge in graph.edges():
@@ -475,6 +482,45 @@ def naive_edge_hits(graph, max_iterations=100, tol=1e-8):
             pbar.update(1)
 
     return node_to_hubs, node_to_authorities
+
+
+'''
+
+The `parallel_edge_hits` is the parallel implementation of the `naive_edge_hits` algorithm.
+In particular it is exactly the same algorithm, but the edges of the graph are split in non overlapping chunks 
+that are given in input to different jobs.
+
+1. Each job, firstly computes a partial authority value for the endpoints of the given edges, considering 
+only the hub values coming from the edges given as input.
+2. The partial authorities are aggregated in order to compute the authority of each node.
+3. Each job, then computes a partial hub value for the endpoints of the given edges, considering 
+only the authority values coming from the edges given as input.
+4. The partial hubs are aggregated in order to compute the hub of each node.
+
+```
+
+2021-06-14 11:51:26,935 __evaluate              INFO     Evaluating parallel_edge_hits algorithm, with these arguments : {'max_iterations': 100}
+2021-06-14 11:52:11,642 parallel_edge_hits      INFO     The algorithm has reached convergence at iteration 22.
+2021-06-14 11:52:11,652 __evaluate              INFO     The centrality algorithm: parallel_edge_hits took 44.71 seconds
+
+```
+
+The results obtained from the parallel version are exactly the same to the ones obtained with the non parallel one.
+
+The parallel version is the slowest, this can due to the fact that the algorithm itself is fast, 
+and so the time overhead due to the creation of the different jobs, the creation of the chunks and
+the aggregation phase, that are performed twice, is greater than the speed up of the algorithm itself.
+
+The non parallel version is faster than the one taken from networkx library, as you can see from the results below:
+
+```
+
+2021-06-14 12:54:22,313 __evaluate      INFO     Evaluating hits algorithm, with these arguments : {'max_iter': 100}
+2021-06-14 12:54:40,418 __evaluate      INFO     The centrality algorithm: hits took 18.104869 seconds
+
+```
+
+'''
 
 
 def parallel_edge_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
