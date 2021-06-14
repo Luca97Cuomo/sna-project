@@ -13,8 +13,7 @@ import networkx as nx
 import utils
 from election import Candidate, run_election
 from final_term_utils import populate_dynamics_parameters
-from manipulators import random_manipulator, centrality_based_manipulator, shapley_degree_manipulator, \
-    shapley_threshold_manipulator, shapley_closeness_manipulator, greedy_manipulator, multi_level_greedy_manipulator
+from manipulators import *
 from network_diffusion.fj_dynamics import fj_dynamics
 
 FACEBOOK_PATH_TO_NODES = "../../../mid-term/exercise-1-2/facebook_large/musae_facebook_target.csv"
@@ -182,13 +181,13 @@ def main():
 
     NUMBER_OF_CANDIDATES = 10
     TARGET_CANDIDATE = random.randint(0, NUMBER_OF_CANDIDATES - 1)
-    NUMBER_OF_SEEDS = 200
-    COMPUTE_SEEDS = multi_level_greedy_manipulator
+    NUMBER_OF_SEEDS = 20
+    COMPUTE_SEEDS = multi_level_greedy_manipulator_with_centrality_sampling
     GRAPH_NAME = "Facebook Graph"
     GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
     STUBBORNNESS = 0.5
 
-    NUMBER_OF_JOBS = 6
+    NUMBER_OF_JOBS = 14
 
     CANDIDATES = []
     for i in range(NUMBER_OF_CANDIDATES):

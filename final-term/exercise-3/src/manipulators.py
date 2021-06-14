@@ -17,6 +17,10 @@ CentralityFunction = typing.Callable[[nx.Graph], CentralityValues]
 logger = logging.getLogger("final_term_exercise_3_logger")
 
 
+NUMBER_OF_DIGITS = 2
+MIN_NUMBER_OF_ITERATIONS = 2000
+
+
 def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate, chunk,
                                             truthful_score, index, number_of_digits):
     marginal_contributions = {}
@@ -29,7 +33,7 @@ def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate,
                                                                        target_candidate, node, truthful_score,
                                                                        number_of_digits)
                 marginal_contributions[node] = marginal_contribution
-                print(f"marginal contribution of {node} is {marginal_contribution}")
+                # print(f"marginal contribution of {node} is {marginal_contribution}")
 
                 bar.update(1)
     else:
@@ -38,7 +42,7 @@ def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate,
                                                                    target_candidate, node, truthful_score,
                                                                    number_of_digits)
             marginal_contributions[node] = marginal_contribution
-            print(f"marginal contribution of {node} is {marginal_contribution}")
+            # print(f"marginal contribution of {node} is {marginal_contribution}")
 
     return marginal_contributions
 
@@ -74,7 +78,6 @@ def _compute_marginal_contribution(graph, candidates, target_candidate, seed_nod
 
 def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
                                    number_of_seeds: int, seed: int, number_of_jobs: int) -> typing.Dict[int, float]:
-    NUMBER_OF_DIGITS = 2
 
     # The graph has to be copied because it will be modified by this function
     copied_graph = copy.deepcopy(graph)
@@ -87,14 +90,9 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
         raise Exception("The target candidate is None")
 
     # fix the max number of iterations
-    MIN_NUMBER_OF_ITERATIONS = len(graph.nodes()) * 2
     number_of_iterations = number_of_seeds
     if number_of_iterations < MIN_NUMBER_OF_ITERATIONS:
         number_of_iterations = MIN_NUMBER_OF_ITERATIONS
-
-    if number_of_iterations > number_of_seeds * len(graph.nodes()):
-        log.info(f"\nWARNING: NUMBER OF ITERATIONS IS GREATER THE NUMBER_OF_SEEDS * NUMBER OF NODES"
-                 f" .SO FEW ITERATIONS WILL BE COMPUTED")
 
     nodes_for_each_iteration = math.floor(number_of_iterations / number_of_seeds)
 
@@ -129,7 +127,9 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
             all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
 
             # if number of nodes is greater that the available nodes then pick few nodes
-            min_number_of_nodes = min(number_of_nodes, len(quit))
+            min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
+            if min_number_of_nodes != number_of_nodes:
+                logger.info("Nodes per iteration would have been too many")
 
             chosen_nodes = random.sample(all_nodes_without_seeds, min_number_of_nodes)
 
@@ -144,7 +144,8 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
                     delayed(_compute_marginal_contribution_on_nodes)(copied_graph, candidates,
                                                                      target_candidate, chunk, score,
                                                                      index + 1,
-                                                                     NUMBER_OF_DIGITS) for index, chunk in enumerate(chunks))
+                                                                     NUMBER_OF_DIGITS) for index, chunk in
+                    enumerate(chunks))
 
             nodes_to_contribution_dict = {}
             for result in results:
@@ -171,6 +172,118 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
     return seeds
 
 
+def _get_nodes_sorted_with_centrality(graph: nx.Graph, centrality_function: typing.Callable[[nx.Graph], CentralityValues]) -> typing.List[int]:
+    centrality_values = centrality_function(graph)
+    centrality_values = sorted(centrality_values.items(), key=lambda element: element[1], reverse=True)
+    return [item[0] for item in centrality_values]
+
+
+def multi_level_greedy_manipulator_with_centrality_sampling(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
+                                   number_of_seeds: int, seed: int, number_of_jobs: int) -> typing.Dict[int, float]:
+    # The graph has to be copied because it will be modified by this function
+    copied_graph = copy.deepcopy(graph)
+
+    seeds: typing.Dict[int, float] = {}  # node_id -> preference
+
+    # get target candidate instance
+    target_candidate = get_candidate_by_id(candidates, target_candidate_id)
+    if target_candidate is None:
+        raise Exception("The target candidate is None")
+
+    # fix the max number of iterations
+    number_of_iterations = number_of_seeds
+    if number_of_iterations < MIN_NUMBER_OF_ITERATIONS:
+        number_of_iterations = MIN_NUMBER_OF_ITERATIONS
+
+    nodes_for_each_iteration = math.floor(number_of_iterations / number_of_seeds)
+
+    logger.info(f"\nTOTAL NUMBER OF ITERATIONS: {number_of_iterations},"
+                f" NUMBER OF NODES FOR EACH ITERATION: {nodes_for_each_iteration}\n"
+                f"\nNUMBER_OF_DIGITS: {NUMBER_OF_DIGITS}\n")
+
+    random.seed(seed)
+
+    degree_bucket = _get_nodes_sorted_with_centrality(graph, shapley_degree)
+    distance_bucket = _most_distant_nodes(graph, target_candidate.position)
+    with tqdm(total=number_of_seeds) as bar:
+        for i in range(number_of_seeds):
+            # evaluate score with seeds
+            preferences = fj_dynamics(copied_graph, NUMBER_OF_DIGITS)
+
+            # update graph after dynamics
+            for node, preference in preferences.items():
+                copied_graph.nodes[node]["peak_preference"] = preference
+
+            # run election after dynamics
+            results = run_election(copied_graph, candidates)
+            score = results[target_candidate.id]
+
+            ##########
+            # evaluate marginal contributions
+            ##########
+
+            number_of_nodes = nodes_for_each_iteration
+            if i == 0:
+                number_of_nodes += number_of_iterations - (nodes_for_each_iteration * number_of_seeds)
+
+            # compute chosen nodes
+            all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
+
+            # if number of nodes is greater that the available nodes then pick few nodes
+            min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
+            if min_number_of_nodes != number_of_nodes:
+                logger.info("Nodes per iteration would have been too many")
+
+            current_random_bucket = random.sample(all_nodes_without_seeds, min_number_of_nodes)
+            current_degree_bucket = degree_bucket[:min_number_of_nodes]
+            current_distance_bucket = distance_bucket[:min_number_of_nodes]
+
+            bucket = set(current_random_bucket + current_degree_bucket + current_distance_bucket)
+            chosen_nodes = random.sample(bucket, min_number_of_nodes)
+
+            with Parallel(n_jobs=number_of_jobs) as parallel:
+                # compute chunks
+                chunks = []
+                chunk_size = math.ceil(len(chosen_nodes) / number_of_jobs)
+                for k in range(number_of_jobs):
+                    chunks.append(chosen_nodes[k * chunk_size: (k + 1) * chunk_size])
+
+                results = parallel(
+                    delayed(_compute_marginal_contribution_on_nodes)(copied_graph, candidates,
+                                                                     target_candidate, chunk, score,
+                                                                     index + 1,
+                                                                     NUMBER_OF_DIGITS) for index, chunk in
+                    enumerate(chunks))
+
+            nodes_to_contribution_dict = {}
+            for result in results:
+                for node, value in result.items():
+                    nodes_to_contribution_dict[node] = value
+
+            # take the node with the higher marginal contribution
+            max_node = None
+            max_value = None
+            for node, value in nodes_to_contribution_dict.items():
+                if max_node is None or value > max_value:
+                    max_node = node
+                    max_value = value
+
+            # add max_node to seeds
+            seeds[max_node] = target_candidate.position
+
+            # update graph with current seed
+            copied_graph.nodes[max_node]["private_belief"] = target_candidate.position
+            copied_graph.nodes[max_node]["stubbornness"] = 1
+
+            # update buckets
+            degree_bucket.remove(max_node)
+            distance_bucket.remove(max_node)
+
+            bar.update(1)
+
+    return seeds
+
+
 def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
                        number_of_seeds: int, seed: int, number_of_jobs: int) -> typing.Dict[int, float]:
     """
@@ -178,9 +291,6 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
 
     Evaluating the marginal contribution takes around 2s, so it is infeasible to do that for each node of the graph.
     """
-
-    NUMBER_OF_DIGITS = 5
-
     target_candidate = get_candidate_by_id(candidates, target_candidate_id)
     if target_candidate is None:
         raise Exception("The target candidate is None")
@@ -197,7 +307,7 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
     score = results[target_candidate.id]
 
     # Evaluate marginal contribution of each node
-    max_number_of_nodes_to_evaluate = len(graph.nodes())
+    max_number_of_nodes_to_evaluate = MIN_NUMBER_OF_ITERATIONS
     number_of_nodes_to_evaluate = number_of_seeds
     if number_of_nodes_to_evaluate < max_number_of_nodes_to_evaluate:
         number_of_nodes_to_evaluate = max_number_of_nodes_to_evaluate
@@ -222,7 +332,8 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
 
         results = parallel(
             delayed(_compute_marginal_contribution_on_nodes)(graph, candidates, target_candidate, chunk,
-                                                             score, index, NUMBER_OF_DIGITS) for index, chunk in enumerate(chunks))
+                                                             score, index, NUMBER_OF_DIGITS) for index, chunk in
+            enumerate(chunks))
     nodes_to_contribution_dict = {}
     for result in results:
         for node, value in result.items():
@@ -288,7 +399,6 @@ def centrality_based_manipulator(graph: nx.Graph, candidates: typing.List[Candid
 
 def random_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
                        number_of_seeds: int, seed: int = 42, number_of_jobs: int = 1) -> typing.Dict[int, float]:
-
     random.seed(seed)
 
     seeds = {}
@@ -301,6 +411,28 @@ def random_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
 
     for node in chosen_nodes:
         seeds[node] = target_candidate.position
+
+    return seeds
+
+
+def _most_distant_nodes(graph: nx.Graph, target_candidate_position: float) -> typing.List[int]:
+    nodes_with_distance = []
+    for node in graph.nodes:
+        nodes_with_distance.append((node, abs(graph.nodes[node]['private_belief'] - target_candidate_position)))
+    nodes_with_distance = sorted(nodes_with_distance, key=lambda item: item[1], reverse=True)
+    nodes_with_distance = [item[0] for item in nodes_with_distance]
+    return nodes_with_distance
+
+
+def furthest_voters_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
+                                number_of_seeds: int, seed: int = 42, number_of_jobs: int = 1) -> typing.Dict[int, float]:
+    target_candidate_position = get_candidate_by_id(candidates, target_candidate_id).position
+
+    sorted_nodes = _most_distant_nodes(graph, target_candidate_position)
+    seeds = {}
+    for i in range(number_of_seeds):
+        node = sorted_nodes[i]
+        seeds[node] = target_candidate_position
 
     return seeds
 

@@ -92,7 +92,7 @@ def optimized_fj_dynamics(graph: nx.Graph, convergence_digits: int = 5) -> Opini
     # built dict
     current_opinions_dict = {nodes_list[i]: current_opinions[i] for i in range(len(nodes_list))}
 
-    print(f"Number of iterations required to converge: {time_step}")
+    # print(f"Number of iterations required to converge: {time_step}")
 
     return current_opinions_dict
 
@@ -137,7 +137,7 @@ def fj_dynamics(graph: nx.Graph, convergence_digits: int = 5) -> OpinionsDict:
         prev_opinions = current_opinions
         current_opinions = {}
 
-    print(f"Number of iterations required to converge: {time_step}")
+    # print(f"Number of iterations required to converge: {time_step}")
 
     return prev_opinions
 
