@@ -18,7 +18,15 @@ logger = logging.getLogger("final_term_exercise_3_logger")
 
 
 NUMBER_OF_DIGITS = 2
-MIN_NUMBER_OF_ITERATIONS = 2000
+MIN_NUMBER_OF_ITERATIONS = 44940
+N_PREFERENCES = 5
+
+
+def _get_preferences(target_candidate_position: float, n_preferences: int):
+    preferences = [target_candidate_position]
+    for _ in range(n_preferences - 1):
+        preferences.append(random.random())
+    return preferences
 
 
 def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate, chunk,
@@ -26,31 +34,26 @@ def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate,
     marginal_contributions = {}
 
     if index == 0:
-        # only if index == 0 use tqdm
-        with tqdm(total=len(chunk)) as bar:
-            for node in chunk:
-                marginal_contribution = _compute_marginal_contribution(graph, candidates,
-                                                                       target_candidate, node, truthful_score,
-                                                                       number_of_digits)
-                marginal_contributions[node] = marginal_contribution
-                # print(f"marginal contribution of {node} is {marginal_contribution}")
-
-                bar.update(1)
-    else:
-        for node in chunk:
+        bar = tqdm(total=len(chunk))
+    for node in chunk:
+        max_marginal_contribution = float('-inf')
+        max_preference = None
+        for preference in _get_preferences(target_candidate.position, N_PREFERENCES):
             marginal_contribution = _compute_marginal_contribution(graph, candidates,
                                                                    target_candidate, node, truthful_score,
-                                                                   number_of_digits)
-            marginal_contributions[node] = marginal_contribution
-            # print(f"marginal contribution of {node} is {marginal_contribution}")
-
+                                                                   number_of_digits, preference)
+            if max_marginal_contribution < marginal_contribution:
+                max_marginal_contribution = marginal_contribution
+                max_preference = preference
+        marginal_contributions[node] = (max_marginal_contribution, max_preference)
+        print(f"marginal contribution of {node} is {max_marginal_contribution} (pref: {max_preference} target: {target_candidate.position})")
+        if index == 0:
+            bar.update(1)
     return marginal_contributions
 
 
 def _compute_marginal_contribution(graph, candidates, target_candidate, seed_node,
-                                   dynamics_score, number_of_digits: int):
-    seed_preference = target_candidate.position
-
+                                   dynamics_score, number_of_digits: int, seed_preference: float):
     # set seed
     old_private_belief = graph.nodes[seed_node]["private_belief"]
     old_stubbornness = graph.nodes[seed_node]["stubbornness"]
@@ -154,17 +157,21 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
 
             # take the node with the higher marginal contribution
             max_node = None
-            max_value = None
+            max_contribution = None
+            max_preference = None
             for node, value in nodes_to_contribution_dict.items():
-                if max_node is None or value > max_value:
+                contribution = value[0]
+                preference = value[1]
+                if max_node is None or contribution > max_contribution:
                     max_node = node
-                    max_value = value
+                    max_contribution = contribution
+                    max_preference = preference
 
             # add max_node to seeds
-            seeds[max_node] = target_candidate.position
+            seeds[max_node] = max_preference
 
             # update graph with current seed
-            copied_graph.nodes[max_node]["private_belief"] = target_candidate.position
+            copied_graph.nodes[max_node]["private_belief"] = seeds[max_node]
             copied_graph.nodes[max_node]["stubbornness"] = 1
 
             bar.update(1)
@@ -234,7 +241,7 @@ def multi_level_greedy_manipulator_with_centrality_sampling(graph: nx.Graph, can
             if min_number_of_nodes != number_of_nodes:
                 logger.info("Nodes per iteration would have been too many")
 
-            current_random_bucket = random.sample(all_nodes_without_seeds, min_number_of_nodes)
+            current_random_bucket = random.sample(all_nodes_without_seeds, min(min_number_of_nodes * 2, len(all_nodes_without_seeds)))
             current_degree_bucket = degree_bucket[:min_number_of_nodes]
             current_distance_bucket = distance_bucket[:min_number_of_nodes]
 
@@ -262,17 +269,21 @@ def multi_level_greedy_manipulator_with_centrality_sampling(graph: nx.Graph, can
 
             # take the node with the higher marginal contribution
             max_node = None
-            max_value = None
+            max_contribution = None
+            max_preference = None
             for node, value in nodes_to_contribution_dict.items():
-                if max_node is None or value > max_value:
+                contribution = value[0]
+                preference = value[1]
+                if max_node is None or contribution > max_contribution:
                     max_node = node
-                    max_value = value
+                    max_contribution = contribution
+                    max_preference = preference
 
             # add max_node to seeds
-            seeds[max_node] = target_candidate.position
+            seeds[max_node] = max_preference
 
             # update graph with current seed
-            copied_graph.nodes[max_node]["private_belief"] = target_candidate.position
+            copied_graph.nodes[max_node]["private_belief"] = seeds[max_node]
             copied_graph.nodes[max_node]["stubbornness"] = 1
 
             # update buckets
@@ -340,11 +351,11 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
             nodes_to_contribution_dict[node] = value
 
     # sort in ascending order
-    nodes_to_contribution = sorted(nodes_to_contribution_dict.items(), key=lambda element: -element[1])
+    nodes_to_contribution = sorted(nodes_to_contribution_dict.items(), key=lambda element: -element[1][0])
 
     seeds = {}
     for i in range(number_of_seeds):
-        seeds[nodes_to_contribution[i][0]] = target_candidate.position
+        seeds[nodes_to_contribution[i][0]] = nodes_to_contribution[i][1][1]
 
     return seeds
 
