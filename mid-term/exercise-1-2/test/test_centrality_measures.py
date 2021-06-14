@@ -119,9 +119,8 @@ class TestCentralityMeasures(TestCase):
         for node in results.keys():
             self.assertEqual(approx(expected[node], rel=0.5), results[node])
 
-
     def test_hits(self):
-        graph = self.facebook_graph
+        graph = self.graph
         nx_hubs, nx_authorities = nx.algorithms.link_analysis.hits_alg.hits(graph, max_iter=100)
 
         hubs, authorities = centrality_measures.hits(graph, max_iterations=100)
