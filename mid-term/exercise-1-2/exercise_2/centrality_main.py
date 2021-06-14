@@ -14,7 +14,10 @@ def main():
     graph, _ = utils.load_graph_and_clusters(PATH_TO_NODES, PATH_TO_EDGES)
 
     centrality = centrality_utils.Centrality([
-        (hits, {'max_iterations': 100}),
+        (naive_edge_hits, {'max_iterations': 100}),
+        (parallel_edge_hits, {'max_iterations': 100}),
+        (naive_hits, {'max_iterations': 100}),
+        (parallel_naive_hits, {'max_iterations': 100}),
     ],
         graph)
 

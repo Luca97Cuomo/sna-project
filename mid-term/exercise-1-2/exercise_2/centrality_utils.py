@@ -8,7 +8,7 @@ import time
 
 logger = logging.getLogger()
 
-HITS_ALGORITHMS = ["hits", "parallel_hits"]
+HITS_ALGORITHMS = ["naive_edge_hits", "parallel_edge_hits", "naive_hits", "parallel_naive_hits"]
 BETWENNEES_CENTRALITY = ["parallel_betweenness_centrality", "betweenness_centrality"]
 
 

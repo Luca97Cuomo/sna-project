@@ -390,7 +390,7 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=8, delta_rel=None):
     return current_node_to_rank
 
 
-def hits(graph, max_iterations=100, tol=1e-8):
+def naive_edge_hits(graph, max_iterations=100, tol=1e-8):
     node_to_authorities = {}
     node_to_hubs = {}
     last_node_to_hubs = {}
@@ -439,28 +439,17 @@ def hits(graph, max_iterations=100, tol=1e-8):
     return node_to_hubs, node_to_authorities
 
 
-def parallel_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
-    def chunked_update_authorities_step(edges, node_to_hubs):
-        partial_node_to_authorities = {node: 0 for node in graph.nodes()}
+def parallel_edge_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
+    def chunked_update_step(edges, node_to_value):
+        partial_node_to_value = {node: 0 for node in graph.nodes()}
         for edge in edges:
             first_endpoint = edge[0]
             second_endpoint = edge[1]
 
-            partial_node_to_authorities[first_endpoint] += node_to_hubs[second_endpoint]
-            partial_node_to_authorities[second_endpoint] += node_to_hubs[first_endpoint]
+            partial_node_to_value[first_endpoint] += node_to_value[second_endpoint]
+            partial_node_to_value[second_endpoint] += node_to_value[first_endpoint]
 
-        return partial_node_to_authorities
-
-    def chunked_update_hubs_step(edges, node_to_authorities):
-        partial_node_to_hubs = {node: 0 for node in graph.nodes()}
-        for edge in edges:
-            first_endpoint = edge[0]
-            second_endpoint = edge[1]
-
-            partial_node_to_hubs[first_endpoint] += node_to_authorities[second_endpoint]
-            partial_node_to_hubs[second_endpoint] += node_to_authorities[first_endpoint]
-
-        return partial_node_to_hubs
+        return partial_node_to_value
 
     node_to_authorities = {}
     node_to_hubs = {}
@@ -482,7 +471,7 @@ def parallel_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
                     node_to_authorities[node] = 0
 
                 authorities_results = parallel(
-                    delayed(chunked_update_authorities_step)(edges_chunk, node_to_hubs) for edges_chunk in edges_chunks)
+                    delayed(chunked_update_step)(edges_chunk, node_to_hubs) for edges_chunk in edges_chunks)
 
                 for authority_results in authorities_results:
                     for node, authority in authority_results.items():
@@ -494,7 +483,7 @@ def parallel_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
                     node_to_hubs[node] = 0
 
                 hubs_results = parallel(
-                    delayed(chunked_update_hubs_step)(edges_chunk, node_to_authorities) for edges_chunk in edges_chunks)
+                    delayed(chunked_update_step)(edges_chunk, node_to_authorities) for edges_chunk in edges_chunks)
 
                 for hub_results in hubs_results:
                     for node, hub in hub_results.items():
@@ -547,6 +536,58 @@ def naive_hits(graph, max_iterations=100, tol=1e-8):
 
             last_node_to_hubs = node_to_hubs.copy()
             pbar.update(1)
+
+    return node_to_hubs, node_to_authorities
+
+
+def parallel_naive_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
+    def chunked_update_step(nodes, node_to_hubs):
+        chunked_node_to_authoritiy = {node: 0 for node in nodes}
+        partial_node_to_hub = {node: 0 for node in graph.nodes()}
+        for node in nodes:
+            chunked_node_to_authoritiy[node] = sum([node_to_hubs[neighbour] for neighbour in graph[node]])
+            for neighbour in graph[node]:
+                partial_node_to_hub[neighbour] += chunked_node_to_authoritiy[node]
+
+        return partial_node_to_hub, chunked_node_to_authoritiy
+
+    node_to_authorities = {}
+    node_to_hubs = {}
+    last_node_to_hubs = {}
+
+    for node in graph.nodes():
+        node_to_authorities[node] = 0
+        node_to_hubs[node] = 1
+
+    with tqdm(total=max_iterations) as pbar:
+        with Parallel(n_jobs=jobs) as parallel:
+            for i in range(max_iterations):
+                partial_results = parallel(delayed(chunked_update_step)(chunk, node_to_hubs) for chunk in
+                                           utils.chunks(graph.nodes(), math.ceil(len(graph.nodes()) / jobs)))
+
+                for node in graph.nodes():
+                    node_to_hubs[node] = 0
+
+                for job_result in partial_results:
+                    for node in graph.nodes():
+                        node_to_hubs[node] += job_result[0][node]
+                        try:
+                            node_to_authorities[node] = job_result[1][node]
+                        except KeyError:
+                            continue
+
+                sum_of_hubs = sum(node_to_hubs.values())
+                sum_of_authorities = sum(node_to_authorities.values())
+                for node in graph.nodes():
+                    node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
+                    node_to_authorities[node] = node_to_authorities[node] / sum_of_authorities
+
+                if i > 0 and check_hits_convergence(graph, node_to_hubs, last_node_to_hubs, tol):
+                    logger.info(f"The algorithm has reached convergence at iteration {i}.")
+                    break
+
+                last_node_to_hubs = node_to_hubs.copy()
+                pbar.update(1)
 
     return node_to_hubs, node_to_authorities
 

@@ -119,25 +119,45 @@ class TestCentralityMeasures(TestCase):
         for node in results.keys():
             self.assertEqual(approx(expected[node], rel=0.5), results[node])
 
-    def test_hits(self):
-        graph = self.graph
+    def test_naive_edge_hits(self):
+        graph = self.facebook_graph
         nx_hubs, nx_authorities = nx.algorithms.link_analysis.hits_alg.hits(graph, max_iter=100)
 
-        hubs, authorities = centrality_measures.hits(graph, max_iterations=100)
+        hubs, authorities = centrality_measures.naive_edge_hits(graph, max_iterations=100)
 
         for node in graph.nodes():
             self.assertEqual(approx(nx_hubs[node], rel=1e-1), hubs[node])
             self.assertEqual(approx(nx_authorities[node], rel=1e-1), authorities[node])
 
-    def test_parallel_hits(self):
+    def test_parallel_edge_hits(self):
         graph = self.facebook_graph
 
-        expected_hubs, expected_authorities = centrality_measures.hits(graph, max_iterations=100)
-        result_hubs, result_authorities = centrality_measures.parallel_hits(graph, max_iterations=100)
+        expected_hubs, expected_authorities = centrality_measures.naive_edge_hits(graph, max_iterations=100)
+        result_hubs, result_authorities = centrality_measures.parallel_edge_hits(graph, max_iterations=100)
 
         for node in graph.nodes():
             self.assertEqual(approx(expected_hubs[node], rel=1e-3), result_hubs[node])
             self.assertEqual(approx(expected_authorities[node], rel=1e-3), result_authorities[node])
+
+    def test_naive_hits(self):
+        graph = self.facebook_graph
+        nx_hubs, nx_authorities = nx.algorithms.link_analysis.hits_alg.hits(graph, max_iter=100)
+
+        hubs, authorities = centrality_measures.naive_hits(graph, max_iterations=100)
+
+        for node in graph.nodes():
+            self.assertEqual(approx(nx_hubs[node], rel=1e-1), hubs[node])
+            self.assertEqual(approx(nx_authorities[node], rel=1e-1), authorities[node])
+
+    def test_parallel_naive_hits(self):
+        graph = self.facebook_graph
+        expected_hubs, expected_authorities = centrality_measures.naive_hits(graph, max_iterations=100)
+
+        hubs, authorities = centrality_measures.parallel_naive_hits(graph, max_iterations=100)
+
+        for node in graph.nodes():
+            self.assertEqual(approx(expected_hubs[node], rel=1e-1), hubs[node])
+            self.assertEqual(approx(expected_authorities[node], rel=1e-1), authorities[node])
 
     def test_node_names(self):
         facebook_graph, true_clusters = utils.load_graph_and_clusters(PATH_TO_NODES, PATH_TO_EDGES)
