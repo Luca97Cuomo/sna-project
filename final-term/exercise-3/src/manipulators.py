@@ -129,7 +129,7 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
             all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
 
             # if number of nodes is greater that the available nodes then pick few nodes
-            min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
+            min_number_of_nodes = min(number_of_nodes, len(quit))
 
             chosen_nodes = random.sample(all_nodes_without_seeds, min_number_of_nodes)
 
