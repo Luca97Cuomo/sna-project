@@ -194,7 +194,7 @@ def basic_page_rank(graph, max_iterations=100, delta_rel=None):
 
             if check_convergence(current_node_to_rank, next_node_to_rank, delta_rel):
                 logger.info(f"The algorithm has reached convergence at iteration {i}")
-                break
+                return next_node_to_rank
 
             for node, rank in next_node_to_rank.items():
                 current_node_to_rank[node] = rank
@@ -269,6 +269,7 @@ def algebraic_page_rank(graph, alpha=0.85, max_iterations=100, delta_rel=None):
             pbar.update(1)
             if check_convergence(current_v, next_v, delta_rel):
                 logger.info(f"The algorithm has reached convergence at iteration {i}.")
+                current_v = next_v
                 break
             current_v = next_v
 
@@ -382,12 +383,49 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=8, delta_rel=None):
                 next_node_to_rank = aggregate_results(results)
                 if check_convergence(current_node_to_rank, next_node_to_rank, delta_rel):
                     logger.info(f"The algorithm has reached convergence at iteration {i}.")
-                    break
+                    return next_node_to_rank
 
                 current_node_to_rank = next_node_to_rank
                 pbar.update(1)
 
     return current_node_to_rank
+
+
+'''
+
+The `naive_edge_hits` is one of the four implementation of the hubs and authorities (HITS) algorithm.
+The implementation of this algorithm has been done with the purpose of optimizing the main iterative loop. In fact,
+instead of visiting the neighbourhood of each node, the loop is performed on the edges, in order to have
+a computational time in the order of m instead of (m + n).
+Unfortunately, using this strategy, the algorithm becomes less readable and the running time slightly increases. 
+This is due to the fact that there is the need of initializing to zero the authority of each node at each iteration. 
+
+The algorithm uses these data structures:
+
+- node_to_authorities: it is a dictionary mapping each node to its current authority value
+- node_to_hubs: it is a dictionary mapping each node to its current hub value
+- last_node_to_hubs: this is the previous iteration node_to_hubs dictionary, used to check the convergence
+
+The algorithm follows these steps:
+
+1. The current node to hubs are initialized, for each node, to 1.
+2. 
+2. For each edge of the graph:
+    - Its endpoint are considered
+    - Updates next rank of one endpoint with the current rank of the other over its degree
+    
+```
+next_rank[first_endpoint] += (current_rank[second_endpoint] / degree(second_endpoint))
+next_rank[second_endpoint] += (current_rank[first_endpoint] / degree(first_endpoint)) 
+```
+
+3. If the convergence is reached, then the algorithm ends. 
+The algorithm reaches the convergence if the difference between two consecutive ranks for all nodes is less than a
+specific threshold that is not absolute, but is relative to the order of magnitude associated to the rank value.
+4. If the convergence is not reached, then the next rank is inserted in the current rank and reinitialized to 0.
+So repeat the steps from 2.
+
+'''
 
 
 def naive_edge_hits(graph, max_iterations=100, tol=1e-8):
@@ -401,7 +439,7 @@ def naive_edge_hits(graph, max_iterations=100, tol=1e-8):
     with tqdm(total=max_iterations) as pbar:
         for i in range(max_iterations):
 
-            for node in graph.nodes():
+            for node in graph.nodes():  # O(n)
                 node_to_authorities[node] = 0
 
             for edge in graph.edges():
