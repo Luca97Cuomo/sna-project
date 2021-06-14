@@ -588,6 +588,43 @@ def parallel_edge_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
     return node_to_hubs, node_to_authorities
 
 
+'''
+
+The `naive_hits` is the third of the four implementation of the hubs and authorities (HITS) algorithm.
+The implementation of the algorithm follows the classical theoretical algorithm. In fact it iterates over all the nodes 
+and updates their authorities and hubs using their neighbours.
+
+The algorithm uses these data structures:
+
+- node_to_authorities: it is a dictionary mapping each node to its current authority value
+- node_to_hubs: it is a dictionary mapping each node to its current hub value
+- last_node_to_hubs: this is the previous iteration node_to_hubs dictionary, used to check the convergence
+
+The algorithm follows these steps:
+
+1. The current node to hubs are initialized, for each node, to 1.
+2. For each node:
+    - Its authority value is updated with the sum of the hub values of its neighbours
+3. All the authority values are normalized
+4. For each node:
+    - Its hub value is updated with the sum of the authority values of its neighbours
+5. All the hub values are normalized
+6. If the convergence or the maximum number of iteration has been reached, the algorithm ends and returns the two dictionaries
+The algorithm reaches the convergence if the sum of the absolute value of the differences between two consecutive hub
+values is lower than the specified threshold.
+7. Else repeat from step 2.
+
+```
+
+2021-06-14 11:52:11,763 __evaluate      INFO     Evaluating naive_hits algorithm, with these arguments : {'max_iterations': 100}
+2021-06-14 11:52:14,609 naive_hits      INFO     The algorithm has reached convergence at iteration 22.
+2021-06-14 11:52:14,610 __evaluate      INFO     The centrality algorithm: naive_hits took 2.84 seconds
+
+```
+
+'''
+
+
 def naive_hits(graph, max_iterations=100, tol=1e-8):
     node_to_authorities = {}
     node_to_hubs = {}
@@ -622,6 +659,44 @@ def naive_hits(graph, max_iterations=100, tol=1e-8):
             pbar.update(1)
 
     return node_to_hubs, node_to_authorities
+
+
+'''
+
+The `parallel_naive_hits` is the parallel implementation of the `naive_hits` algorithm.
+In particular, the nodes of the graph are split in non overlapping chunks that are given in input to different jobs.
+
+1. Each job for the each node of the given chunk:
+    - Firstly computes the authority value.
+    - Sum the authority value computed in the previous step, to the hub value of its neighbours, 
+    computing a partial hub value for them.
+2. In the aggregation phase:
+    - The authority values are merged in a single structure.
+    - The partial hub values are sum together in order to obtain the final hub value for each node.
+3. In this algorithm the normalization phase is performed at the end of each iteration.
+
+The convergence check is the same of the other hits implementation.
+
+```
+
+2021-06-14 11:52:14,656 __evaluate              INFO     Evaluating parallel_naive_hits algorithm, with these arguments : {'max_iterations': 100}
+2021-06-14 11:52:36,253 parallel_naive_hits     INFO     The algorithm has reached convergence at iteration 22.
+2021-06-14 11:52:36,254 __evaluate              INFO     The centrality algorithm: parallel_naive_hits took 21.59 seconds
+
+```
+
+The results obtained from the parallel version are exactly the same to the ones obtained with the non parallel one.
+
+The parallel version is slower than the non parallel one but is faster than the `parallel_edge_hits`. This is due to
+the fact that in this parallel version the parallelization and the aggregation phases are performed only once at each
+iteration.
+
+Final considerations:
+
+All the four implementations return the same results and, in fact, they all reach the convergence at the same iteration.
+The fastest implementation is the `naive_hits` that only takes 2.84 seconds (on our computer).
+
+'''
 
 
 def parallel_naive_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
