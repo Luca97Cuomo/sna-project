@@ -389,29 +389,17 @@ def parallel_basic_page_rank(graph, max_iterations=100, jobs=8, delta_rel=None):
     return current_node_to_rank
 
 
-def hits(graph, max_iterations=100, tol=1e-8):
-    def check_convergence(current_node_to_hubs, last_node_to_hubs, tol):
-        if tol is None:
-            return False
-        err = sum([abs(current_node_to_hubs[node] - last_node_to_hubs[node]) for node in graph.nodes()])
-        if err < tol:
-            return True
-        else:
-            return False
+def hits(graph, max_iterations=100):
 
     node_to_authorities = {}
     node_to_hubs = {}
-    last_node_to_hubs = {}
 
     for node in graph.nodes():
+        node_to_authorities[node] = 0
         node_to_hubs[node] = 1
 
     with tqdm(total=max_iterations) as pbar:
         for i in range(max_iterations):
-
-            for node in graph.nodes():
-                node_to_authorities[node] = 0
-
             for edge in graph.edges():
                 first_endpoint = edge[0]
                 second_endpoint = edge[1]
@@ -433,15 +421,15 @@ def hits(graph, max_iterations=100, tol=1e-8):
                 node_to_hubs[second_endpoint] += node_to_authorities[first_endpoint]
 
             sum_of_hubs = sum(node_to_hubs.values())
-
-            for node in graph.nodes():
-                node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
-
-            if i > 0 and check_convergence(node_to_hubs, last_node_to_hubs, tol):
-                logger.info(f"The algorithm has reached convergence at iteration {i}.")
+            if i == max_iterations - 1:
+                for node in graph.nodes():
+                    node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
                 break
+            else:
+                for node in graph.nodes():
+                    node_to_hubs[node] = node_to_hubs[node] / sum_of_hubs
+                    node_to_authorities[node] = 0
 
-            last_node_to_hubs = node_to_hubs
             pbar.update(1)
 
     return node_to_hubs, node_to_authorities
