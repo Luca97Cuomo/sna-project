@@ -1,3 +1,4 @@
+import pickle
 from unittest import TestCase
 import networkx as nx
 from tqdm import tqdm
@@ -158,3 +159,25 @@ class TestFjDynamics(TestCase):
                 self.assertTrue(True)
 
                 pbar.update(1)
+
+    def test_fj_dynamics_disconnected(self):
+        """
+        If stubbornness is 0, the algorithm may not converge.
+        This happens for example in this case, where in a
+        disconnected graph it exists a pair of nodes, connected by one edge but
+        isolated from the rest of the graph.
+
+        Since stubbornness is 0, at each iteration the two nodes will exchange
+        their respective believes, not converging.
+
+        This happens for the pair of nodes (1029, 2136), independently from the
+        believes
+        """
+
+        with open(("graph-3000-4000"), 'rb') as file:
+            graph = pickle.load(file)
+
+        populate_dynamics_parameters(graph, seed=42, stubbornness=0)
+
+        fj_dynamics(graph)
+        self.assertTrue(True)

@@ -118,13 +118,16 @@ def fj_dynamics(graph: nx.Graph, convergence_digits: int = 5) -> OpinionsDict:
     while not is_converged:
         time_step += 1
         for node in graph.nodes():
-            # update current_opinion
             private_belief = graph.nodes[node]["private_belief"]
-            stubbornness = graph.nodes[node]["stubbornness"]
+            if graph.degree[node] == 0:
+                current_opinions[node] = private_belief
+            else:
+                # update current_opinion
+                stubbornness = graph.nodes[node]["stubbornness"]
 
-            neighborhood_opinion = _evaluate_neighborhood_opinion(graph, node, prev_opinions)
+                neighborhood_opinion = _evaluate_neighborhood_opinion(graph, node, prev_opinions)
 
-            current_opinions[node] = stubbornness * private_belief + (1 - stubbornness) * neighborhood_opinion
+                current_opinions[node] = stubbornness * private_belief + (1 - stubbornness) * neighborhood_opinion
 
         is_converged = is_dynamics_converged(prev_opinions, current_opinions, convergence_digits)
 
