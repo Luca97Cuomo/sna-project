@@ -18,6 +18,7 @@ from election import Candidate, run_election
 from final_term_utils import populate_dynamics_parameters
 from manipulators import *
 from manipulators.cluster_based import cluster_based_manipulator
+from manipulators.manipulators import timed_multi_level_greedy_manipulator
 from network_diffusion.fj_dynamics import fj_dynamics
 
 FACEBOOK_PATH_TO_NODES = "../../../mid-term/exercise-1-2/facebook_large/musae_facebook_target.csv"
@@ -205,7 +206,7 @@ def main():
     GRAPH_NAME = "Facebook Graph"
     GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
 
-    MAX_RUNNING_TIME_S =  # 50 min
+    MAX_RUNNING_TIME_S = 1707
 
     STUBBORNNESS = 0.5
 
