@@ -21,8 +21,6 @@ NUMBER_OF_DIGITS = 2
 MIN_NUMBER_OF_ITERATIONS = 2000
 N_PREFERENCES = 1
 
-logger.info(f"\nNUMBER OF PREFERENCES: {N_PREFERENCES}")
-
 
 def _get_preferences(target_candidate_position: float, n_preferences: int):
     preferences = [target_candidate_position]
@@ -103,7 +101,9 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
 
     logger.info(f"\nTOTAL NUMBER OF ITERATIONS: {number_of_iterations},"
                 f" NUMBER OF NODES FOR EACH ITERATION: {nodes_for_each_iteration}\n"
-                f"\nNUMBER_OF_DIGITS: {NUMBER_OF_DIGITS}\n")
+                f"\nNUMBER_OF_DIGITS: {NUMBER_OF_DIGITS}\n"
+                f"NODES TO EXCLUDE: TRUE"
+                f"\nNUMBER OF PREFERENCES: {N_PREFERENCES}")
 
     random.seed(seed)
 
@@ -375,6 +375,19 @@ def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], targ
     return seeds
 
 
+def belief_degree_centrality(graph: nx.Graph, target_candidate_position: float) -> CentralityValues:
+    values = {}
+
+    for node in graph.nodes():
+        distance = abs(graph.nodes[node]["private_belief"] - target_candidate_position)
+        for neighbour in graph.neighbors(node):
+            distance += abs(graph.nodes[neighbour]["private_belief"] - target_candidate_position)
+
+        values[node] = distance
+
+    return values
+
+
 def shapley_closeness_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
                                   number_of_seeds: int, seed: int, number_of_jobs: int = 1) -> typing.Dict[int, float]:
     return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds,
@@ -394,6 +407,19 @@ def shapley_degree_manipulator(graph: nx.Graph, candidates: typing.List[Candidat
                                number_of_seeds: int, seed: int, number_of_jobs: int = 1) -> typing.Dict[int, float]:
     return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds,
                                         seed, number_of_jobs, shapley_degree)
+
+
+def belief_degree_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
+                              number_of_seeds: int, seed: int, number_of_jobs: int = 1) -> typing.Dict[int, float]:
+
+    target_candidate = get_candidate_by_id(candidates, target_candidate_id)
+    if target_candidate is None:
+        raise Exception("The target candidate is None")
+    target_candidate_position = target_candidate.position
+
+    return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds,
+                                        seed, number_of_jobs,
+                                        lambda graph: belief_degree_centrality(graph, target_candidate_position))
 
 
 def centrality_based_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
