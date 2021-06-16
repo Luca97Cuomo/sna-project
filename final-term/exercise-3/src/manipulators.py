@@ -2,6 +2,7 @@ import copy
 import logging
 import math
 import random
+import time
 import typing
 
 from joblib import Parallel, delayed
@@ -18,7 +19,7 @@ logger = logging.getLogger("final_term_exercise_3_logger")
 
 
 NUMBER_OF_DIGITS = 2
-MIN_NUMBER_OF_ITERATIONS = 2000
+MIN_NUMBER_OF_ITERATIONS = 468
 N_PREFERENCES = 1
 
 
@@ -80,7 +81,7 @@ def _compute_marginal_contribution(graph, candidates, target_candidate, seed_nod
 
 
 def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
-                                   number_of_seeds: int, seed: int, number_of_jobs: int) -> typing.Dict[int, float]:
+                                   number_of_seeds: int, seed: int, number_of_jobs: int, *args) -> typing.Dict[int, float]:
 
     # The graph has to be copied because it will be modified by this function
     copied_graph = copy.deepcopy(graph)
@@ -201,7 +202,7 @@ def _get_nodes_sorted_with_centrality(graph: nx.Graph, centrality_function: typi
 
 
 def multi_level_greedy_manipulator_with_centrality_sampling(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
-                                   number_of_seeds: int, seed: int, number_of_jobs: int) -> typing.Dict[int, float]:
+                                   number_of_seeds: int, seed: int, number_of_jobs: int, *args) -> typing.Dict[int, float]:
     # The graph has to be copied because it will be modified by this function
     copied_graph = copy.deepcopy(graph)
 
@@ -311,7 +312,7 @@ def multi_level_greedy_manipulator_with_centrality_sampling(graph: nx.Graph, can
 
 
 def greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
-                       number_of_seeds: int, seed: int, number_of_jobs: int) -> typing.Dict[int, float]:
+                       number_of_seeds: int, seed: int, number_of_jobs: int, *args) -> typing.Dict[int, float]:
     """
     It takes the nodes with the highest marginal contributions
 
@@ -389,13 +390,13 @@ def belief_degree_centrality(graph: nx.Graph, target_candidate_position: float) 
 
 
 def shapley_closeness_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
-                                  number_of_seeds: int, seed: int, number_of_jobs: int = 1) -> typing.Dict[int, float]:
+                                  number_of_seeds: int, seed: int, number_of_jobs: int = 1, *args) -> typing.Dict[int, float]:
     return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds,
                                         seed, shapley_closeness)
 
 
 def shapley_threshold_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
-                                  number_of_seeds: int, seed: int, number_of_jobs: int = 1) -> typing.Dict[int, float]:
+                                  number_of_seeds: int, seed: int, number_of_jobs: int = 1, *args) -> typing.Dict[int, float]:
     threshold = 1000
     logger.info(f"\nTHRESHOLD: {threshold}")
 
@@ -404,13 +405,13 @@ def shapley_threshold_manipulator(graph: nx.Graph, candidates: typing.List[Candi
 
 
 def shapley_degree_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
-                               number_of_seeds: int, seed: int, number_of_jobs: int = 1) -> typing.Dict[int, float]:
+                               number_of_seeds: int, seed: int, number_of_jobs: int = 1, *args) -> typing.Dict[int, float]:
     return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds,
                                         seed, number_of_jobs, shapley_degree)
 
 
 def belief_degree_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
-                              number_of_seeds: int, seed: int, number_of_jobs: int = 1) -> typing.Dict[int, float]:
+                              number_of_seeds: int, seed: int, number_of_jobs: int = 1, *args) -> typing.Dict[int, float]:
 
     target_candidate = get_candidate_by_id(candidates, target_candidate_id)
     if target_candidate is None:
@@ -450,7 +451,7 @@ def centrality_based_manipulator(graph: nx.Graph, candidates: typing.List[Candid
 
 
 def random_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
-                       number_of_seeds: int, seed: int = 42, number_of_jobs: int = 1) -> typing.Dict[int, float]:
+                       number_of_seeds: int, seed: int = 42, number_of_jobs: int = 1, *args) -> typing.Dict[int, float]:
     random.seed(seed)
 
     seeds = {}
@@ -495,3 +496,201 @@ def get_candidate_by_id(candidates: typing.List[Candidate], candidate_id: int) -
             return candidates[i]
 
     return None
+
+
+def _parallel_time_improvement_factor_heuristic(number_of_jobs: int):
+    if number_of_jobs <= 0:
+        return 1
+
+    return math.log(number_of_jobs, 2) + 1
+
+
+def _estimate_number_of_iterations(max_running_time_s: int, number_of_seeds: int,
+                                   number_of_digits: int, graph: nx.Graph, candidates, number_of_jobs: int):
+    """
+    It returns the number of nodes for which the marginal contribution has to be evaluated in the next iteration.
+    """
+
+    # total_time = marginal_contribution_time * num_total_iterations
+    # num_total_iterations = total_time / marginal_contribution_time
+    # num_iterations_for_each_seed = num_total_iterations / number_of_seeds
+
+    nodes = list(graph.nodes())
+
+    start_time_s = time.time()
+
+    # Estimate the marginal contribution time, considering only one job.
+    _ = _compute_marginal_contribution(graph, candidates,
+                                       candidates[0], nodes[0], 2000,
+                                       number_of_digits, seed_preference=0.5)
+    end_time_s = time.time()
+
+    marginal_contribution_time_s = (end_time_s - start_time_s) / _parallel_time_improvement_factor_heuristic(number_of_jobs)
+
+    logger.info(f"The estimate of the marginal contribution time with one job is: {end_time_s - start_time_s}")
+    logger.info(f"The estimate of the marginal contribution time"
+                f" with {number_of_jobs} job is: {marginal_contribution_time_s}")
+
+    num_total_iterations = max_running_time_s / marginal_contribution_time_s
+    num_iterations_for_each_seed = math.floor(num_total_iterations / number_of_seeds)
+
+    if num_iterations_for_each_seed < number_of_jobs:
+        logger.info(f"The number of iterations for each seed {num_iterations_for_each_seed} is smaller than the"
+                    f"number of jobs {number_of_jobs}. Setting num_iterations_for_each_seed to number_of_jobs")
+        num_iterations_for_each_seed = number_of_jobs
+
+    return num_iterations_for_each_seed
+
+
+def _estimate_number_of_iterations_at_execution_time(last_iteration_time_s: int, last_num_iterations_for_each_seed: int,
+                                                     remaining_seeds: int, remaining_time_s, number_of_jobs: int):
+    """
+    Note: it remaining_time_s is < 0 num_iterations_for_each_seed will be set to number_of_jobs
+    """
+
+    marginal_contribution_time_s = last_iteration_time_s / last_num_iterations_for_each_seed
+
+    logger.debug(f"The estimate of the marginal contribution time with one job is: {marginal_contribution_time_s}")
+
+    num_total_iterations = remaining_time_s / marginal_contribution_time_s
+    num_iterations_for_each_seed = math.floor(num_total_iterations / remaining_seeds)
+
+    if num_iterations_for_each_seed < number_of_jobs:
+        logger.debug(f"The number of iterations for each seed {num_iterations_for_each_seed} is smaller than the"
+                    f"number of jobs {number_of_jobs}. Setting num_iterations_for_each_seed to number_of_jobs")
+        num_iterations_for_each_seed = number_of_jobs
+
+    logger.debug(f"The number of iterations for the next level is : {num_iterations_for_each_seed}")
+
+    return num_iterations_for_each_seed
+
+
+def timed_multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
+                                         number_of_seeds: int, seed: int,
+                                         number_of_jobs: int, max_running_time_s: int) -> typing.Dict[int, float]:
+
+    # The graph has to be copied because it will be modified during the execution of this function
+    copied_graph = copy.deepcopy(graph)
+
+    # Initialize seeds dict
+    seeds: typing.Dict[int, float] = {}  # node_id -> preference
+
+    # Get target candidate instance
+    target_candidate = get_candidate_by_id(candidates, target_candidate_id)
+    if target_candidate is None:
+        raise Exception("The target candidate is None")
+
+    # Estimate the number of iterations to be done based on the max_running_time_s
+    # fix the max number of iterations
+    number_of_iterations = _estimate_number_of_iterations(max_running_time_s, number_of_seeds, NUMBER_OF_DIGITS,
+                                                          copied_graph, candidates, number_of_jobs)
+
+    # Logging some infos
+    logger.info(f"\nNUMBER OF ITERATIONS FOR EACH SEED: {number_of_iterations},"
+                f"\nNUMBER_OF_DIGITS: {NUMBER_OF_DIGITS}"
+                f"\nNODES TO EXCLUDE: TRUE"
+                f"\nNUMBER OF PREFERENCES: {N_PREFERENCES}")
+
+    random.seed(seed)
+
+    remaining_time = max_running_time_s
+    total_performed_iterations = 0 # for debugging purposes
+
+    with tqdm(total=number_of_seeds) as bar:
+        with Parallel(n_jobs=number_of_jobs) as parallel:
+            for i in range(number_of_seeds):
+                start_time_s = time.time()
+                # evaluate score with seeds
+                preferences = fj_dynamics(copied_graph, NUMBER_OF_DIGITS)
+
+                # update graph after dynamics
+                for node, preference in preferences.items():
+                    copied_graph.nodes[node]["peak_preference"] = preference
+
+                # run election after dynamics
+                results, voters_to_candidates = get_full_results_election(copied_graph, candidates)
+                score = results[target_candidate.id]
+
+                # get nodes to exclude
+                nodes_to_exclude = []
+                for node, candidate_id in voters_to_candidates.items():
+                    if candidate_id == target_candidate_id:
+                        nodes_to_exclude.append(node)
+
+                ##########
+                # evaluate marginal contributions
+                ##########
+
+                total_performed_iterations += number_of_iterations
+
+                # compute chosen nodes
+                all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
+
+                print(f"len all_nodes: {len(all_nodes_without_seeds)} - len to exclude: {len(nodes_to_exclude)}")
+
+                # exclude also node that vote for me
+                all_nodes_without_seeds = list(filter(lambda element: element not in nodes_to_exclude, all_nodes_without_seeds))
+
+                print(f"len all_nodes after exclusion: {len(all_nodes_without_seeds)}")
+
+                # if number of nodes is greater that the available nodes then pick few nodes
+                min_number_of_nodes = min(number_of_iterations, len(all_nodes_without_seeds))
+                if min_number_of_nodes != number_of_iterations:
+                    logger.info("Nodes per iteration would have been too many")
+
+                chosen_nodes = random.sample(all_nodes_without_seeds, min_number_of_nodes)
+
+                # compute chunks
+                chunks = []
+                chunk_size = math.ceil(len(chosen_nodes) / number_of_jobs)
+                for k in range(number_of_jobs):
+                    chunks.append(chosen_nodes[k * chunk_size: (k + 1) * chunk_size])
+
+                results = parallel(
+                    delayed(_compute_marginal_contribution_on_nodes)(copied_graph, candidates,
+                                                                     target_candidate, chunk, score,
+                                                                     index + 1,
+                                                                     NUMBER_OF_DIGITS) for index, chunk in
+                    enumerate(chunks))
+
+                nodes_to_contribution_dict = {}
+                for result in results:
+                    for node, value in result.items():
+                        nodes_to_contribution_dict[node] = value
+
+                # take the node with the higher marginal contribution
+                max_node = None
+                max_contribution = None
+                max_preference = None
+                for node, value in nodes_to_contribution_dict.items():
+                    contribution = value[0]
+                    preference = value[1]
+                    if max_node is None or contribution > max_contribution:
+                        max_node = node
+                        max_contribution = contribution
+                        max_preference = preference
+
+                # add max_node to seeds
+                seeds[max_node] = max_preference
+
+                # update graph with current seed
+                copied_graph.nodes[max_node]["private_belief"] = seeds[max_node]
+                copied_graph.nodes[max_node]["stubbornness"] = 1
+
+                bar.update(1)
+
+                end_time_s = time.time()
+
+                last_iteration_time_s = end_time_s - start_time_s
+                remaining_seeds = number_of_seeds - i - 1
+                if remaining_seeds > 0:
+                    remaining_time -= last_iteration_time_s
+                    number_of_iterations = _estimate_number_of_iterations_at_execution_time(last_iteration_time_s,
+                                                                                        number_of_iterations,
+                                                                                        remaining_seeds,
+                                                                                        remaining_time,
+                                                                                        number_of_jobs)
+
+    logger.info(f"THE TOTAL NUMBER OF PERFORMED ITERATIONS IS: {total_performed_iterations}")
+
+    return seeds
