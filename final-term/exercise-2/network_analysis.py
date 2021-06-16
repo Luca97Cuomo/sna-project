@@ -15,6 +15,7 @@ AVG_CLUSTERING_COEF_THRESHOLD = 0.20
 logger = logging.getLogger(__name__)
 
 
+
 def main():
     target_network = load_network(NETWORK_PATH)
 
@@ -28,6 +29,7 @@ def main():
 
     network_analyzer.analyze_all()
 
-
 if __name__ == "__main__":
+    logging_configuration.set_logging()
+
     main()

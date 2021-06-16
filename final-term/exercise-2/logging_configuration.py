@@ -48,6 +48,3 @@ def set_logging():
             }
         },
     })
-
-
-set_logging()
