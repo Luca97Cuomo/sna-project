@@ -14,6 +14,9 @@ from network_diffusion.fj_dynamics import fj_dynamics
 from shapley_centrality import CentralityValues, shapley_degree, shapley_threshold, shapley_closeness
 
 CentralityFunction = typing.Callable[[nx.Graph], CentralityValues]
+Seeds = typing.Dict[int, float]
+Manipulator = typing.Callable[[nx.Graph, typing.List[Candidate], int, int, int, int], Seeds]
+
 logger = logging.getLogger("final_term_exercise_3_logger")
 
 
@@ -108,50 +111,50 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
     random.seed(seed)
 
     with tqdm(total=number_of_seeds) as bar:
-        for i in range(number_of_seeds):
-            # evaluate score with seeds
-            preferences = fj_dynamics(copied_graph, NUMBER_OF_DIGITS)
+        with Parallel(n_jobs=number_of_jobs) as parallel:
+            for i in range(number_of_seeds):
+                # evaluate score with seeds
+                preferences = fj_dynamics(copied_graph, NUMBER_OF_DIGITS)
 
-            # update graph after dynamics
-            for node, preference in preferences.items():
-                copied_graph.nodes[node]["peak_preference"] = preference
+                # update graph after dynamics
+                for node, preference in preferences.items():
+                    copied_graph.nodes[node]["peak_preference"] = preference
 
-            # run election after dynamics
-            results, voters_to_candidates = get_full_results_election(copied_graph, candidates)
-            score = results[target_candidate.id]
+                # run election after dynamics
+                results, voters_to_candidates = get_full_results_election(copied_graph, candidates)
+                score = results[target_candidate.id]
 
-            # get nodes to exclude
-            nodes_to_exclude = []
-            for node, candidate_id in voters_to_candidates.items():
-                if candidate_id == target_candidate_id:
-                    nodes_to_exclude.append(node)
+                # get nodes to exclude
+                nodes_to_exclude = []
+                for node, candidate_id in voters_to_candidates.items():
+                    if candidate_id == target_candidate_id:
+                        nodes_to_exclude.append(node)
 
-            ##########
-            # evaluate marginal contributions
-            ##########
+                ##########
+                # evaluate marginal contributions
+                ##########
 
-            number_of_nodes = nodes_for_each_iteration
-            if i == 0:
-                number_of_nodes += number_of_iterations - (nodes_for_each_iteration * number_of_seeds)
+                number_of_nodes = nodes_for_each_iteration
+                if i == 0:
+                    number_of_nodes += number_of_iterations - (nodes_for_each_iteration * number_of_seeds)
 
-            # compute chosen nodes
-            all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
+                # compute chosen nodes
+                all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
 
-            print(f"len all_nodes: {len(all_nodes_without_seeds)} - len to exclude: {len(nodes_to_exclude)}")
+                print(f"len all_nodes: {len(all_nodes_without_seeds)} - len to exclude: {len(nodes_to_exclude)}")
 
-            # exclude also node that vote for me
-            all_nodes_without_seeds = list(filter(lambda element: element not in nodes_to_exclude, all_nodes_without_seeds))
+                # exclude also node that vote for me
+                all_nodes_without_seeds = list(filter(lambda element: element not in nodes_to_exclude, all_nodes_without_seeds))
 
-            print(f"len all_nodes after exclusion: {len(all_nodes_without_seeds)}")
+                print(f"len all_nodes after exclusion: {len(all_nodes_without_seeds)}")
 
-            # if number of nodes is greater that the available nodes then pick few nodes
-            min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
-            if min_number_of_nodes != number_of_nodes:
-                logger.info("Nodes per iteration would have been too many")
+                # if number of nodes is greater that the available nodes then pick few nodes
+                min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
+                if min_number_of_nodes != number_of_nodes:
+                    logger.info("Nodes per iteration would have been too many")
 
-            chosen_nodes = random.sample(all_nodes_without_seeds, min_number_of_nodes)
+                chosen_nodes = random.sample(all_nodes_without_seeds, min_number_of_nodes)
 
-            with Parallel(n_jobs=number_of_jobs) as parallel:
                 # compute chunks
                 chunks = []
                 chunk_size = math.ceil(len(chosen_nodes) / number_of_jobs)
@@ -165,31 +168,31 @@ def multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.List[Cand
                                                                      NUMBER_OF_DIGITS) for index, chunk in
                     enumerate(chunks))
 
-            nodes_to_contribution_dict = {}
-            for result in results:
-                for node, value in result.items():
-                    nodes_to_contribution_dict[node] = value
+                nodes_to_contribution_dict = {}
+                for result in results:
+                    for node, value in result.items():
+                        nodes_to_contribution_dict[node] = value
 
-            # take the node with the higher marginal contribution
-            max_node = None
-            max_contribution = None
-            max_preference = None
-            for node, value in nodes_to_contribution_dict.items():
-                contribution = value[0]
-                preference = value[1]
-                if max_node is None or contribution > max_contribution:
-                    max_node = node
-                    max_contribution = contribution
-                    max_preference = preference
+                # take the node with the higher marginal contribution
+                max_node = None
+                max_contribution = None
+                max_preference = None
+                for node, value in nodes_to_contribution_dict.items():
+                    contribution = value[0]
+                    preference = value[1]
+                    if max_node is None or contribution > max_contribution:
+                        max_node = node
+                        max_contribution = contribution
+                        max_preference = preference
 
-            # add max_node to seeds
-            seeds[max_node] = max_preference
+                # add max_node to seeds
+                seeds[max_node] = max_preference
 
-            # update graph with current seed
-            copied_graph.nodes[max_node]["private_belief"] = seeds[max_node]
-            copied_graph.nodes[max_node]["stubbornness"] = 1
+                # update graph with current seed
+                copied_graph.nodes[max_node]["private_belief"] = seeds[max_node]
+                copied_graph.nodes[max_node]["stubbornness"] = 1
 
-            bar.update(1)
+                bar.update(1)
 
     return seeds
 
@@ -228,42 +231,42 @@ def multi_level_greedy_manipulator_with_centrality_sampling(graph: nx.Graph, can
     degree_bucket = _get_nodes_sorted_with_centrality(graph, shapley_degree)
     distance_bucket = _most_distant_nodes(graph, target_candidate.position)
     with tqdm(total=number_of_seeds) as bar:
-        for i in range(number_of_seeds):
-            # evaluate score with seeds
-            preferences = fj_dynamics(copied_graph, NUMBER_OF_DIGITS)
+        with Parallel(n_jobs=number_of_jobs) as parallel:
+            for i in range(number_of_seeds):
+                # evaluate score with seeds
+                preferences = fj_dynamics(copied_graph, NUMBER_OF_DIGITS)
 
-            # update graph after dynamics
-            for node, preference in preferences.items():
-                copied_graph.nodes[node]["peak_preference"] = preference
+                # update graph after dynamics
+                for node, preference in preferences.items():
+                    copied_graph.nodes[node]["peak_preference"] = preference
 
-            # run election after dynamics
-            results = run_election(copied_graph, candidates)
-            score = results[target_candidate.id]
+                # run election after dynamics
+                results = run_election(copied_graph, candidates)
+                score = results[target_candidate.id]
 
-            ##########
-            # evaluate marginal contributions
-            ##########
+                ##########
+                # evaluate marginal contributions
+                ##########
 
-            number_of_nodes = nodes_for_each_iteration
-            if i == 0:
-                number_of_nodes += number_of_iterations - (nodes_for_each_iteration * number_of_seeds)
+                number_of_nodes = nodes_for_each_iteration
+                if i == 0:
+                    number_of_nodes += number_of_iterations - (nodes_for_each_iteration * number_of_seeds)
 
-            # compute chosen nodes
-            all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
+                # compute chosen nodes
+                all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
 
-            # if number of nodes is greater that the available nodes then pick few nodes
-            min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
-            if min_number_of_nodes != number_of_nodes:
-                logger.info("Nodes per iteration would have been too many")
+                # if number of nodes is greater that the available nodes then pick few nodes
+                min_number_of_nodes = min(number_of_nodes, len(all_nodes_without_seeds))
+                if min_number_of_nodes != number_of_nodes:
+                    logger.info("Nodes per iteration would have been too many")
 
-            current_random_bucket = random.sample(all_nodes_without_seeds, min(min_number_of_nodes * 2, len(all_nodes_without_seeds)))
-            current_degree_bucket = degree_bucket[:min_number_of_nodes]
-            current_distance_bucket = distance_bucket[:min_number_of_nodes]
+                current_random_bucket = random.sample(all_nodes_without_seeds, min(min_number_of_nodes * 2, len(all_nodes_without_seeds)))
+                current_degree_bucket = degree_bucket[:min_number_of_nodes]
+                current_distance_bucket = distance_bucket[:min_number_of_nodes]
 
-            bucket = set(current_random_bucket + current_degree_bucket + current_distance_bucket)
-            chosen_nodes = random.sample(bucket, min_number_of_nodes)
+                bucket = set(current_random_bucket + current_degree_bucket + current_distance_bucket)
+                chosen_nodes = random.sample(bucket, min_number_of_nodes)
 
-            with Parallel(n_jobs=number_of_jobs) as parallel:
                 # compute chunks
                 chunks = []
                 chunk_size = math.ceil(len(chosen_nodes) / number_of_jobs)
@@ -277,35 +280,35 @@ def multi_level_greedy_manipulator_with_centrality_sampling(graph: nx.Graph, can
                                                                      NUMBER_OF_DIGITS) for index, chunk in
                     enumerate(chunks))
 
-            nodes_to_contribution_dict = {}
-            for result in results:
-                for node, value in result.items():
-                    nodes_to_contribution_dict[node] = value
+                nodes_to_contribution_dict = {}
+                for result in results:
+                    for node, value in result.items():
+                        nodes_to_contribution_dict[node] = value
 
-            # take the node with the higher marginal contribution
-            max_node = None
-            max_contribution = None
-            max_preference = None
-            for node, value in nodes_to_contribution_dict.items():
-                contribution = value[0]
-                preference = value[1]
-                if max_node is None or contribution > max_contribution:
-                    max_node = node
-                    max_contribution = contribution
-                    max_preference = preference
+                # take the node with the higher marginal contribution
+                max_node = None
+                max_contribution = None
+                max_preference = None
+                for node, value in nodes_to_contribution_dict.items():
+                    contribution = value[0]
+                    preference = value[1]
+                    if max_node is None or contribution > max_contribution:
+                        max_node = node
+                        max_contribution = contribution
+                        max_preference = preference
 
-            # add max_node to seeds
-            seeds[max_node] = max_preference
+                # add max_node to seeds
+                seeds[max_node] = max_preference
 
-            # update graph with current seed
-            copied_graph.nodes[max_node]["private_belief"] = seeds[max_node]
-            copied_graph.nodes[max_node]["stubbornness"] = 1
+                # update graph with current seed
+                copied_graph.nodes[max_node]["private_belief"] = seeds[max_node]
+                copied_graph.nodes[max_node]["stubbornness"] = 1
 
-            # update buckets
-            degree_bucket.remove(max_node)
-            distance_bucket.remove(max_node)
+                # update buckets
+                degree_bucket.remove(max_node)
+                distance_bucket.remove(max_node)
 
-            bar.update(1)
+                bar.update(1)
 
     return seeds
 
