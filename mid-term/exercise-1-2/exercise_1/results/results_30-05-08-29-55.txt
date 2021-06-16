@@ -12,6 +12,7 @@
 05-30 08:30 hierarchical_optimized DEBUG    The length of the cluster_2 is 9335
 05-30 08:30 hierarchical_optimized DEBUG    The length of the cluster_3 is 12621
 05-30 08:30 hierarchical_optimized DEBUG    The length of the cluster_4 is 31
+
 05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': None, 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10000, 'centers': None, 'verbose': False}
 05-30 08:30 k_means      INFO     The clustering algorithm: k_means took 10.106914500000002 seconds
 05-30 08:30 k_means      INFO     The rand index for the clustering algorithm k_means is 0.4067197443947051
@@ -20,6 +21,7 @@
 05-30 08:30 k_means      DEBUG    The length of the cluster_2 is 19401
 05-30 08:30 k_means      DEBUG    The length of the cluster_3 is 2494
 05-30 08:30 k_means      DEBUG    The length of the cluster_4 is 80
+
 05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'degree_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10000, 'centers': None, 'verbose': False}
 05-30 08:30 k_means      INFO     The clustering algorithm: k_means took 1.1127535999999978 seconds
 05-30 08:30 k_means      INFO     The rand index for the clustering algorithm k_means is 0.6354478760362172
@@ -28,6 +30,7 @@
 05-30 08:30 k_means      DEBUG    The length of the cluster_2 is 9576
 05-30 08:30 k_means      DEBUG    The length of the cluster_3 is 5056
 05-30 08:30 k_means      DEBUG    The length of the cluster_4 is 4169
+
 05-30 08:30 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'closeness_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10, 'centers': None, 'verbose': False}
 05-30 10:23 k_means      INFO     The clustering algorithm: k_means took 6787.46255 seconds
 05-30 10:23 k_means      INFO     The rand index for the clustering algorithm k_means is 0.5567763986272893
@@ -36,6 +39,7 @@
 05-30 10:23 k_means      DEBUG    The length of the cluster_2 is 278
 05-30 10:23 k_means      DEBUG    The length of the cluster_3 is 2855
 05-30 10:23 k_means      DEBUG    The length of the cluster_4 is 6430
+
 05-30 10:23 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'nodes_betweenness_centrality', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 10, 'centers': None, 'verbose': False}
 05-30 14:07 k_means      INFO     The clustering algorithm: k_means took 13456.140629499998 seconds
 05-30 14:07 k_means      INFO     The rand index for the clustering algorithm k_means is 0.5328093378835772
@@ -44,6 +48,7 @@
 05-30 14:07 k_means      DEBUG    The length of the cluster_2 is 3793
 05-30 14:07 k_means      DEBUG    The length of the cluster_3 is 3788
 05-30 14:07 k_means      DEBUG    The length of the cluster_4 is 406
+
 05-30 14:07 k_means      INFO     Evaluating k_means algorithm, with these arguments : {'centrality_measure': 'pagerank', 'seed': 42, 'k': 4, 'equality_threshold': 0.001, 'max_iterations': 50, 'centers': None, 'verbose': False}
 05-30 14:07 k_means      INFO     The clustering algorithm: k_means took 18.678264799997123 seconds
 05-30 14:07 k_means      INFO     The rand index for the clustering algorithm k_means is 0.4661067140459932
@@ -52,6 +57,7 @@
 05-30 14:07 k_means      DEBUG    The length of the cluster_2 is 776
 05-30 14:07 k_means      DEBUG    The length of the cluster_3 is 1713
 05-30 14:07 k_means      DEBUG    The length of the cluster_4 is 2813
+
 05-30 14:07 girvan_newman INFO     Evaluating girvan_newman algorithm, with these arguments : {'centrality_measure': 'edges_betweenness_centrality', 'seed': 42, 'k': 4, 'verbose': False, 'optimized': True}
 05-30 15:18 girvan_newman INFO     The clustering algorithm: girvan_newman took 4216.963710799999 seconds
 05-30 15:18 girvan_newman INFO     The rand index for the clustering algorithm girvan_newman is 0.26791726871754057
@@ -62,6 +68,7 @@
 05-30 15:18 girvan_newman DEBUG    The length of the cluster_4 is 14
 05-30 15:18 girvan_newman DEBUG    The length of the cluster_5 is 14
 05-30 15:18 girvan_newman DEBUG    The length of the cluster_6 is 1
+
 05-30 15:18 spectral     INFO     Evaluating spectral algorithm, with these arguments : {'k': 4}
 05-30 15:18 spectral     INFO     The clustering algorithm: spectral took 0.9156270999992557 seconds
 05-30 15:18 spectral     INFO     The rand index for the clustering algorithm spectral is 0.617678996506149

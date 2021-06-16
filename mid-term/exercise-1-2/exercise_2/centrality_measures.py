@@ -751,6 +751,51 @@ def parallel_naive_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
     return node_to_hubs, node_to_authorities
 
 
+'''
+
+For the betweenness centrality measure a naive and a parallel version has been implemented.
+The naive implementation, for each node given as input there are two phases:
+
+1. TOP DOWN PHASE: in this phase the following values are computed:
+    - The BFS tree from the root node to all the other nodes.
+    - The number of shortest path from the root to all the other nodes.
+    - The parents in the BFS tree of each node.
+2. BOTTOM UP PHASE: in this phase the following values are computed:
+    - The number of shortest path that start from the root that passes through each other node and each edge.
+    - Then for each edge and node the edge betweenness and the node betweenness are updated.
+
+The algorithm in particular makes use of the following data structures:
+
+- number_sp_from_root_to_other: it is a dictionary that maps the number of shortest paths from the
+  root to all the others node
+- parents: it is a dictionary that maps for each node its parents in the BFS tree
+- number_sp_from_root_through_other: it is a dictionary that maps each node to the number of shortest paths starting 
+  from root that passes through that node
+
+```
+2021-06-12 19:23:45,316 __evaluate      INFO     Evaluating betweenness_centrality algorithm 
+2021-06-12 20:35:56,018 __evaluate      INFO     The centrality algorithm: betweenness_centrality took 4330.68 seconds
+```
+
+The naive implementation took 72 minutes on our pc, so, in order to make the running time more feasible, 
+a parallel version has been implemented that splits the nodes of the graph into different chunks 
+(one for each job) and compute the betweenness on different jobs.
+
+```
+2021-06-12 20:35:56,382 __evaluate      INFO     Evaluating parallel_betweenness_centrality algorithm
+2021-06-12 20:51:35,563 __evaluate      INFO     The centrality algorithm: parallel_betweenness_centrality took 939.17 seconds
+```
+
+The results of the naive, the parallel implementation and the networkx implementation, have been compared in time and
+in precision. The time of the naive and the networkx implementation is almost the same, while the parallel
+implementation performs better.
+
+The top 500 most central nodes (highest betweenness) returned by these three implementation are exactly the same.
+In particular the results from the naive and the parallel implementation are exactly the same.
+
+'''
+
+
 def parallel_betweenness_centrality(graph, n_jobs):
     edge_btw = {frozenset(e): 0 for e in graph.edges()}
     node_btw = {i: 0 for i in graph.nodes()}
@@ -772,51 +817,47 @@ def parallel_betweenness_centrality(graph, n_jobs):
     return edge_btw, node_btw
 
 
-def betweenness_centrality(graph, sample):
-    edge_btw = {frozenset(e): 0 for e in graph.edges()}
-    node_btw = {i: 0 for i in graph.nodes()}
+def betweenness_centrality(graph, nodes):
+    edge_betweenness = {frozenset(e): 0 for e in graph.edges()}
+    node_betweenness = {i: 0 for i in graph.nodes()}
 
-    for s in sample:
-        # Compute the number of shortest paths from s to every other node
-        tree = []  # it lists the nodes in the order in which they are visited
-        spnum = {i: 0 for i in graph.nodes()}  # it saves the number of shortest paths from s to i
-        parents = {i: [] for i in graph.nodes()}  # it saves the parents of i in each of the shortest paths from s to i
-        # distance = {i: -1 for i in graph.nodes()}  # the number of shortest paths starting from s that use the edge e
-        # eflow = {frozenset(e): 0 for e in graph.edges()}  # the number of shortest paths starting from s that use the edge e
-        distance = {}
-        vflow = {i: 1 for i in
-                 graph.nodes()}  # the number of shortest paths starting from s that use the vertex i. It is initialized to 1 because the shortest path from s to i is assumed to uses that vertex once.
+    for root in nodes:
+        # Compute the number of shortest paths from current_node to every other node
+        tree = []
+        number_sp_from_root_to_other = {node: 0 for node in graph.nodes()}
+        parents = {node: [] for node in graph.nodes()}
+        distance_from_root_to_other = {}
+        number_sp_from_root_through_other = {node: 1 for node in graph.nodes()}
 
         # BFS
-        queue = [s]
-        spnum[s] = 1
-        distance[s] = 0
-        while queue != []:
-            c = queue.pop(0)
-            tree.append(c)
-            for i in graph[c]:
-                if i not in distance:  # if vertex i has not been visited
-                    queue.append(i)
-                    distance[i] = distance[c] + 1
-                if distance[i] == distance[c] + 1:  # if we have just found another shortest path from s to i
-                    spnum[i] += spnum[c]
-                    parents[i].append(c)
+        queue = [root]
+        number_sp_from_root_to_other[root] = 1
+        distance_from_root_to_other[root] = 0
+        while len(queue) != 0:
+            current = queue.pop(0)
+            tree.append(current)
+            for child in graph[current]:
+                if child not in distance_from_root_to_other:  # if vertex node has not been visited
+                    queue.append(child)
+                    distance_from_root_to_other[child] = distance_from_root_to_other[current] + 1
+                if distance_from_root_to_other[child] == distance_from_root_to_other[current] + 1:
+                    # if we have just found another shortest path from current_node to node
+                    number_sp_from_root_to_other[child] += number_sp_from_root_to_other[current]
+                    # The number of the shortest paths from the current node to a node in the bfs tree is
+                    # the sum of the shortest path from the current node to its parents
+                    parents[child].append(current)
 
         # BOTTOM-UP PHASE
-        while tree != []:
-            c = tree.pop()
-            for i in parents[c]:
-                eflow = vflow[c] * (spnum[i] / spnum[
-                    c])  # the number of shortest paths using vertex c is split among the edges towards its parents proportionally to the number of shortest paths that the parents contributes
-                vflow[
-                    i] += eflow  # each shortest path that use an edge (i,c) where i is closest to s than c must use also vertex i
-                edge_btw[frozenset({c,
-                                    i})] += eflow  # betweenness of an edge is the sum over all s of the number of shortest paths from s to other nodes using that edge
-            if c != s:
-                node_btw[c] += vflow[
-                    c]  # betweenness of a vertex is the sum over all s of the number of shortest paths from s to other nodes using that vertex
+        while len(tree) != 0:
+            current = tree.pop()
+            for parent in parents[current]:
+                fraction_sp_from_child_to_parent = number_sp_from_root_through_other[current] * (number_sp_from_root_to_other[parent] / number_sp_from_root_to_other[current])
+                number_sp_from_root_through_other[parent] += fraction_sp_from_child_to_parent
+                edge_betweenness[frozenset({current, parent})] += fraction_sp_from_child_to_parent
+            if current != root:
+                node_betweenness[current] += number_sp_from_root_through_other[current]
 
-    return edge_btw, node_btw
+    return edge_betweenness, node_betweenness
 
 
 def parallel_edges_betweenness_centrality(graph, **kwargs):
