@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from sklearn.metrics import rand_score
 import logging
+import centrality_measures
 import logging_configuration
 
 
@@ -15,6 +16,7 @@ CENTRALITY_MEASURES = {
     "closeness_centrality": nx.closeness_centrality,
     "nodes_betweenness_centrality": nx.betweenness_centrality,
     "edges_betweenness_centrality": nx.edge_betweenness_centrality,
+    "parallel_edges_betweenness_centrality": centrality_measures.parallel_edges_betweenness_centrality,
     "pagerank": nx.pagerank
 }
 

@@ -1,47 +1,58 @@
-import sys
 import numpy as np
-from tqdm import tqdm
-
-sys.path.append("../")
 from pathlib import Path
 import datetime
 from priorityq import PriorityQueue
+import logging_configuration
 import logging
 import time
 
+logger = logging.getLogger()
+
+HITS_ALGORITHMS = ["naive_edge_hits", "parallel_edge_hits", "naive_hits", "parallel_naive_hits"]
+BETWENNEES_CENTRALITY = ["parallel_betweenness_centrality", "betweenness_centrality"]
+
 
 class Centrality:
-    def __init__(self, centrality_algorithms_with_kwargs, graph, seed=42, logger_level=logging.INFO, k=500,
-                 output_file_path=f"centrality_results/results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt"):
+    def __init__(self, centrality_algorithms_with_kwargs, graph, seed=42, k=500):
         self.centrality_algorithms_with_kwargs = centrality_algorithms_with_kwargs
         self.graph = graph
         self.seed = seed
         self.k = k
-        self.output_file_path = Path(output_file_path).absolute()
-        self.logger_level = logger_level
-        logging.basicConfig(level=self.logger_level,
-                            format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                            datefmt='%m-%d %H:%M',
-                            filename=str(self.output_file_path),
-                            filemode='w+')
-
-        console = logging.StreamHandler()
-        console.setLevel(self.logger_level)
-        formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-        console.setFormatter(formatter)
-        logging.getLogger().addHandler(console)
 
     def __evaluate(self, centrality_algorithm, kwargs):
-        logger = logging.getLogger(f"{centrality_algorithm.__name__}")
         logger.info(f"Evaluating {centrality_algorithm.__name__} algorithm, with these arguments : {kwargs}")
         start = time.perf_counter()
-        node_to_centrality = centrality_algorithm(self.graph, **kwargs)
+        node_to_hubs = {}
+        node_to_authorities = {}
+        node_to_centrality = {}
+        edge_btw = {}
+        node_btw = {}
+        if centrality_algorithm.__name__ in HITS_ALGORITHMS:
+            node_to_hubs, node_to_authorities = centrality_algorithm(self.graph, **kwargs)
+        elif centrality_algorithm.__name__ in BETWENNEES_CENTRALITY:
+            edge_btw, node_btw = centrality_algorithm(self.graph, **kwargs)
+        else:
+            node_to_centrality = centrality_algorithm(self.graph, **kwargs)
+
         end = time.perf_counter()
         elapsed = end - start
         logger.info(f"The centrality algorithm: {centrality_algorithm.__name__} took {elapsed} seconds")
-        k_nodes = k_most_central_nodes(self.graph, node_to_centrality, self.k)
-        logger.info(
-            f"The {str(self.k)} most central nodes for the algorithm {centrality_algorithm.__name__} are : {k_nodes}")
+        if centrality_algorithm.__name__ in HITS_ALGORITHMS:
+            k_most_hubs_nodes = k_most_central_nodes(self.graph, node_to_hubs, self.k)
+            k_most_authorities_nodes = k_most_central_nodes(self.graph, node_to_authorities, self.k)
+            logger.info(
+                f"The {str(self.k)} most hubs nodes for the algorithm {centrality_algorithm.__name__} are : {k_most_hubs_nodes}")
+            logger.info(
+                f"The {str(self.k)} most authorities nodes for the algorithm {centrality_algorithm.__name__} are : {k_most_authorities_nodes}")
+        elif centrality_algorithm.__name__ in BETWENNEES_CENTRALITY:
+            k_nodes = k_most_central_nodes(self.graph, node_btw, self.k)
+            logger.info(
+                f"The {str(self.k)} most central nodes for the algorithm {centrality_algorithm.__name__} are : {k_nodes}")
+            logger.info(f"Edge betweennes : {edge_btw}")
+        else:
+            k_nodes = k_most_central_nodes(self.graph, node_to_centrality, self.k)
+            logger.info(
+                f"The {str(self.k)} most central nodes for the algorithm {centrality_algorithm.__name__} are : {k_nodes}")
 
     def evaluate_all(self):
         for algorithm, kwargs in self.centrality_algorithms_with_kwargs:
@@ -57,6 +68,18 @@ def k_most_central_nodes(graph, node_to_measure, k):
     for i in range(k):
         node = pq.pop()
         out.append((node, node_to_measure[node]))
+
+    return out
+
+def k_most_central_edges(graph, edge_to_measure, k):
+    pq = PriorityQueue()
+    for edge in graph.edges():
+        pq.add(edge, -edge_to_measure[edge])
+    out = []
+
+    for i in range(k):
+        edge = pq.pop()
+        out.append((edge, edge_to_measure[edge]))
 
     return out
 
