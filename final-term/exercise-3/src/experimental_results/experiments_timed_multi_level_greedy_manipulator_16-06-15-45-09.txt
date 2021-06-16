@@ -1,0 +1,473 @@
+
+##########
+
+DATE: 16-06-15-45-09
+SEED: 45, POPULATE_DYNAMICS_SEED: 46, RUN_EXPERIMENT_SEED: 47
+NUMBER_OF_CANDIDATES: 10, TARGET_CANDIDATE: 4, NUMBER_OF_SEEDS: 200, COMPUTE_SEEDS: timed_multi_level_greedy_manipulator, STUBBORNNESS: 0.5
+
+MAX RUNNING TIME S: 1707
+GRAPH_NAME: Facebook Graph, NUMBER_OF_NODES: 22470, NUMBER_0F_EDGES: 171002
+NUMBER_OF_JOBS: 8
+
+CANDIDATES POSITIONS
+CANDIDATE: 0: 0.4176911897065356
+CANDIDATE: 1: 0.2576606205245803
+CANDIDATE: 2: 0.3031921113933137
+CANDIDATE: 3: 0.021593161466223032
+CANDIDATE: 4: 0.4842559174525467
+CANDIDATE: 5: 0.11483817759044679
+CANDIDATE: 6: 0.807660453898507
+CANDIDATE: 7: 0.9563359790372715
+CANDIDATE: 8: 0.8554199691375404
+CANDIDATE: 9: 0.6493040698450484
+
+TRUTHFUL ELECTION RESULTS
+CANDIDATE ID: 9: SCORE: 3665
+CANDIDATE ID: 5: SCORE: 2733
+CANDIDATE ID: 4: SCORE: 2574
+CANDIDATE ID: 6: SCORE: 2314
+CANDIDATE ID: 7: SCORE: 2143
+CANDIDATE ID: 1: SCORE: 2057
+CANDIDATE ID: 0: SCORE: 2002
+CANDIDATE ID: 2: SCORE: 1848
+CANDIDATE ID: 8: SCORE: 1649
+CANDIDATE ID: 3: SCORE: 1485
+
+ELECTION RESULTS AFTER DYNAMICS
+CANDIDATE ID: 9: SCORE: 6786
+CANDIDATE ID: 4: SCORE: 4924
+CANDIDATE ID: 0: SCORE: 3977
+CANDIDATE ID: 2: SCORE: 3309
+CANDIDATE ID: 1: SCORE: 1792
+CANDIDATE ID: 6: SCORE: 1454
+CANDIDATE ID: 5: SCORE: 142
+CANDIDATE ID: 8: SCORE: 84
+CANDIDATE ID: 3: SCORE: 1
+CANDIDATE ID: 7: SCORE: 1
+The estimate of the marginal contribution time with one job is: 1.0025408267974854
+The estimate of the marginal contribution time with 8 job is: 0.25063520669937134
+
+NUMBER OF ITERATIONS FOR EACH SEED: 34,
+NUMBER_OF_DIGITS: 2
+NODES TO EXCLUDE: TRUE
+NUMBER OF PREFERENCES: 1
+The estimate of the marginal contribution time with one job is: 0.2868680813733269
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.2798509268925108
+The number of iterations for the next level is : 30
+The estimate of the marginal contribution time with one job is: 0.2676722764968872
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26170367579306325
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2512003779411316
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2789076097083814
+The number of iterations for the next level is : 30
+The estimate of the marginal contribution time with one job is: 0.2862317403157552
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.28991149211752004
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.29480084879644985
+The number of iterations for the next level is : 28
+The estimate of the marginal contribution time with one job is: 0.29710050991603304
+The number of iterations for the next level is : 28
+The estimate of the marginal contribution time with one job is: 0.3315284933362688
+The number of iterations for the next level is : 25
+The estimate of the marginal contribution time with one job is: 0.33888276100158693
+The number of iterations for the next level is : 25
+The estimate of the marginal contribution time with one job is: 0.3192168426513672
+The number of iterations for the next level is : 26
+The estimate of the marginal contribution time with one job is: 0.31581915341890776
+The number of iterations for the next level is : 27
+The estimate of the marginal contribution time with one job is: 0.31060054567125106
+The number of iterations for the next level is : 27
+The estimate of the marginal contribution time with one job is: 0.3025215908333107
+The number of iterations for the next level is : 28
+The estimate of the marginal contribution time with one job is: 0.29532348258154734
+The number of iterations for the next level is : 28
+The estimate of the marginal contribution time with one job is: 0.29445277793066843
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.28353089299695244
+The number of iterations for the next level is : 30
+The estimate of the marginal contribution time with one job is: 0.27940462430318197
+The number of iterations for the next level is : 30
+The estimate of the marginal contribution time with one job is: 0.2709429661432902
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2566794349301246
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2870514898589163
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.2875876097843565
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.2879116206333555
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.2663482879770213
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2637183591723442
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2548627108335495
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2625394878965436
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2723763510584831
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26319469944123297
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2550812438130379
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26256809812603576
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25371428579092026
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2630159565896699
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25342801958322525
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26291862401095306
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25804510712623596
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2668267813595859
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2613612189888954
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25595133751630783
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2629352988618793
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25520355999469757
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2599575664057876
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.27251478284597397
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2749340688028643
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.25935486055189566
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26178300019466516
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25619130581617355
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2611986579317035
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25153180956840515
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.25716111940496106
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2698633309566613
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.25921875430691627
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2661061431422378
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2692941948771477
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2576261720349712
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2636458223516291
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2545900493860245
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26032864686214563
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.253602497279644
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27202421246152936
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2770527793515113
+The number of iterations for the next level is : 30
+The estimate of the marginal contribution time with one job is: 0.27660857836405434
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2563613384000717
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2698452111446496
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.25712651591147145
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2629888924685391
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.256434828042984
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2696475621425744
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2633796891858501
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26112601161003113
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2738528773188591
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26751149854352396
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2761978432536125
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.27052841647978754
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2937356118232973
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.3120121298165157
+The number of iterations for the next level is : 27
+The estimate of the marginal contribution time with one job is: 0.30475302978798197
+The number of iterations for the next level is : 28
+The estimate of the marginal contribution time with one job is: 0.2950311814035688
+The number of iterations for the next level is : 29
+The estimate of the marginal contribution time with one job is: 0.28288216426454743
+The number of iterations for the next level is : 30
+The estimate of the marginal contribution time with one job is: 0.2714370250701904
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2716402161505915
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26860619360400784
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.263052262365818
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.258482962846756
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2757757577029141
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2689375800471152
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26036305725574493
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2677337111848773
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25993936508893967
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26484842733903363
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2612806707620621
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2746385857462883
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.28041681935710294
+The number of iterations for the next level is : 30
+The estimate of the marginal contribution time with one job is: 0.27134506702423095
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26311740567607267
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2645236700773239
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26652999967336655
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26326655596494675
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2747271656990051
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2648436869344404
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2666189968585968
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26039453595876694
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2703654621586655
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26606235965605707
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2581828460097313
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2752465045813358
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.27224965249338456
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.27396117487261373
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26905647400886784
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2535829395055771
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.2725959104650161
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2647169097777336
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26184334605932236
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2655467047835841
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25937722623348236
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27114096554842865
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26147607065016226
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2683670159542199
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2586405426263809
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2716680512283788
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2700080256308279
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26152320951223373
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2689511197986025
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26123133301734924
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27878537322535657
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.27233692907517953
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26805543899536133
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.261880062520504
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2683773257515647
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25939321517944336
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.271806001663208
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26368118101550686
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26066602021455765
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27112973820079456
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2644663856875512
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25922002643346786
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2671782464692087
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2616710215806961
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26740944746768835
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2605486959218979
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.28254511862090137
+The number of iterations for the next level is : 30
+The estimate of the marginal contribution time with one job is: 0.27127830187479657
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2595502808690071
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2662254030054266
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2610081061720848
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27567900310863147
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26091884797619236
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26899529948379053
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25848908722400665
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27688155752239807
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26483277351625506
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26168548315763474
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27047447002295294
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2608281299471855
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2708033792900317
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2586527392268181
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2682040026693633
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.261479489505291
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2694636474956166
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.26635880023241043
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2616492658853531
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27338223746328644
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2642870256977697
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27460874933185
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2644002745228429
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26601675062468555
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2611728608608246
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2700783483909838
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25893305242061615
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2702767343232126
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2595355361700058
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26670479051994556
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2566675841808319
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.2630791944615981
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26770909627278644
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2638993188738823
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26839480255589343
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.260555736720562
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.28218394337278424
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.2615802441873858
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.2710141557635683
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.2544933781027794
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.2625005876316744
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.26572674693483295
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.27492906830527564
+The number of iterations for the next level is : 32
+The estimate of the marginal contribution time with one job is: 0.25418899208307266
+The number of iterations for the next level is : 35
+The estimate of the marginal contribution time with one job is: 0.26813857214791437
+The number of iterations for the next level is : 33
+The estimate of the marginal contribution time with one job is: 0.3441473570736972
+The number of iterations for the next level is : 25
+The estimate of the marginal contribution time with one job is: 0.30618748664855955
+The number of iterations for the next level is : 28
+The estimate of the marginal contribution time with one job is: 0.2842248167310442
+The number of iterations for the next level is : 31
+The estimate of the marginal contribution time with one job is: 0.26051160597032114
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.2640799844966215
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.26212143898010254
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.26398545153000774
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.2608451282276827
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.2630538449567907
+The number of iterations for the next level is : 34
+The estimate of the marginal contribution time with one job is: 0.2619124370462754
+The number of iterations for the next level is : 36
+THE TOTAL NUMBER OF PERFORMED ITERATIONS IS: 6340
+
+MANIPULATED ELECTION RESULTS
+CANDIDATE ID: 9: SCORE: 6594
+CANDIDATE ID: 4: SCORE: 5380
+CANDIDATE ID: 0: SCORE: 3825
+CANDIDATE ID: 2: SCORE: 3288
+CANDIDATE ID: 1: SCORE: 1762
+CANDIDATE ID: 6: SCORE: 1407
+CANDIDATE ID: 5: SCORE: 137
+CANDIDATE ID: 8: SCORE: 75
+CANDIDATE ID: 3: SCORE: 1
+CANDIDATE ID: 7: SCORE: 1
+
+DIFFERENCE BETWEEN MANIPULATED AND DYNAMICS SCORE: 456
+
+TRUTHFUL_SCORE: 2574, MANIPULATED_SCORE: 5380, SCORE_DIFFERENCE: 2806
+
+RUN_TIME: 1713.0825378894806 seconds. (Davide)
+
+##########
+

@@ -1,5 +1,6 @@
 import logging
 import logging.config
+import os
 import pathlib
 import pickle
 import random
@@ -16,6 +17,8 @@ import utils
 from election import Candidate, run_election
 from final_term_utils import populate_dynamics_parameters
 from manipulators import *
+from manipulators.cluster_based import cluster_based_manipulator
+from manipulators.manipulators import timed_multi_level_greedy_manipulator
 from network_diffusion.fj_dynamics import fj_dynamics
 
 FACEBOOK_PATH_TO_NODES = "../../../mid-term/exercise-1-2/facebook_large/musae_facebook_target.csv"
@@ -25,7 +28,7 @@ logger = logging.getLogger("final_term_exercise_3_logger")
 
 
 def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int, number_of_seeds: int,
-                   compute_seeds: typing.Callable, seed: int, number_of_jobs: int,
+                   compute_seeds: typing.Callable, seed: int, number_of_jobs: int, max_running_time_s: int,
                    max_results_to_print: int = 10) -> typing.Tuple[int, int]:
     """
     :param graph:                   The graph of the voters. Each node has the attributes private_belief
@@ -36,6 +39,7 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
     :param compute_seeds:
     :param seed:
     :param number_of_jobs:
+    :param max_running_time_s:
     :param max_results_to_print:
     :return:                        A tuple in which the first element is the score obtained by the target candidate
                                     in the truthful election and the second element is the score obtained in the
@@ -91,7 +95,8 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
     ##########
 
     # compute seeds
-    seeds = compute_seeds(graph, candidates, target_candidate_id, number_of_seeds, seed, number_of_jobs)
+    seeds = compute_seeds(graph, candidates, target_candidate_id, number_of_seeds,
+                          seed, number_of_jobs, max_running_time_s)
     if len(seeds) > number_of_seeds:
         raise Exception(f"The length of computed seeds {len(seeds)} is greater "
                         f"than the number of seeds {number_of_seeds}")
@@ -167,11 +172,24 @@ def _set_logger_configuration(compute_seeds_function_name) -> None:
         "loggers": {
             "final_term_exercise_3_logger": {
                 "propagate": False,
-                "level": "INFO",
+                "level": "DEBUG",
                 "handlers": ["console-unnamed", "file-unnamed"]
             },
         },
     })
+
+
+def _set_number_of_jobs(number_of_free_cpus: int):
+    number_of_jobs = os.cpu_count()
+    if number_of_jobs is None:
+        print(f"WARNING: No cpus were detected. Using one job.")
+        return 1
+
+    number_of_jobs -= number_of_free_cpus
+    if number_of_jobs < 1:
+        return 1
+
+    return number_of_jobs
 
 
 def main():
@@ -184,13 +202,15 @@ def main():
     NUMBER_OF_CANDIDATES = 10
     TARGET_CANDIDATE = random.randint(0, NUMBER_OF_CANDIDATES - 1)
     NUMBER_OF_SEEDS = 200
-    COMPUTE_SEEDS = belief_degree_manipulator
+    COMPUTE_SEEDS = timed_multi_level_greedy_manipulator
     GRAPH_NAME = "Facebook Graph"
     GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
 
+    MAX_RUNNING_TIME_S = 1707
+
     STUBBORNNESS = 0.5
 
-    NUMBER_OF_JOBS = 6
+    NUMBER_OF_JOBS = _set_number_of_jobs(8)
 
     CANDIDATES = []
     for i in range(NUMBER_OF_CANDIDATES):
@@ -220,6 +240,9 @@ def main():
                 f" TARGET_CANDIDATE: {TARGET_CANDIDATE}, NUMBER_OF_SEEDS: {NUMBER_OF_SEEDS},"
                 f" COMPUTE_SEEDS: {COMPUTE_SEEDS.__name__}, STUBBORNNESS: {STUBBORNNESS}")
 
+    # log max time
+    logger.info(f"\nMAX RUNNING TIME S: {MAX_RUNNING_TIME_S}")
+
     # log graph parameters
     logger.info(f"GRAPH_NAME: {GRAPH_NAME}, NUMBER_OF_NODES: {len(GRAPH.nodes)},"
                 f" NUMBER_0F_EDGES: {len(GRAPH.edges)}")
@@ -240,7 +263,8 @@ def main():
     # measure time
     start_time = time.time()
     truthful_score, manipulated_score = run_experiment(GRAPH, CANDIDATES, TARGET_CANDIDATE, NUMBER_OF_SEEDS,
-                                                       COMPUTE_SEEDS, RUN_EXPERIMENT_SEED, NUMBER_OF_JOBS)
+                                                       COMPUTE_SEEDS, RUN_EXPERIMENT_SEED,
+                                                       NUMBER_OF_JOBS, MAX_RUNNING_TIME_S)
     end_time = time.time()
     score_difference = manipulated_score - truthful_score
 
