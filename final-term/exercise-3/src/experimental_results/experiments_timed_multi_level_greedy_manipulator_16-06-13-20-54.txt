@@ -1,0 +1,113 @@
+
+##########
+
+DATE: 16-06-13-20-54
+SEED: 45, POPULATE_DYNAMICS_SEED: 46, RUN_EXPERIMENT_SEED: 47
+NUMBER_OF_CANDIDATES: 10, TARGET_CANDIDATE: 4, NUMBER_OF_SEEDS: 20, COMPUTE_SEEDS: timed_multi_level_greedy_manipulator, STUBBORNNESS: 0.5
+
+MAX RUNNING TIME S: 300
+GRAPH_NAME: Facebook Graph, NUMBER_OF_NODES: 22470, NUMBER_0F_EDGES: 171002
+NUMBER_OF_JOBS: 6
+
+CANDIDATES POSITIONS
+CANDIDATE: 0: 0.4176911897065356
+CANDIDATE: 1: 0.2576606205245803
+CANDIDATE: 2: 0.3031921113933137
+CANDIDATE: 3: 0.021593161466223032
+CANDIDATE: 4: 0.4842559174525467
+CANDIDATE: 5: 0.11483817759044679
+CANDIDATE: 6: 0.807660453898507
+CANDIDATE: 7: 0.9563359790372715
+CANDIDATE: 8: 0.8554199691375404
+CANDIDATE: 9: 0.6493040698450484
+
+TRUTHFUL ELECTION RESULTS
+CANDIDATE ID: 9: SCORE: 3665
+CANDIDATE ID: 5: SCORE: 2733
+CANDIDATE ID: 4: SCORE: 2574
+CANDIDATE ID: 6: SCORE: 2314
+CANDIDATE ID: 7: SCORE: 2143
+CANDIDATE ID: 1: SCORE: 2057
+CANDIDATE ID: 0: SCORE: 2002
+CANDIDATE ID: 2: SCORE: 1848
+CANDIDATE ID: 8: SCORE: 1649
+CANDIDATE ID: 3: SCORE: 1485
+
+ELECTION RESULTS AFTER DYNAMICS
+CANDIDATE ID: 9: SCORE: 6786
+CANDIDATE ID: 4: SCORE: 4924
+CANDIDATE ID: 0: SCORE: 3977
+CANDIDATE ID: 2: SCORE: 3309
+CANDIDATE ID: 1: SCORE: 1792
+CANDIDATE ID: 6: SCORE: 1454
+CANDIDATE ID: 5: SCORE: 142
+CANDIDATE ID: 8: SCORE: 84
+CANDIDATE ID: 3: SCORE: 1
+CANDIDATE ID: 7: SCORE: 1
+The estimate of the marginal contribution time with one job is: 1.3258039951324463
+The estimate of the marginal contribution time with 6 job is: 0.22096733252207437
+
+NUMBER OF ITERATIONS FOR EACH SEED: 67,
+NUMBER_OF_DIGITS: 2
+NODES TO EXCLUDE: TRUE
+NUMBER OF PREFERENCES: 1
+The estimate of the marginal contribution time with one job is: 0.5042274709957749
+The number of iterations for the next level is : 27
+The estimate of the marginal contribution time with one job is: 0.5453938819743969
+The number of iterations for the next level is : 25
+The estimate of the marginal contribution time with one job is: 0.6427346134185791
+The number of iterations for the next level is : 21
+The estimate of the marginal contribution time with one job is: 0.7903660365513393
+The number of iterations for the next level is : 17
+The estimate of the marginal contribution time with one job is: 0.7448378731222713
+The number of iterations for the next level is : 18
+The estimate of the marginal contribution time with one job is: 0.7513824039035373
+The number of iterations for the next level is : 18
+The estimate of the marginal contribution time with one job is: 0.6946645710203383
+The number of iterations for the next level is : 19
+The estimate of the marginal contribution time with one job is: 0.8132747976403487
+The number of iterations for the next level is : 16
+The estimate of the marginal contribution time with one job is: 0.6804204434156418
+The number of iterations for the next level is : 20
+The estimate of the marginal contribution time with one job is: 0.7196180582046509
+The number of iterations for the next level is : 19
+The estimate of the marginal contribution time with one job is: 0.6636130182366622
+The number of iterations for the next level is : 21
+The estimate of the marginal contribution time with one job is: 0.745829389208839
+The number of iterations for the next level is : 18
+The estimate of the marginal contribution time with one job is: 0.5812328126695421
+The number of iterations for the next level is : 24
+The estimate of the marginal contribution time with one job is: 0.6057489713033041
+The number of iterations for the next level is : 23
+The estimate of the marginal contribution time with one job is: 0.6101876756419307
+The number of iterations for the next level is : 23
+The estimate of the marginal contribution time with one job is: 0.7093022906261942
+The number of iterations for the next level is : 19
+The estimate of the marginal contribution time with one job is: 0.5962495050932232
+The number of iterations for the next level is : 24
+The estimate of the marginal contribution time with one job is: 0.618280291557312
+The number of iterations for the next level is : 23
+The estimate of the marginal contribution time with one job is: 0.60362025965815
+The number of iterations for the next level is : 26
+THE TOTAL NUMBER OF PERFORMED ITERATIONS IS: 468
+
+MANIPULATED ELECTION RESULTS
+CANDIDATE ID: 9: SCORE: 6768
+CANDIDATE ID: 4: SCORE: 4972
+CANDIDATE ID: 0: SCORE: 3963
+CANDIDATE ID: 2: SCORE: 3309
+CANDIDATE ID: 1: SCORE: 1784
+CANDIDATE ID: 6: SCORE: 1446
+CANDIDATE ID: 5: SCORE: 142
+CANDIDATE ID: 8: SCORE: 84
+CANDIDATE ID: 3: SCORE: 1
+CANDIDATE ID: 7: SCORE: 1
+
+DIFFERENCE BETWEEN MANIPULATED AND DYNAMICS SCORE: 48
+
+TRUTHFUL_SCORE: 2574, MANIPULATED_SCORE: 4972, SCORE_DIFFERENCE: 2398
+
+RUN_TIME: 309.87976241111755 seconds. (LordCatello)
+
+##########
+
