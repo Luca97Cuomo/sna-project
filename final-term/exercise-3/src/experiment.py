@@ -206,11 +206,11 @@ def main():
     GRAPH_NAME = "Facebook Graph"
     GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
 
-    MAX_RUNNING_TIME_S = 1707
+    MAX_RUNNING_TIME_S = 14400
 
     STUBBORNNESS = 0.5
 
-    NUMBER_OF_JOBS = _set_number_of_jobs(8)
+    NUMBER_OF_JOBS = _set_number_of_jobs(1)
 
     CANDIDATES = []
     for i in range(NUMBER_OF_CANDIDATES):

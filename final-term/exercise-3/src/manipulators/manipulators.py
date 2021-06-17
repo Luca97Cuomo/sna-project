@@ -50,7 +50,7 @@ def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate,
                 max_marginal_contribution = marginal_contribution
                 max_preference = preference
         marginal_contributions[node] = (max_marginal_contribution, max_preference)
-        print(f"marginal contribution of {node} is {max_marginal_contribution} (pref: {max_preference} target: {target_candidate.position})")
+        #print(f"marginal contribution of {node} is {max_marginal_contribution} (pref: {max_preference} target: {target_candidate.position})")
         if index == 0:
             bar.update(1)
     return marginal_contributions
