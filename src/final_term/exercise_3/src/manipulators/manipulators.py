@@ -559,11 +559,6 @@ def _estimate_number_of_iterations(max_running_time_s: int, number_of_seeds: int
     num_total_iterations = max_running_time_s / marginal_contribution_time_s
     num_iterations_for_each_seed = math.floor(num_total_iterations / number_of_seeds)
 
-    if num_iterations_for_each_seed < number_of_jobs:
-        logger.info(f"The number of iterations for each seed {num_iterations_for_each_seed} is smaller than the"
-                    f"number of jobs {number_of_jobs}. Setting num_iterations_for_each_seed to number_of_jobs")
-        num_iterations_for_each_seed = number_of_jobs
-
     return num_iterations_for_each_seed
 
 
@@ -662,10 +657,11 @@ def timed_multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.Lis
                                 f" analyze {len(all_nodes_without_seeds)}")
 
                 # What happens if min_number_of_nodes is 0 or is fewer then the number of jobs?
-                if min_number_of_nodes == 0:
+                if min_number_of_nodes <= 0:
                     # All the nodes are in seeds or all the nodes votes for the target candidate
                     logger.info(f"Stopping prematurely compute seeds algorithm because"
-                                f" all the non-seeds nodes votes already for the target candidate")
+                                f" all the non-seeds nodes votes already for the target candidate"
+                                f" or the number of iterations is 0")
                     break
 
                 total_performed_iterations += min_number_of_nodes  # for debug purposes
