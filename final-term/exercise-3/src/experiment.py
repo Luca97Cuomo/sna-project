@@ -28,6 +28,39 @@ FACEBOOK_PATH_TO_EDGES = "../../../mid-term/exercise-1-2/facebook_large/musae_fa
 logger = logging.getLogger("final_term_exercise_3_logger")
 
 
+def _set_number_of_jobs(number_of_free_cpus: int):
+    number_of_jobs = os.cpu_count()
+    if number_of_jobs is None:
+        print(f"WARNING: No cpus were detected. Using one job.")
+        return 1
+
+    number_of_jobs -= number_of_free_cpus
+    if number_of_jobs < 1:
+        return 1
+
+    return number_of_jobs
+
+
+COMPUTE_SEEDS = timed_multi_level_greedy_manipulator
+
+SEED = 45
+POPULATE_DYNAMICS_SEED = SEED + 1
+RUN_EXPERIMENT_SEED = POPULATE_DYNAMICS_SEED + 1
+
+MAX_RUNNING_TIME_S = 60
+
+NUMBER_OF_CANDIDATES = 10
+NUMBER_OF_SEEDS = 20
+
+#GRAPH_NAME = "Facebook Graph"
+#GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
+
+path = pathlib.Path("../../graph-3000-4000")
+
+with open(path, 'rb') as file:
+    GRAPH = pickle.load(file)
+
+
 def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int, number_of_seeds: int,
                    compute_seeds: typing.Callable, seed: int, number_of_jobs: int, max_running_time_s: int,
                    max_results_to_print: int = 10) -> typing.Tuple[int, int]:
@@ -47,7 +80,41 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
                                     manipulated one.
     """
 
-    # check input
+    ##########
+    # Logging
+    ##########
+
+    _set_logger_configuration(compute_seeds.__name__)
+
+    # start logging a new experiment
+    logger.info("\n##########\n")
+
+    # log date
+    logger.info(f"DATE: {datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}")
+
+    # log seeds
+    logger.info(f"SEED: {SEED}, POPULATE_DYNAMICS_SEED: {POPULATE_DYNAMICS_SEED},"
+                f" RUN_EXPERIMENT_SEED: {RUN_EXPERIMENT_SEED}")
+
+    # log parameters
+    logger.info(f"NUMBER_OF_CANDIDATES: {len(candidates)},"
+                f" TARGET_CANDIDATE: {target_candidate_id}, NUMBER_OF_SEEDS: {number_of_seeds},"
+                f" COMPUTE_SEEDS: {compute_seeds.__name__}")
+
+    # log max time
+    logger.info(f"\nMAX RUNNING TIME S: {max_running_time_s}")
+
+    # log graph parameters
+    logger.info(f"NUMBER_OF_NODES: {len(graph.nodes)},"
+                f" NUMBER_0F_EDGES: {len(graph.edges)}")
+
+    logger.info(f"NUMBER_OF_JOBS: {number_of_jobs}")
+
+    ##########
+
+    start_time = time.time()
+
+    # Check input
     target_is_in_candidate = False
     for candidate in candidates:
         if target_candidate_id == candidate.id:
@@ -59,6 +126,8 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
     if number_of_seeds > len(graph.nodes):
         raise Exception(f"Number of seeds {number_of_seeds} is greater that tha number of nodes {len(graph.nodes)}")
 
+    ##########
+    # Evaluate truthful score
     ##########
 
     # set peak_preferences
@@ -76,7 +145,7 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
 
     ##########
 
-    # run dynamics and election (for debugging purposes)
+    # run dynamics (with 5 digits) and election (for debugging purposes)
     preferences_after_dynamics = fj_dynamics(graph)
 
     # update graph after dynamics
@@ -98,35 +167,53 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
     # compute seeds
     seeds = compute_seeds(graph, candidates, target_candidate_id, number_of_seeds,
                           seed, number_of_jobs, max_running_time_s=max_running_time_s)
+    logger.info(f"Computed {len(seeds)} seeds. The budget was {number_of_seeds}")
     if len(seeds) > number_of_seeds:
         raise Exception(f"The length of computed seeds {len(seeds)} is greater "
                         f"than the number of seeds {number_of_seeds}")
 
-    # update graph with seeds
+    # Update graph with seeds
     for node, preference in seeds.items():
         graph.nodes[node]["private_belief"] = preference
         graph.nodes[node]["stubbornness"] = 1
 
     manipulated_preferences = fj_dynamics(graph)
 
-    # update graph with manipulated preferences
+    # Update graph with manipulated preferences
     for node, preference in manipulated_preferences.items():
         graph.nodes[node]["peak_preference"] = preference
 
     # run manipulated election
     results = run_election(graph, candidates)
+    manipulated_score = results[target_candidate_id]
+
+    end_time = time.time()
+
+    ############
+
+    score_difference = manipulated_score - truthful_score
+
+    logger.info("")
+
+    # log score
+    logger.info(f"TRUTHFUL_SCORE: {truthful_score}, MANIPULATED_SCORE: {manipulated_score},"
+                f" SCORE_DIFFERENCE: {score_difference}")
+
+    # log time
+    logger.info(f"RUN_TIME: {end_time - start_time} seconds. ({getpass.getuser()})")
 
     # logging
     logger.debug("")
     logger.debug("MANIPULATED ELECTION RESULTS")
     _log_election_results(results, max_results_to_print)
 
-    manipulated_score = results[target_candidate_id]
-
     ##########
 
     logger.info("")
     logger.info(f"DIFFERENCE BETWEEN MANIPULATED AND DYNAMICS SCORE: {manipulated_score - dynamics_score}")
+
+    # end logging for this experiment
+    logger.info("\n##########\n")
 
     ##########
 
@@ -173,45 +260,60 @@ def _set_logger_configuration(compute_seeds_function_name) -> None:
         "loggers": {
             "final_term_exercise_3_logger": {
                 "propagate": False,
-                "level": "DEBUG",
+                "level": "WARNING",
                 "handlers": ["console-unnamed", "file-unnamed"]
             },
         },
     })
 
 
-def _set_number_of_jobs(number_of_free_cpus: int):
-    number_of_jobs = os.cpu_count()
-    if number_of_jobs is None:
-        print(f"WARNING: No cpus were detected. Using one job.")
-        return 1
+def manipulation(G: nx.Graph, p: typing.List[float], c: int, B: int, b: typing.List[float]):
+    # populate graph
+    index = 0
+    node_list = sorted(list(G.nodes()))
+    for node in node_list:
+        G.nodes[node]["private_belief"] = b[index]
+        G.nodes[node]["stubbornness"] = 0.5
+        index += 1
 
-    number_of_jobs -= number_of_free_cpus
-    if number_of_jobs < 1:
-        return 1
+    # candidates
+    candidates = []
+    for i in range(len(p)):
+        candidates.append(Candidate(i, p[i]))
 
-    return number_of_jobs
+    number_of_jobs = _set_number_of_jobs(2)
+
+    truthful_score, manipulated_score = run_experiment(G, candidates, c, B,
+                                                       COMPUTE_SEEDS, RUN_EXPERIMENT_SEED,
+                                                       number_of_jobs, MAX_RUNNING_TIME_S)
+
+    print(f"1,{truthful_score},{manipulated_score}")
 
 
 def main():
-    # parameters
-    SEED = 45
-    POPULATE_DYNAMICS_SEED = SEED + 1
-    RUN_EXPERIMENT_SEED = POPULATE_DYNAMICS_SEED + 1
     random.seed(SEED)
 
-    NUMBER_OF_CANDIDATES = 10
+    target_candidate_index = random.randint(0, NUMBER_OF_CANDIDATES - 1)
+    candidate_positions = []
+    for i in range(NUMBER_OF_CANDIDATES):
+        candidate_positions.append(random.random())
+
+    nodes_private_belief = []
+    for i in range(len(GRAPH.nodes())):
+        nodes_private_belief.append(random.random())
+
+    manipulation(GRAPH, candidate_positions, target_candidate_index, NUMBER_OF_SEEDS, nodes_private_belief)
+
+
+def set_parameters_and_launch_experiment():
+    # parameters
+    random.seed(SEED)
+
     TARGET_CANDIDATE = random.randint(0, NUMBER_OF_CANDIDATES - 1)
-    NUMBER_OF_SEEDS = 20
-    COMPUTE_SEEDS = timed_multi_level_greedy_manipulator
-    GRAPH_NAME = "Facebook Graph"
-    GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
-
-    MAX_RUNNING_TIME_S = 300
-
-    STUBBORNNESS = 0.5
 
     NUMBER_OF_JOBS = _set_number_of_jobs(2)
+
+    STUBBORNNESS = 0.5
 
     CANDIDATES = []
     for i in range(NUMBER_OF_CANDIDATES):
@@ -220,40 +322,8 @@ def main():
 
     populate_dynamics_parameters(GRAPH, POPULATE_DYNAMICS_SEED, None, STUBBORNNESS)
 
-    ##########
-    # Logging
-    ##########
-
-    _set_logger_configuration(COMPUTE_SEEDS.__name__)
-
-    # start logging a new experiment
-    logger.info("\n##########\n")
-
-    # log date
-    logger.info(f"DATE: {datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}")
-
-    # log seeds
-    logger.info(f"SEED: {SEED}, POPULATE_DYNAMICS_SEED: {POPULATE_DYNAMICS_SEED},"
-                f" RUN_EXPERIMENT_SEED: {RUN_EXPERIMENT_SEED}")
-
-    # log parameters
-    logger.info(f"NUMBER_OF_CANDIDATES: {NUMBER_OF_CANDIDATES},"
-                f" TARGET_CANDIDATE: {TARGET_CANDIDATE}, NUMBER_OF_SEEDS: {NUMBER_OF_SEEDS},"
-                f" COMPUTE_SEEDS: {COMPUTE_SEEDS.__name__}, STUBBORNNESS: {STUBBORNNESS}")
-
-    # log max time
-    logger.info(f"\nMAX RUNNING TIME S: {MAX_RUNNING_TIME_S}")
-
-    # log graph parameters
-    logger.info(f"GRAPH_NAME: {GRAPH_NAME}, NUMBER_OF_NODES: {len(GRAPH.nodes)},"
-                f" NUMBER_0F_EDGES: {len(GRAPH.edges)}")
-
-    logger.info(f"NUMBER_OF_JOBS: {NUMBER_OF_JOBS}")
-
-    logger.debug("")
-
     # log candidates positions
-    logger.debug("CANDIDATES POSITIONS")
+    logger.debug("\nCANDIDATES POSITIONS")
     for i in range(NUMBER_OF_CANDIDATES):
         candidate_id = CANDIDATES[i].id
         position = CANDIDATES[i].position
@@ -262,26 +332,9 @@ def main():
     logger.debug("")
 
     # measure time
-    start_time = time.time()
     truthful_score, manipulated_score = run_experiment(GRAPH, CANDIDATES, TARGET_CANDIDATE, NUMBER_OF_SEEDS,
                                                        COMPUTE_SEEDS, RUN_EXPERIMENT_SEED,
                                                        NUMBER_OF_JOBS, MAX_RUNNING_TIME_S)
-    end_time = time.time()
-    score_difference = manipulated_score - truthful_score
-
-    logger.info("")
-
-    # log score
-    logger.info(f"TRUTHFUL_SCORE: {truthful_score}, MANIPULATED_SCORE: {manipulated_score},"
-                f" SCORE_DIFFERENCE: {score_difference}")
-
-    logger.info("")
-
-    # log time
-    logger.info(f"RUN_TIME: {end_time - start_time} seconds. ({getpass.getuser()})")
-
-    # end logging for this experiment
-    logger.info("\n##########\n")
 
 
 if __name__ == "__main__":

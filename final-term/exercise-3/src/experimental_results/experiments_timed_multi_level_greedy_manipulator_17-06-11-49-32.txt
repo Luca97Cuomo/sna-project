@@ -1,0 +1,29 @@
+
+##########
+
+DATE: 17-06-11-49-32
+SEED: 45, POPULATE_DYNAMICS_SEED: 46, RUN_EXPERIMENT_SEED: 47
+NUMBER_OF_CANDIDATES: 10, TARGET_CANDIDATE: 4, NUMBER_OF_SEEDS: 1, COMPUTE_SEEDS: timed_multi_level_greedy_manipulator
+
+MAX RUNNING TIME S: 300
+NUMBER_OF_NODES: 3000, NUMBER_0F_EDGES: 4000
+NUMBER_OF_JOBS: 6
+The estimate of the marginal contribution time with one job is: 0.025929689407348633
+The estimate of the marginal contribution time with 6 job is: 0.007232903943104727
+
+NUMBER OF ITERATIONS FOR EACH SEED: 41477,
+NUMBER_OF_DIGITS: 2
+NODES TO EXCLUDE: TRUE
+NUMBER OF PREFERENCES: 1
+Number of iterations 41477 is greater the the available nodes to analyze 0
+Stopping prematurely compute seeds algorithm because all the non-seeds nodes votes already for the target candidate
+THE TOTAL NUMBER OF PERFORMED ITERATIONS IS: 0
+Computed 0 seeds. The budget was 1
+
+TRUTHFUL_SCORE: 3000, MANIPULATED_SCORE: 3000, SCORE_DIFFERENCE: 0
+RUN_TIME: 0.34332895278930664 seconds. (LordCatello)
+
+DIFFERENCE BETWEEN MANIPULATED AND DYNAMICS SCORE: 0
+
+##########
+

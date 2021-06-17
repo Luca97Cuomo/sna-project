@@ -1,0 +1,18 @@
+
+##########
+
+DATE: 17-06-11-48-02
+SEED: 45, POPULATE_DYNAMICS_SEED: 46, RUN_EXPERIMENT_SEED: 47
+NUMBER_OF_CANDIDATES: 10, TARGET_CANDIDATE: 4, NUMBER_OF_SEEDS: 1, COMPUTE_SEEDS: timed_multi_level_greedy_manipulator
+
+MAX RUNNING TIME S: 300
+NUMBER_OF_NODES: 3000, NUMBER_0F_EDGES: 4000
+NUMBER_OF_JOBS: 6
+The estimate of the marginal contribution time with one job is: 0.12167644500732422
+The estimate of the marginal contribution time with 6 job is: 0.03394078598670073
+
+NUMBER OF ITERATIONS FOR EACH SEED: 8838,
+NUMBER_OF_DIGITS: 2
+NODES TO EXCLUDE: TRUE
+NUMBER OF PREFERENCES: 1
+Number of iterations 8838 is greater the the available nodes toanalyze 2419

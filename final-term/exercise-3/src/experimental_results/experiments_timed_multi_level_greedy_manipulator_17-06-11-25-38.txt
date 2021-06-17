@@ -1,0 +1,140 @@
+
+##########
+
+DATE: 17-06-11-25-38
+SEED: 45, POPULATE_DYNAMICS_SEED: 46, RUN_EXPERIMENT_SEED: 47
+NUMBER_OF_CANDIDATES: 10, TARGET_CANDIDATE: 4, NUMBER_OF_SEEDS: 20, COMPUTE_SEEDS: timed_multi_level_greedy_manipulator
+
+MAX RUNNING TIME S: 300
+NUMBER_OF_NODES: 22470, NUMBER_0F_EDGES: 171002
+NUMBER_OF_JOBS: 6
+TRUTHFUL ELECTION RESULTS
+CANDIDATE ID: 9: SCORE: 3661
+CANDIDATE ID: 4: SCORE: 2598
+CANDIDATE ID: 5: SCORE: 2593
+CANDIDATE ID: 6: SCORE: 2340
+CANDIDATE ID: 7: SCORE: 2152
+CANDIDATE ID: 1: SCORE: 2081
+CANDIDATE ID: 0: SCORE: 1978
+CANDIDATE ID: 2: SCORE: 1780
+CANDIDATE ID: 8: SCORE: 1721
+CANDIDATE ID: 3: SCORE: 1566
+
+ELECTION RESULTS AFTER DYNAMICS
+CANDIDATE ID: 9: SCORE: 6898
+CANDIDATE ID: 4: SCORE: 5039
+CANDIDATE ID: 0: SCORE: 3852
+CANDIDATE ID: 2: SCORE: 3262
+CANDIDATE ID: 1: SCORE: 1700
+CANDIDATE ID: 6: SCORE: 1522
+CANDIDATE ID: 5: SCORE: 120
+CANDIDATE ID: 8: SCORE: 75
+CANDIDATE ID: 7: SCORE: 2
+CANDIDATE ID: 3: SCORE: 0
+The estimate of the marginal contribution time with one job is: 1.5226573944091797
+The estimate of the marginal contribution time with 6 job is: 0.4247345388139708
+
+NUMBER OF ITERATIONS FOR EACH SEED: 35,
+NUMBER_OF_DIGITS: 2
+NODES TO EXCLUDE: TRUE
+NUMBER OF PREFERENCES: 1
+len all_nodes: 22470 - len to exclude: 5036
+len all_nodes after exclusion: 17434
+The estimate of the marginal contribution time with one job is: 0.5771243027278355
+The number of iterations for the next level is : 25
+len all_nodes: 22469 - len to exclude: 5040
+len all_nodes after exclusion: 17430
+The estimate of the marginal contribution time with one job is: 0.5359708118438721
+The number of iterations for the next level is : 27
+len all_nodes: 22468 - len to exclude: 5044
+len all_nodes after exclusion: 17426
+The estimate of the marginal contribution time with one job is: 0.5017589463127984
+The number of iterations for the next level is : 29
+len all_nodes: 22467 - len to exclude: 5051
+len all_nodes after exclusion: 17419
+The estimate of the marginal contribution time with one job is: 0.48220710918821136
+The number of iterations for the next level is : 30
+len all_nodes: 22466 - len to exclude: 5054
+len all_nodes after exclusion: 17416
+The estimate of the marginal contribution time with one job is: 0.465437650680542
+The number of iterations for the next level is : 32
+len all_nodes: 22465 - len to exclude: 5056
+len all_nodes after exclusion: 17414
+The estimate of the marginal contribution time with one job is: 0.4886898621916771
+The number of iterations for the next level is : 30
+len all_nodes: 22464 - len to exclude: 5058
+len all_nodes after exclusion: 17412
+The estimate of the marginal contribution time with one job is: 0.48375545342763265
+The number of iterations for the next level is : 30
+len all_nodes: 22463 - len to exclude: 5060
+len all_nodes after exclusion: 17410
+The estimate of the marginal contribution time with one job is: 0.4733869632085164
+The number of iterations for the next level is : 31
+len all_nodes: 22462 - len to exclude: 5062
+len all_nodes after exclusion: 17408
+The estimate of the marginal contribution time with one job is: 0.5131572369606264
+The number of iterations for the next level is : 29
+len all_nodes: 22461 - len to exclude: 5066
+len all_nodes after exclusion: 17404
+The estimate of the marginal contribution time with one job is: 0.47634866319853686
+The number of iterations for the next level is : 31
+len all_nodes: 22460 - len to exclude: 5068
+len all_nodes after exclusion: 17402
+The estimate of the marginal contribution time with one job is: 0.4962178276431176
+The number of iterations for the next level is : 30
+len all_nodes: 22459 - len to exclude: 5070
+len all_nodes after exclusion: 17400
+The estimate of the marginal contribution time with one job is: 0.491976531346639
+The number of iterations for the next level is : 30
+len all_nodes: 22458 - len to exclude: 5072
+len all_nodes after exclusion: 17398
+The estimate of the marginal contribution time with one job is: 0.48365770975748695
+The number of iterations for the next level is : 31
+len all_nodes: 22457 - len to exclude: 5077
+len all_nodes after exclusion: 17393
+The estimate of the marginal contribution time with one job is: 0.5085093436702606
+The number of iterations for the next level is : 29
+len all_nodes: 22456 - len to exclude: 5079
+len all_nodes after exclusion: 17391
+The estimate of the marginal contribution time with one job is: 0.473820554799047
+The number of iterations for the next level is : 32
+len all_nodes: 22455 - len to exclude: 5083
+len all_nodes after exclusion: 17387
+The estimate of the marginal contribution time with one job is: 0.514250785112381
+The number of iterations for the next level is : 29
+len all_nodes: 22454 - len to exclude: 5087
+len all_nodes after exclusion: 17383
+The estimate of the marginal contribution time with one job is: 0.46733844691309434
+The number of iterations for the next level is : 33
+len all_nodes: 22453 - len to exclude: 5089
+len all_nodes after exclusion: 17381
+The estimate of the marginal contribution time with one job is: 0.47947810635422217
+The number of iterations for the next level is : 32
+len all_nodes: 22452 - len to exclude: 5092
+len all_nodes after exclusion: 17378
+The estimate of the marginal contribution time with one job is: 0.49553047120571136
+The number of iterations for the next level is : 30
+len all_nodes: 22451 - len to exclude: 5095
+len all_nodes after exclusion: 17375
+THE TOTAL NUMBER OF PERFORMED ITERATIONS IS: 605
+Computed 20 seeds. The budget was 20
+
+TRUTHFUL_SCORE: 2598, MANIPULATED_SCORE: 5099, SCORE_DIFFERENCE: 2501
+RUN_TIME: 307.5282347202301 seconds. (LordCatello)
+
+MANIPULATED ELECTION RESULTS
+CANDIDATE ID: 9: SCORE: 6868
+CANDIDATE ID: 4: SCORE: 5099
+CANDIDATE ID: 0: SCORE: 3836
+CANDIDATE ID: 2: SCORE: 3253
+CANDIDATE ID: 1: SCORE: 1697
+CANDIDATE ID: 6: SCORE: 1520
+CANDIDATE ID: 5: SCORE: 121
+CANDIDATE ID: 8: SCORE: 74
+CANDIDATE ID: 7: SCORE: 2
+CANDIDATE ID: 3: SCORE: 0
+
+DIFFERENCE BETWEEN MANIPULATED AND DYNAMICS SCORE: 60
+
+##########
+
