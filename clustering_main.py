@@ -1,12 +1,12 @@
-import clustering_utils
-import clustering_algorithms
+import mid_term.exercise_1.clustering_utils as clustering_utils
+import mid_term.exercise_1.clustering_algorithms as clustering_algorithms
 
 import utils
 import logging
 from final_term.exercise_2 import logging_configuration
 
-PATH_TO_NODES = "../../facebook_large/musae_facebook_target.csv"
-PATH_TO_EDGES = "../../facebook_large/musae_facebook_edges.csv"
+PATH_TO_NODES = "facebook_large/musae_facebook_target.csv"
+PATH_TO_EDGES = "facebook_large/musae_facebook_edges.csv"
 logger = logging.getLogger()
 
 logging_configuration.set_logging()
@@ -44,10 +44,8 @@ def main():
 
     clustering = clustering_utils.Clustering([
         (clustering_algorithms.k_means, {"centrality_measure": "degree_centrality", "seed": 42, "k": 4,
-                                                                              "equality_threshold": 0.001, "max_iterations": 10000,
-                                                                              "centers": None})
-        # (clustering_algorithms.girvan_newman, {"centrality_measure": "parallel_edges_betweenness_centrality", "seed": 42,
-        #                                        "k": 4, "optimized": False})
+                                         "equality_threshold": 0.001, "max_iterations": 10000,
+                                         "centers": None})
     ],
         graph, true_clusters, draw_graph=False)
 

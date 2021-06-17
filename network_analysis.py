@@ -1,9 +1,9 @@
 from utils import *
-from network_analysis_utils import NetworkAnalyzer
+from final_term.exercise_2.network_analysis_utils import NetworkAnalyzer
 from final_term.exercise_2.lectures_material.lesson4 import *
 from mid_term.exercise_2.centrality_measures import *
 
-NETWORK_PATH = "nets/net_1"
+NETWORK_PATH = "src/final_term/exercise_2/nets/net_1"
 NETWORK_NUM_NODES = 10000
 DEGREE_MEAN_THRESHOLD = 15
 DEGREE_STD_THRESHOLD = 10

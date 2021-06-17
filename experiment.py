@@ -19,8 +19,8 @@ from final_term.final_term_utils import populate_dynamics_parameters
 from final_term.exercise_3.src.manipulators.manipulators import timed_multi_level_greedy_manipulator
 from final_term.exercise_1.src.network_diffusion.fj_dynamics import fj_dynamics
 
-FACEBOOK_PATH_TO_NODES = "../../../facebook_large/musae_facebook_target.csv"
-FACEBOOK_PATH_TO_EDGES = "../../../facebook_large/musae_facebook_edges.csv"
+FACEBOOK_PATH_TO_NODES = "facebook_large/musae_facebook_target.csv"
+FACEBOOK_PATH_TO_EDGES = "facebook_large/musae_facebook_edges.csv"
 
 logger = logging.getLogger("final_term_exercise_3_logger")
 
@@ -44,7 +44,7 @@ SEED = 45
 POPULATE_DYNAMICS_SEED = SEED + 1
 RUN_EXPERIMENT_SEED = POPULATE_DYNAMICS_SEED + 1
 
-MAX_RUNNING_TIME_S = 14400  # 4h
+MAX_RUNNING_TIME_S = 15  # 4h
 
 NUMBER_OF_CANDIDATES = 10
 NUMBER_OF_SEEDS = 200
@@ -231,7 +231,7 @@ def _log_election_results(results: typing.Dict[int, int], max_results_to_print: 
 
 def _set_logger_configuration(compute_seeds_function_name) -> None:
     # logger configuration
-    results_dir = Path('experimental_results')
+    results_dir = Path('src/final_term/exercise_3/src/experimental_results')
     results_dir.mkdir(exist_ok=True)
 
     logging.config.dictConfig({
@@ -257,7 +257,7 @@ def _set_logger_configuration(compute_seeds_function_name) -> None:
         "loggers": {
             "final_term_exercise_3_logger": {
                 "propagate": False,
-                "level": "WARNING",
+                "level": "INFO",
                 "handlers": ["console-unnamed", "file-unnamed"]
             },
         },

@@ -9,8 +9,8 @@ from final_term.exercise_2 import logging_configuration
 logging_configuration.set_logging()
 
 logger = logging.getLogger()
-PATH_TO_NODES = "../../../facebook_large/musae_facebook_target.csv"
-PATH_TO_EDGES = "../../../facebook_large/musae_facebook_edges.csv"
+PATH_TO_NODES = "../../../../facebook_large/musae_facebook_target.csv"
+PATH_TO_EDGES = "../../../../facebook_large/musae_facebook_edges.csv"
 
 
 class TestCentralityMeasures(TestCase):

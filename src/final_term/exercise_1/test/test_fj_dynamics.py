@@ -9,8 +9,8 @@ from src.final_term.final_term_utils import populate_dynamics_parameters
 from src.final_term.exercise_1.src.network_diffusion.fj_dynamics import is_dynamics_converged, fj_dynamics, optimized_fj_dynamics
 
 SEED = 42
-FACEBOOK_PATH_TO_NODES = "../../../facebook_large/musae_facebook_target.csv"
-FACEBOOK_PATH_TO_EDGES = "../../../facebook_large/musae_facebook_edges.csv"
+FACEBOOK_PATH_TO_NODES = "../../../../facebook_large/musae_facebook_target.csv"
+FACEBOOK_PATH_TO_EDGES = "../../../../facebook_large/musae_facebook_edges.csv"
 
 
 class TestFjDynamics(TestCase):

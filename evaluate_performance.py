@@ -1,6 +1,5 @@
 import datetime
 import sys
-import typing
 from pathlib import Path
 
 from mid_term.exercise_3.src.classification.base_classifier import BaseClassifier
@@ -21,7 +20,7 @@ import numpy as np
 
 
 def set_logging():
-    results_dir = Path('results')
+    results_dir = Path('src/mid_term/exercise_3/test/performance/results')
     results_dir.mkdir(exist_ok=True)
 
     logging.config.dictConfig({
