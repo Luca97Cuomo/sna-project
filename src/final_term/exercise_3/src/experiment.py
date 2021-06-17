@@ -197,16 +197,16 @@ def main():
 
     NUMBER_OF_CANDIDATES = 10
     TARGET_CANDIDATE = random.randint(0, NUMBER_OF_CANDIDATES - 1)
-    NUMBER_OF_SEEDS = 200
-    COMPUTE_SEEDS = triangles_based_manipulator
+    NUMBER_OF_SEEDS = 20
+    COMPUTE_SEEDS = timed_multi_level_greedy_manipulator
     GRAPH_NAME = "Facebook Graph"
     GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
 
-    MAX_RUNNING_TIME_S = 14400
+    MAX_RUNNING_TIME_S = 300
 
     STUBBORNNESS = 0.5
 
-    NUMBER_OF_JOBS = _set_number_of_jobs(1)
+    NUMBER_OF_JOBS = _set_number_of_jobs(2)
 
     CANDIDATES = []
     for i in range(NUMBER_OF_CANDIDATES):
