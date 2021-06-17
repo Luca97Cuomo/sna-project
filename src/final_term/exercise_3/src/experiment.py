@@ -1,6 +1,8 @@
 import logging
 import logging.config
 import os
+import pathlib
+import pickle
 import random
 import sys
 import typing
@@ -11,10 +13,9 @@ import getpass
 
 import networkx as nx
 
-import utils
 from final_term.exercise_3.src.election import Candidate, run_election
 from final_term.final_term_utils import populate_dynamics_parameters
-from final_term.exercise_3.src.manipulators.manipulators import triangles_based_manipulator
+from final_term.exercise_3.src.manipulators.manipulators import timed_multi_level_greedy_manipulator
 from final_term.exercise_1.src.network_diffusion.fj_dynamics import fj_dynamics
 
 FACEBOOK_PATH_TO_NODES = "../../../facebook_large/musae_facebook_target.csv"
