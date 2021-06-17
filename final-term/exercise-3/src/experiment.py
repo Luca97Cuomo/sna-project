@@ -18,7 +18,8 @@ from election import Candidate, run_election
 from final_term_utils import populate_dynamics_parameters
 from manipulators import *
 from manipulators.cluster_based import cluster_based_manipulator
-from manipulators.manipulators import timed_multi_level_greedy_manipulator
+from manipulators.manipulators import timed_multi_level_greedy_manipulator, page_rank_manipulator, \
+    triangles_based_manipulator
 from network_diffusion.fj_dynamics import fj_dynamics
 
 FACEBOOK_PATH_TO_NODES = "../../../mid-term/exercise-1-2/facebook_large/musae_facebook_target.csv"
@@ -96,7 +97,7 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
 
     # compute seeds
     seeds = compute_seeds(graph, candidates, target_candidate_id, number_of_seeds,
-                          seed, number_of_jobs, max_running_time_s)
+                          seed, number_of_jobs, max_running_time_s=max_running_time_s)
     if len(seeds) > number_of_seeds:
         raise Exception(f"The length of computed seeds {len(seeds)} is greater "
                         f"than the number of seeds {number_of_seeds}")
@@ -202,7 +203,7 @@ def main():
     NUMBER_OF_CANDIDATES = 10
     TARGET_CANDIDATE = random.randint(0, NUMBER_OF_CANDIDATES - 1)
     NUMBER_OF_SEEDS = 200
-    COMPUTE_SEEDS = timed_multi_level_greedy_manipulator
+    COMPUTE_SEEDS = triangles_based_manipulator
     GRAPH_NAME = "Facebook Graph"
     GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
 

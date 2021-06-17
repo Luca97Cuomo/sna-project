@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 import networkx as nx
 
+from centrality_measures import algebraic_page_rank, naive_hits
 from election import Candidate, run_election, get_full_results_election
 from network_diffusion.fj_dynamics import fj_dynamics
 from shapley_centrality import CentralityValues, shapley_degree, shapley_threshold, shapley_closeness
@@ -50,7 +51,7 @@ def _compute_marginal_contribution_on_nodes(graph, candidates, target_candidate,
                 max_marginal_contribution = marginal_contribution
                 max_preference = preference
         marginal_contributions[node] = (max_marginal_contribution, max_preference)
-        print(f"marginal contribution of {node} is {max_marginal_contribution} (pref: {max_preference} target: {target_candidate.position})")
+        # print(f"marginal contribution of {node} is {max_marginal_contribution} (pref: {max_preference} target: {target_candidate.position})")
         if index == 0:
             bar.update(1)
     return marginal_contributions
@@ -424,6 +425,27 @@ def belief_degree_manipulator(graph: nx.Graph, candidates: typing.List[Candidate
     return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds,
                                         seed, number_of_jobs,
                                         lambda graph: belief_degree_centrality(graph, target_candidate_position))
+
+
+def page_rank_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
+                              number_of_seeds: int, seed: int, number_of_jobs: int = 1, *args, **kwargs) -> typing.Dict[int, float]:
+    return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds, seed, number_of_jobs,
+                                        algebraic_page_rank)
+
+
+def hubs_based_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
+                           number_of_seeds: int, seed: int, number_of_jobs: int = 1, *args, **kwargs) -> Seeds:
+    def naive_hits_hubs(graph: nx.Graph) -> CentralityValues:
+        return naive_hits(graph)[0]
+
+    return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds, seed,
+                                        number_of_jobs, naive_hits_hubs)
+
+
+def triangles_based_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
+                          number_of_seeds: int, seed: int, number_of_jobs: int = 1, *args, **kwargs) -> typing.Dict[int, float]:
+    return centrality_based_manipulator(graph, candidates, target_candidate_id, number_of_seeds, seed, number_of_jobs,
+                                        nx.clustering)
 
 
 def centrality_based_manipulator(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int,
