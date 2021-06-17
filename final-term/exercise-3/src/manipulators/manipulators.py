@@ -594,53 +594,59 @@ def timed_multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.Lis
                 f"\nNODES TO EXCLUDE: TRUE"
                 f"\nNUMBER OF PREFERENCES: {N_PREFERENCES}")
 
+    # Setting seed
     random.seed(seed)
 
     remaining_time = max_running_time_s
-    total_performed_iterations = 0 # for debugging purposes
+    total_performed_iterations = 0  # for debugging purposes
 
     with tqdm(total=number_of_seeds) as bar:
         with Parallel(n_jobs=number_of_jobs) as parallel:
             for i in range(number_of_seeds):
                 start_time_s = time.time()
-                # evaluate score with seeds
+
+                ##########
+                # Evaluate target candidate score with the actual seeds
+                ##########
+
                 preferences = fj_dynamics(copied_graph, NUMBER_OF_DIGITS)
 
-                # update graph after dynamics
+                # Update graph after dynamics
                 for node, preference in preferences.items():
                     copied_graph.nodes[node]["peak_preference"] = preference
 
-                # run election after dynamics
+                # Run election after dynamics
                 results, voters_to_candidates = get_full_results_election(copied_graph, candidates)
                 score = results[target_candidate.id]
 
-                # get nodes to exclude
+                # Get nodes to exclude
+                # If a node votes already for me, I exclude it from the seed candidates
                 nodes_to_exclude = []
                 for node, candidate_id in voters_to_candidates.items():
                     if candidate_id == target_candidate_id:
                         nodes_to_exclude.append(node)
 
                 ##########
-                # evaluate marginal contributions
+                # Evaluate marginal contributions
                 ##########
 
-                total_performed_iterations += number_of_iterations
+                total_performed_iterations += number_of_iterations  # for debug purposes
 
-                # compute chosen nodes
+                # Exclude nodes that are already in seeds
                 all_nodes_without_seeds = list(filter(lambda element: element not in seeds, copied_graph.nodes()))
+                logger.debug(f"len all_nodes: {len(all_nodes_without_seeds)} - len to exclude: {len(nodes_to_exclude)}")
 
-                print(f"len all_nodes: {len(all_nodes_without_seeds)} - len to exclude: {len(nodes_to_exclude)}")
+                all_nodes_without_seeds = list(filter(lambda element: element not in nodes_to_exclude,
+                                                      all_nodes_without_seeds))
+                logger.debug(f"len all_nodes after exclusion: {len(all_nodes_without_seeds)}")
 
-                # exclude also node that vote for me
-                all_nodes_without_seeds = list(filter(lambda element: element not in nodes_to_exclude, all_nodes_without_seeds))
-
-                print(f"len all_nodes after exclusion: {len(all_nodes_without_seeds)}")
-
-                # if number of nodes is greater that the available nodes then pick few nodes
+                # If the number of nodes to analyze is greater that the available number of nodes then pick few nodes
                 min_number_of_nodes = min(number_of_iterations, len(all_nodes_without_seeds))
                 if min_number_of_nodes != number_of_iterations:
-                    logger.info("Nodes per iteration would have been too many")
+                    logger.debug(f"Number of iterations {number_of_iterations} is greater the the available nodes to"
+                                 f"analyze {len(all_nodes_without_seeds)}")
 
+                # Choose the nodes for which to evaluate the marginal contribution
                 chosen_nodes = random.sample(all_nodes_without_seeds, min_number_of_nodes)
 
                 # compute chunks
