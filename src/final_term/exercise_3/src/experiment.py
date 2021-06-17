@@ -13,6 +13,7 @@ import getpass
 
 import networkx as nx
 
+import utils
 from final_term.exercise_3.src.election import Candidate, run_election
 from final_term.final_term_utils import populate_dynamics_parameters
 from final_term.exercise_3.src.manipulators.manipulators import timed_multi_level_greedy_manipulator
@@ -43,18 +44,18 @@ SEED = 45
 POPULATE_DYNAMICS_SEED = SEED + 1
 RUN_EXPERIMENT_SEED = POPULATE_DYNAMICS_SEED + 1
 
-MAX_RUNNING_TIME_S = 60
+MAX_RUNNING_TIME_S = 14400  # 4h
 
 NUMBER_OF_CANDIDATES = 10
-NUMBER_OF_SEEDS = 20
+NUMBER_OF_SEEDS = 200
 
-#GRAPH_NAME = "Facebook Graph"
-#GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
+GRAPH_NAME = "Facebook Graph"
+GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
 
-path = pathlib.Path("../../graph-3000-4000")
+# path = pathlib.Path("../../graph-3000-4000")
 
-with open(path, 'rb') as file:
-    GRAPH = pickle.load(file)
+# with open(path, 'rb') as file:
+#    GRAPH = pickle.load(file)
 
 
 def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_candidate_id: int, number_of_seeds: int,
