@@ -384,9 +384,6 @@ This algorithm has the following output:
 05-30 15:18 girvan_newman DEBUG    The length of the cluster_6 is 1
 ```
 
-It is possible to see that the algorithm tends to create clusters that are not homogeneous in size.
-This can due to the fact that when a cluster becomes bigger, the probability that other clusters will be merged with it
-increase.
 
 '''
 
