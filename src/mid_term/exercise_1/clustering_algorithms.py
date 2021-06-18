@@ -2,7 +2,7 @@ import time
 import networkx as nx
 import random
 import logging
-from clustering_utils import rand_index, CENTRALITY_MEASURES
+from mid_term.exercise_1.clustering_utils import rand_index, CENTRALITY_MEASURES
 from scipy.sparse import linalg
 from networkx.linalg.laplacianmatrix import laplacian_matrix
 from utils.priorityq import PriorityQueue
