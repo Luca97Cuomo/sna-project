@@ -17,7 +17,8 @@ logger = logging.getLogger()
 '''
 
 The degree centrality measure has been implemented only with the naive algorithm
-because the running time is already feasible. In fact it takes less one seconds as you can see from the results below.
+because the running time is already feasible. In fact it takes less than one second
+as you can see from the results below.
 
 ```
 2021-06-12 18:20:58,730 __evaluate      INFO     Evaluating degree_centrality algorithm
@@ -55,7 +56,7 @@ Even if the naive implementation took more or less half of an hour, a parallel v
 that splits the nodes of the graph into different chunks (one for each job) and compute the closeness on different jobs.
 
 ```
-2021-06-13 12:13:01,319 __evaluate      INFO     Evaluating parallel_closeness_centrality algorithm, with these arguments : {'n_jobs': 8}
+2021-06-13 12:13:01,319 __evaluate      INFO     Evaluating parallel_closeness_centrality algorithm, with these arguments: {'n_jobs': 8}
 2021-06-13 12:17:39,897 __evaluate      INFO     The centrality algorithm: parallel_closeness_centrality took 278.57 seconds
 ```
 
@@ -130,25 +131,25 @@ specific threshold that is not absolute, but is relative to the order of magnitu
 So repeat the steps from 2.
 
 ```
-2021-06-13 15:25:48,120 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.2}
-2021-06-13 15:27:03,518 basic_page_rank                INFO     The algorithm has reached convergence at iteration 161
-2021-06-13 15:27:03,523 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 75.40 seconds
+2021-06-13 15:25:48,120 __evaluate       INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.2}
+2021-06-13 15:27:03,518 basic_page_rank  INFO     The algorithm has reached convergence at iteration 161
+2021-06-13 15:27:03,523 __evaluate       INFO     The centrality algorithm: basic_page_rank took 75.40 seconds
 
-2021-06-13 16:06:28,041 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.4}
-2021-06-13 16:07:33,329 basic_page_rank                INFO     The algorithm has reached convergence at iteration 135
-2021-06-13 16:07:33,331 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 65.289 seconds
+2021-06-13 16:06:28,041 __evaluate       INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.4}
+2021-06-13 16:07:33,329 basic_page_rank  INFO     The algorithm has reached convergence at iteration 135
+2021-06-13 16:07:33,331 __evaluate       INFO     The centrality algorithm: basic_page_rank took 65.289 seconds
 
-2021-06-13 16:10:47,365 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.6}
-2021-06-13 16:11:45,624 basic_page_rank                INFO     The algorithm has reached convergence at iteration 121
-2021-06-13 16:11:45,625 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 58.260 seconds
+2021-06-13 16:10:47,365 __evaluate       INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.6}
+2021-06-13 16:11:45,624 basic_page_rank  INFO     The algorithm has reached convergence at iteration 121
+2021-06-13 16:11:45,625 __evaluate       INFO     The centrality algorithm: basic_page_rank took 58.260 seconds
 
-2021-06-13 16:14:37,236 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.8}
-2021-06-13 16:15:28,762 basic_page_rank                INFO     The algorithm has reached convergence at iteration 109
-2021-06-13 16:15:28,762 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 51.526 seconds
+2021-06-13 16:14:37,236 __evaluate       INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.8}
+2021-06-13 16:15:28,762 basic_page_rank  INFO     The algorithm has reached convergence at iteration 109
+2021-06-13 16:15:28,762 __evaluate       INFO     The centrality algorithm: basic_page_rank took 51.526 seconds
 
-2021-06-13 16:18:03,536 __evaluate                     INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 1}
-2021-06-13 16:18:51,097 basic_page_rank                INFO     The algorithm has reached convergence at iteration 101
-2021-06-13 16:18:51,097 __evaluate                     INFO     The centrality algorithm: basic_page_rank took 47.562 seconds
+2021-06-13 16:18:03,536 __evaluate       INFO     Evaluating basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 1}
+2021-06-13 16:18:51,097 basic_page_rank  INFO     The algorithm has reached convergence at iteration 101
+2021-06-13 16:18:51,097 __evaluate       INFO     The centrality algorithm: basic_page_rank took 47.562 seconds
 ```
 
 '''
@@ -223,25 +224,25 @@ The algorithm follows these steps:
 The check of the convergence is the same used in the basic_page_rank.
 
 ```
-2021-06-13 15:53:15,668 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.2}
-2021-06-13 15:54:22,941 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 161.
-2021-06-13 15:54:23,262 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 67.59438390000003 seconds
+2021-06-13 15:53:15,668 __evaluate            INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.2}
+2021-06-13 15:54:22,941 algebraic_page_rank   INFO     The algorithm has reached convergence at iteration 161.
+2021-06-13 15:54:23,262 __evaluate            INFO     The centrality algorithm: algebraic_page_rank took 67.59438390000003 seconds
 
-2021-06-13 16:09:55,159 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.4}
-2021-06-13 16:10:47,003 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 135.
-2021-06-13 16:10:47,309 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 52.149115600000016 seconds
+2021-06-13 16:09:55,159 __evaluate            INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.4}
+2021-06-13 16:10:47,003 algebraic_page_rank   INFO     The algorithm has reached convergence at iteration 135.
+2021-06-13 16:10:47,309 __evaluate            INFO     The centrality algorithm: algebraic_page_rank took 52.149115600000016 seconds
 
-2021-06-13 16:13:45,160 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.6}
-2021-06-13 16:14:36,877 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 121.
-2021-06-13 16:14:37,178 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 52.017438700000014 seconds
+2021-06-13 16:13:45,160 __evaluate            INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.6}
+2021-06-13 16:14:36,877 algebraic_page_rank   INFO     The algorithm has reached convergence at iteration 121.
+2021-06-13 16:14:37,178 __evaluate            INFO     The centrality algorithm: algebraic_page_rank took 52.017438700000014 seconds
 
-2021-06-13 16:17:18,057 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.8}
-2021-06-13 16:18:03,043 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 109.
-2021-06-13 16:18:03,371 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 45.31399070000009 seconds
+2021-06-13 16:17:18,057 __evaluate            INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 0.8}
+2021-06-13 16:18:03,043 algebraic_page_rank   INFO     The algorithm has reached convergence at iteration 109.
+2021-06-13 16:18:03,371 __evaluate            INFO     The centrality algorithm: algebraic_page_rank took 45.31399070000009 seconds
 
-2021-06-13 16:20:34,706 __evaluate                     INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 1}
-2021-06-13 16:21:20,211 algebraic_page_rank            INFO     The algorithm has reached convergence at iteration 101.
-2021-06-13 16:21:20,529 __evaluate                     INFO     The centrality algorithm: algebraic_page_rank took 45.822299099999896 seconds
+2021-06-13 16:20:34,706 __evaluate            INFO     Evaluating algebraic_page_rank algorithm: {'max_iterations': 10000, 'alpha': 1, 'delta_rel': 1}
+2021-06-13 16:21:20,211 algebraic_page_rank   INFO     The algorithm has reached convergence at iteration 101.
+2021-06-13 16:21:20,529 __evaluate            INFO     The centrality algorithm: algebraic_page_rank took 45.822299099999896 seconds
 ```
 
 '''
@@ -303,19 +304,19 @@ results computed by the jobs.
 
 2021-06-13 16:07:33,403 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.4, 'jobs': 8}
 2021-06-13 16:09:55,129 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 135.
-2021-06-13 16:09:55,137 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 141.73seconds
+2021-06-13 16:09:55,137 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 141.73 seconds
 
 2021-06-13 16:11:45,796 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.6, 'jobs': 8}
 2021-06-13 16:13:45,033 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 121.
-2021-06-13 16:13:45,040 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 119.244 seconds
+2021-06-13 16:13:45,040 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 119.24 seconds
 
 2021-06-13 16:15:28,789 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 0.8, 'jobs': 8}
 2021-06-13 16:17:18,017 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 109.
-2021-06-13 16:17:18,024 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 109.236 seconds
+2021-06-13 16:17:18,024 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 109.23 seconds
 
 2021-06-13 16:18:51,124 __evaluate                     INFO     Evaluating parallel_basic_page_rank algorithm: {'max_iterations': 10000, 'delta_rel': 1, 'jobs': 8}
 2021-06-13 16:20:34,558 parallel_basic_page_rank       INFO     The algorithm has reached convergence at iteration 101.
-2021-06-13 16:20:34,568 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 103.4429374 seconds
+2021-06-13 16:20:34,568 __evaluate                     INFO     The centrality algorithm: parallel_basic_page_rank took 103.44 seconds
 ```
 
 
@@ -428,7 +429,7 @@ values is lower than the specified threshold.
 
 ```
 
-2021-06-14 11:51:22,728 __evaluate          INFO     Evaluating naive_edge_hits algorithm, with these arguments : {'max_iterations': 100}
+2021-06-14 11:51:22,728 __evaluate          INFO     Evaluating naive_edge_hits algorithm, with these arguments: {'max_iterations': 100}
 2021-06-14 11:51:26,834 naive_edge_hits     INFO     The algorithm has reached convergence at iteration 22.
 2021-06-14 11:51:26,836 __evaluate          INFO     The centrality algorithm: naive_edge_hits took 4.10 seconds
  
@@ -501,7 +502,7 @@ only the authority values coming from the edges given as input.
 
 ```
 
-2021-06-14 11:51:26,935 __evaluate              INFO     Evaluating parallel_edge_hits algorithm, with these arguments : {'max_iterations': 100}
+2021-06-14 11:51:26,935 __evaluate              INFO     Evaluating parallel_edge_hits algorithm, with these arguments: {'max_iterations': 100}
 2021-06-14 11:52:11,642 parallel_edge_hits      INFO     The algorithm has reached convergence at iteration 22.
 2021-06-14 11:52:11,652 __evaluate              INFO     The centrality algorithm: parallel_edge_hits took 44.71 seconds
 
@@ -517,7 +518,7 @@ The non parallel version is faster than the one taken from networkx library, as 
 
 ```
 
-2021-06-14 12:54:22,313 __evaluate      INFO     Evaluating hits algorithm, with these arguments : {'max_iter': 100}
+2021-06-14 12:54:22,313 __evaluate      INFO     Evaluating hits algorithm, with these arguments: {'max_iter': 100}
 2021-06-14 12:54:40,418 __evaluate      INFO     The centrality algorithm: hits took 18.104869 seconds
 
 ```
@@ -618,7 +619,7 @@ values is lower than the specified threshold.
 
 ```
 
-2021-06-14 11:52:11,763 __evaluate      INFO     Evaluating naive_hits algorithm, with these arguments : {'max_iterations': 100}
+2021-06-14 11:52:11,763 __evaluate      INFO     Evaluating naive_hits algorithm, with these arguments: {'max_iterations': 100}
 2021-06-14 11:52:14,609 naive_hits      INFO     The algorithm has reached convergence at iteration 22.
 2021-06-14 11:52:14,610 __evaluate      INFO     The centrality algorithm: naive_hits took 2.84 seconds
 
@@ -681,7 +682,7 @@ The convergence check is the same of the other hits implementation.
 
 ```
 
-2021-06-14 11:52:14,656 __evaluate              INFO     Evaluating parallel_naive_hits algorithm, with these arguments : {'max_iterations': 100}
+2021-06-14 11:52:14,656 __evaluate              INFO     Evaluating parallel_naive_hits algorithm, with these arguments: {'max_iterations': 100}
 2021-06-14 11:52:36,253 parallel_naive_hits     INFO     The algorithm has reached convergence at iteration 22.
 2021-06-14 11:52:36,254 __evaluate              INFO     The centrality algorithm: parallel_naive_hits took 21.59 seconds
 
@@ -756,7 +757,7 @@ def parallel_naive_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
 '''
 
 For the betweenness centrality measure a naive and a parallel version has been implemented.
-The naive implementation, for each node given as input there are two phases:
+In the naive implementation, for each node given as input there are two phases:
 
 1. TOP DOWN PHASE: in this phase the following values are computed:
     - The BFS tree from the root node to all the other nodes.

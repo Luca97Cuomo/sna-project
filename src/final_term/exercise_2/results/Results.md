@@ -177,7 +177,7 @@ However, increasing q from 2 to 3, the diameter tends to increase, consequently,
 in such a way balancing the growth of the diameter.
 In fact, a network very similar to the target one was obtained using the combination:
 
-'r':5 - 'k':20 - 'q'= 3:
+'r':5 - 'k':20 - 'q': 3
 
 <img src=":/0a7c0ffa08604cee84923bf11133b987" alt="GenWS2DG_5_20_3.jpg" width="229" height="172" class="jop-noMdConv">
 
