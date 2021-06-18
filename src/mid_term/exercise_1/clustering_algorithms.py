@@ -464,14 +464,14 @@ def spectral_one_iteration(graph, nodes):
     logger.debug(f"The laplacian matrix took {time_end - time_start} seconds")
 
     time_start = time.perf_counter()
-    w, v = linalg.eigsh(lap_matrix, 1)  # check if we must use the greatest eigenvalue or the smallest one
+    w, v = linalg.eigsh(lap_matrix, 2, which='SM')  # check if we must use the greatest eigenvalue or the smallest one
     time_end = time.perf_counter()
     logger.debug(f"The linalg.eigsh took {time_end - time_start} seconds")
     c1 = []
     c2 = []
     time_start = time.perf_counter()
     for i in range(n):
-        if v[i, 0] < 0:
+        if v[i, 1] < 0:
             c1.append(nodes[i])
         else:
             c2.append(nodes[i])
