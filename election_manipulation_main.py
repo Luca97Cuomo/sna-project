@@ -265,7 +265,7 @@ def _set_logger_configuration(compute_seeds_function_name) -> None:
 def manipulation(G: nx.Graph, p: typing.List[float], c: int, B: int, b: typing.List[float]):
     # populate graph
     index = 0
-    node_list = sorted(list(G.nodes()))
+    node_list = G.nodes()
     for node in node_list:
         G.nodes[node]["private_belief"] = b[index]
         G.nodes[node]["stubbornness"] = 0.5

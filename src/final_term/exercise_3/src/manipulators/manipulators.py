@@ -559,6 +559,8 @@ def _estimate_number_of_iterations(max_running_time_s: int, number_of_seeds: int
     num_total_iterations = max_running_time_s / marginal_contribution_time_s
     num_iterations_for_each_seed = math.floor(num_total_iterations / number_of_seeds)
 
+    if num_iterations_for_each_seed < 1:
+        return 1
     return num_iterations_for_each_seed
 
 
@@ -577,6 +579,8 @@ def _estimate_number_of_iterations_at_execution_time(last_iteration_time_s: int,
 
     logger.debug(f"The number of iterations for the next level is : {num_iterations_for_each_seed}")
 
+    if num_iterations_for_each_seed < 1:
+        return 1
     return num_iterations_for_each_seed
 
 
