@@ -1,6 +1,5 @@
 # Execution instructions
 
-
 In this file you can find the instructions to be able to run the 
 experiments in order to verify the results, and the correct functioning,
 of the implemented algorithms.
@@ -27,7 +26,7 @@ dependencies into a
 > **Python version:** The code has been tested only with `Python 3.9.5` and there is a bug
 > in the `logger` if you execute the code with a Python version lower than 3.9.
 
-First create the virtual environment.
+First, create the virtual environment.
 
 ```bash
 
@@ -35,7 +34,7 @@ python3 -m venv venv
 
 ```
 
-From the same folder you executed the previous command, activate the python environment.
+From the same folder you executed the previous command, activate the Python environment.
 
 ```bash
 
@@ -62,7 +61,7 @@ pip install -r requirements.txt
 
 Different main files have been provided in order to test
 the exercises functionalities. 
-it is assumed that all the commands indicated 
+It is assumed that all the commands indicated 
 in this file are executed within the active virtual environment and
 preferably with the 3.9.5 version of Python.
 
@@ -77,7 +76,7 @@ python clustering_main.py
 ```
 
 If you want to run only a specific clustering algorithm you can delete 
-as much experiments as you want from the following lines into the 
+as many experiments as you want from the following lines into the 
 `clustering_main.py` files.
 
 ```python
@@ -134,7 +133,7 @@ python centrality_main.py
 If you want to test only some specific centrality measure you can edit
 the `centrality_main.py` file in the same way of the Exercise 1.
 
-For example if you want to execute only the Page rank algorithm and the HITS algorithm
+For example, if you want to execute only the Page rank algorithm and the HITS algorithm
 you can leave only the following lines into the `main` function:
 
 ```python
@@ -164,7 +163,7 @@ python network_analysis_main.py
 ```
 
 As the middle term Exercise 1 and Exercise 2, you can analyze a specific
-model, for example `randomG`, by leaving only the following lines into the `main` function
+model, for example `randomG`, by leaving only the following lines into the `main` function.
 
 ```python
 

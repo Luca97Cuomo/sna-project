@@ -1,8 +1,6 @@
 import logging
 import logging.config
 import os
-import pathlib
-import pickle
 import random
 import sys
 import typing
@@ -257,7 +255,7 @@ def _set_logger_configuration(compute_seeds_function_name) -> None:
         "loggers": {
             "final_term_exercise_3_logger": {
                 "propagate": False,
-                "level": "INFO",
+                "level": "WARNING",
                 "handlers": ["console-unnamed", "file-unnamed"]
             },
         },
@@ -278,7 +276,7 @@ def manipulation(G: nx.Graph, p: typing.List[float], c: int, B: int, b: typing.L
     for i in range(len(p)):
         candidates.append(Candidate(i, p[i]))
 
-    number_of_jobs = _set_number_of_jobs(2)
+    number_of_jobs = _set_number_of_jobs(number_of_free_cpus=1)
 
     truthful_score, manipulated_score = run_experiment(G, candidates, c, B,
                                                        COMPUTE_SEEDS, RUN_EXPERIMENT_SEED,

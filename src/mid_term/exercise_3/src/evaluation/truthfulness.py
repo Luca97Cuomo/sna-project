@@ -3,7 +3,7 @@ A fit classifier has its truthfulness tested by evaluating all possible reviews.
 The chosen measures for the truthfulness of a classifier are two:
 
 - the reviews subject to cheating: the ratio between the number of samples for which hiding one or more
-    features results in a better score and the total number of samples that have feature to be hidden (for instance,
+    features results in a better score and the total number of samples that have features to be hidden (for instance,
     1 x x is not included).
 
 

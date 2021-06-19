@@ -68,7 +68,7 @@ def load_graph_and_clusters(nodes_path, edges_path, num_of_clusters=4):
 
             clusters[index].append(identifier)
 
-    logger.info(f"There are {len(graph)} nodes in the graph")
+    # logger.info(f"There are {len(graph)} nodes in the graph")
 
     return graph, clusters
 
