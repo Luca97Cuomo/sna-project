@@ -20,7 +20,9 @@ def main():
                                        network_diameter_threshold=DIAMETER_THRESHOLD,
                                        network_clustering_coefficient_threshold=AVG_CLUSTERING_COEF_THRESHOLD,
                                        target_network=target_network, network_generation_algorithms_with_kwargs=[
-            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 11, "q": 3}),
+            (GenWS2DG, {"n": NETWORK_NUM_NODES, "r": 5, "k": 3, "q": 2}),
+            (preferentialG, {"n": NETWORK_NUM_NODES, "p": 0.2}),
+            (randomG, {"n": NETWORK_NUM_NODES, "p": 0.05}),
         ])
 
     network_analyzer.analyze_all()

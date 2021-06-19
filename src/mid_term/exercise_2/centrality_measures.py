@@ -526,7 +526,7 @@ The non parallel version is faster than the one taken from networkx library, as 
 '''
 
 
-def parallel_edge_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
+def parallel_edge_hits(graph, max_iterations=100, jobs=4, tol=1.0e-8):
     def chunked_update_step(edges, node_to_value):
         partial_node_to_value = {node: 0 for node in graph.nodes()}
         for edge in edges:
@@ -702,7 +702,7 @@ The fastest implementation is the `naive_hits` that only takes 2.84 seconds (on 
 '''
 
 
-def parallel_naive_hits(graph, max_iterations=100, jobs=8, tol=1.0e-8):
+def parallel_naive_hits(graph, max_iterations=100, jobs=4, tol=1.0e-8):
     def chunked_update_step(nodes, node_to_hubs):
         chunked_node_to_authoritiy = {node: 0 for node in nodes}
         partial_node_to_hub = {node: 0 for node in graph.nodes()}
@@ -799,7 +799,7 @@ In particular the results from the naive and the parallel implementation are exa
 '''
 
 
-def parallel_betweenness_centrality(graph, n_jobs):
+def parallel_betweenness_centrality(graph, n_jobs=4):
     edge_btw = {frozenset(e): 0 for e in graph.edges()}
     node_btw = {i: 0 for i in graph.nodes()}
 
