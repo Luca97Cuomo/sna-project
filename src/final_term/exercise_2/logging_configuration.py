@@ -6,8 +6,8 @@ import datetime
 
 
 def set_logging():
-    results_dir = Path('results')
-    results_dir.mkdir(exist_ok=True)
+    #results_dir = Path('results')
+    #results_dir.mkdir(exist_ok=True)
 
     logging.config.dictConfig({
         "version": 1,
@@ -30,16 +30,16 @@ def set_logging():
                 "stream": sys.stdout,
                 "formatter": "unnamed"
             },
-            "file-named": {
-                "class": "logging.FileHandler",
-                "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
-                "formatter": "named"
-            },
-            "file-unnamed": {
-                "class": "logging.FileHandler",
-                "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
-                "formatter": "unnamed"
-            },
+            # "file-named": {
+            #     "class": "logging.FileHandler",
+            #     "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
+            #     "formatter": "named"
+            # },
+            # "file-unnamed": {
+            #     "class": "logging.FileHandler",
+            #     "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
+            #     "formatter": "unnamed"
+            # },
         },
         "loggers": {
             "root": {

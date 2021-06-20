@@ -229,8 +229,8 @@ def _log_election_results(results: typing.Dict[int, int], max_results_to_print: 
 
 def _set_logger_configuration(compute_seeds_function_name) -> None:
     # logger configuration
-    results_dir = Path('results')
-    results_dir.mkdir(exist_ok=True)
+    #results_dir = Path('results')
+    #results_dir.mkdir(exist_ok=True)
 
     logging.config.dictConfig({
         "version": 1,
@@ -245,12 +245,12 @@ def _set_logger_configuration(compute_seeds_function_name) -> None:
                 "stream": sys.stdout,
                 "formatter": "unnamed"
             },
-            "file-unnamed": {
-                "class": "logging.FileHandler",
-                "filename": results_dir / f"experiments_{compute_seeds_function_name}_"
-                                          f"{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
-                "formatter": "unnamed"
-            },
+            # "file-unnamed": {
+            #     "class": "logging.FileHandler",
+            #     "filename": results_dir / f"experiments_{compute_seeds_function_name}_"
+            #                               f"{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
+            #     "formatter": "unnamed"
+            # },
         },
         "loggers": {
             "final_term_exercise_3_logger": {

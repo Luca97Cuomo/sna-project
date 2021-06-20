@@ -44,21 +44,21 @@ def set_logging():
                 "stream": sys.stdout,
                 "formatter": "unnamed"
             },
-            "file-named": {
-                "class": "logging.FileHandler",
-                "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
-                "formatter": "named"
-            },
-            "file-unnamed": {
-                "class": "logging.FileHandler",
-                "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
-                "formatter": "unnamed"
-            },
+            # "file-named": {
+            #     "class": "logging.FileHandler",
+            #     "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
+            #     "formatter": "named"
+            # },
+            # "file-unnamed": {
+            #     "class": "logging.FileHandler",
+            #     "filename": results_dir / f"results_{datetime.datetime.now().strftime('%d-%m-%H-%M-%S')}.txt",
+            #     "formatter": "unnamed"
+            # },
         },
         "loggers": {
             "root": {
                 "level": "DEBUG",
-                "handlers": ["console-unnamed", "file-unnamed"]
+                "handlers": ["console-unnamed"]
             },
             "classification": {
                 "level": "DEBUG",

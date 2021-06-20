@@ -542,15 +542,18 @@ def _estimate_number_of_iterations(max_running_time_s: int, number_of_seeds: int
 
     nodes = list(graph.nodes())
 
-    start_time_s = time.time()
+    start_time_s = time.perf_counter()
 
     # Estimate the marginal contribution time, considering only one job.
     _ = _compute_marginal_contribution(graph, candidates,
                                        candidates[0], nodes[0], 2000,
                                        number_of_digits, seed_preference=0.5)
-    end_time_s = time.time()
+    end_time_s = time.perf_counter()
 
     marginal_contribution_time_s = (end_time_s - start_time_s) / _parallel_time_improvement_factor_heuristic(number_of_jobs)
+
+    if marginal_contribution_time_s <= 0:
+        marginal_contribution_time_s = 1
 
     logger.info(f"The estimate of the marginal contribution time with one job is: {end_time_s - start_time_s}")
     logger.info(f"The estimate of the marginal contribution time"
@@ -564,13 +567,15 @@ def _estimate_number_of_iterations(max_running_time_s: int, number_of_seeds: int
     return num_iterations_for_each_seed
 
 
-def _estimate_number_of_iterations_at_execution_time(last_iteration_time_s: int, last_num_iterations_for_each_seed: int,
+def _estimate_number_of_iterations_at_execution_time(last_iteration_time_s: float, last_num_iterations_for_each_seed: int,
                                                      remaining_seeds: int, remaining_time_s, number_of_jobs: int):
     """
     Note: it remaining_time_s is < 0 num_iterations_for_each_seed will be set to number_of_jobs
     """
 
     marginal_contribution_time_s = last_iteration_time_s / last_num_iterations_for_each_seed
+    if marginal_contribution_time_s <= 0:
+        marginal_contribution_time_s = 1
 
     logger.debug(f"The estimate of the marginal contribution time with one job is: {marginal_contribution_time_s}")
 
@@ -619,7 +624,7 @@ def timed_multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.Lis
     with tqdm(total=number_of_seeds) as bar:
         with Parallel(n_jobs=number_of_jobs) as parallel:
             for i in range(number_of_seeds):
-                start_time_s = time.time()
+                start_time_s = time.perf_counter()
 
                 ##########
                 # Evaluate target candidate score with the actual seeds
@@ -714,7 +719,7 @@ def timed_multi_level_greedy_manipulator(graph: nx.Graph, candidates: typing.Lis
 
                 bar.update(1)
 
-                end_time_s = time.time()
+                end_time_s = time.perf_counter()
 
                 # Updated estimate
                 last_iteration_time_s = end_time_s - start_time_s
