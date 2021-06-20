@@ -226,6 +226,9 @@ def main():
 
 ```
 
+Note that you should use your main file from the same directory in which is located the file `election_manipulation_main.py`.
+You can also copy it into your folder.
+
 The experiment was configured in order to run in a defined amount of time. By default it will
 run for 4 hours.
 If you want to change it you should edit the constant `MAX_RUNNING_TIME_S` at 
