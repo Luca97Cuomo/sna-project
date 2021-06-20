@@ -211,7 +211,7 @@ def main():
 
 ### Final term exercise 3 - Election manipulation
 
-The file `election_manipulation_main.py` has been used for testing puposes and should not be executed.
+The file `election_manipulation_main.py` has been used for testing purposes and should not be executed.
 
 In order to use the manipulation function requested by the exercise you should import it into
 your main file as follows:
