@@ -62,7 +62,7 @@ def set_logging():
             },
             "classification": {
                 "level": "DEBUG",
-                "handlers": ["console-named", "file-named"],
+                "handlers": ["console-named"],
                 "propagate": False
             }
         },

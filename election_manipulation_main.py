@@ -48,7 +48,7 @@ NUMBER_OF_CANDIDATES = 10
 NUMBER_OF_SEEDS = 200
 
 GRAPH_NAME = "Facebook Graph"
-GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
+# GRAPH, _ = utils.load_graph_and_clusters(FACEBOOK_PATH_TO_NODES, FACEBOOK_PATH_TO_EDGES)
 
 # path = pathlib.Path("../../graph-3000-4000")
 
@@ -195,7 +195,7 @@ def run_experiment(graph: nx.Graph, candidates: typing.List[Candidate], target_c
                 f" SCORE_DIFFERENCE: {score_difference}")
 
     # log time
-    logger.info(f"RUN_TIME: {end_time - start_time} seconds. ({getpass.getuser()})")
+    logger.info(f"RUN_TIME: {end_time - start_time} seconds.")
 
     # logging
     logger.debug("")
@@ -229,7 +229,7 @@ def _log_election_results(results: typing.Dict[int, int], max_results_to_print: 
 
 def _set_logger_configuration(compute_seeds_function_name) -> None:
     # logger configuration
-    results_dir = Path('src/final_term/exercise_3/src/experimental_results')
+    results_dir = Path('results')
     results_dir.mkdir(exist_ok=True)
 
     logging.config.dictConfig({
@@ -256,7 +256,7 @@ def _set_logger_configuration(compute_seeds_function_name) -> None:
             "final_term_exercise_3_logger": {
                 "propagate": False,
                 "level": "WARNING",
-                "handlers": ["console-unnamed", "file-unnamed"]
+                "handlers": ["console-unnamed"]
             },
         },
     })

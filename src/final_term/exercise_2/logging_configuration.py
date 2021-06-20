@@ -44,7 +44,7 @@ def set_logging():
         "loggers": {
             "root": {
                 "level": "DEBUG",
-                "handlers": ["console-named", "file-named"]
+                "handlers": ["console-named"]
             }
         },
     })
